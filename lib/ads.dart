@@ -42,6 +42,7 @@ class Ads {
     assert(appId != null, 'Ads.init(): appId is required.');
     /// Redundancy with the assert, but kept if again made optional.
     _appId = appId == null ? FirebaseAdMob.testAppId : appId;
+    /// Some keywords have to be provided if not passed int.
     _keywords = keywords == null ? <String>['foo', 'bar'] : keywords;
     _contentUrl = contentUrl;
     Ads.birthday = birthday;
