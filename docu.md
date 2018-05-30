@@ -6,12 +6,12 @@
 Here you go, copy  this gist, ads.dart, and you're on your way to monetizing your Flutter app. I've written a DART class library to utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app. Take it, make it better, and then share.
 Ads by Example
 In the first example listed below, it takes only three lines of code, to get a banner ad displayed in your app. All that's required of you is the 'AdMob id' you got when you signed up for an Adsense account. The id listed here is a 'test id' offered by Google and is to be used during development. Of course, keep yours confidential, but when using yours during development, supply instead the second parameter, testing, to the init() function. Doing so, as you see in the example below, and setting it to true will bring up only 'test ads.'
-
+![Flutter AdMob](https://github.com/AndriousSolutions/ads/blob/master/test/images/AdMob%20and%20Flutter.png)
 
 ## AdMob by Google
 If you've yet to get setup for AdMob, go to this website, https://firebase.google.com/docs/admob/, after downloading this file. You'll need your 'AdMob id.' Again, test id's are supplied by the plugin to be used during development since using your own id would violate 'AdMob by Google' policy. I mean, you can't be clicking ads on your own app, don't you know! That'd be cheating! 
+![Three lines of code, and you've a Banner ad.](https://github.com/AndriousSolutions/ads/blob/master/test/images/01iniState.png)
 
-Three lines of code, and you've a Banner ad.
 It's best practice to call the 'Ads' init() function in a State object's iniState() function, and to call its dispose() function in the State object's corresponding dispose() function. The third function call is showBannerAd() and, as the name implies, it does just that.
 ## Beta You Bet!
 Again, this 'Ads' library currently uses the plugin, firebase_admob, which is, as of this writing, still in beta. As such, Banner ads can only be positioned at the top or the bottom of the screen, animation is limited, the ads come in a infinite set of sizes. Lastly, 'native ads' (i.e. ads displayed on UI components native to the platform) are not yet supported.
