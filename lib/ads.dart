@@ -19,7 +19,7 @@ typedef void AdEventListener(MobileAdEvent event);
 
 typedef void VideoEventListener(RewardedVideoAdEvent event, {String rewardType, int rewardAmount});
 
-typedef void RewardListener({String rewardType, int rewardAmount});
+typedef void RewardListener(String rewardType, int rewardAmount);
 
 
 List<AdEventListener> _adEventListeners = [];
@@ -30,7 +30,7 @@ class Ads {
   static init(
     String appId,
     {List<String> keywords,
-    String contentUrl = '',
+    String contentUrl,
     DateTime birthday,
     MobileAdGender gender = MobileAdGender.unknown,
     bool designedForFamilies = true,
@@ -74,7 +74,7 @@ class Ads {
     if (_contentUrl.isEmpty){
        _contentUrl = null;
     }else {
-      _contentUrl = contentUrl;
+       _contentUrl = contentUrl;
     }
   }
 
@@ -89,8 +89,11 @@ class Ads {
   static List<String> _testDevices;
   static get testDevices => _testDevices;
   static set testDevices(List<String> devices){
-    if(devices.every((String s) => s != null && s.isNotEmpty)){
-      _testDevices = devices;
+    /// Take in only valid entries.
+    for(var device in devices){
+      if(device != null && device.isNotEmpty){
+        _testDevices.add(device);
+      }
     }
   }
 
@@ -158,7 +161,7 @@ class Ads {
       targetingInfo: info,
       listener: banner._eventListener,
     );
-    _bannerAd.load();
+//    _bannerAd.load();
   }
 
 
@@ -468,6 +471,7 @@ class _VidListener{
     /// Don't continue if there is no corresponding event type.
     if(mobileEvent != null) {
       for (var listener in _adEventListeners) {
+
         listener(mobileEvent);
       }
     }
@@ -522,7 +526,7 @@ class _VidListener{
 
         for (var listener in _rewardedListeners){
 
-          listener(rewardType: rewardType, rewardAmount: rewardAmount);
+          listener(rewardType, rewardAmount);
         }
 
         break;
