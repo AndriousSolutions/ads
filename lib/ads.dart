@@ -161,7 +161,6 @@ class Ads {
       targetingInfo: info,
       listener: banner._eventListener,
     );
-//    _bannerAd.load();
   }
 
 
@@ -320,6 +319,11 @@ class _AdListener{
   set removeClicked(VoidCallback listener) => _clickedListeners.remove(listener);
   clearClicked() => _clickedListeners.clear();
 
+  List<VoidCallback> _impressionListeners = [];
+  set impressionListener(VoidCallback listener) => _impressionListeners.add(listener);
+  set removeImpression(VoidCallback listener) => _impressionListeners.remove(listener);
+  clearImpression() => _impressionListeners.clear();
+
   List<VoidCallback> _openedListeners = [];
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
   set removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
@@ -373,6 +377,11 @@ class _AdListener{
 
         break;
       case MobileAdEvent.impression:
+
+        for (var listener in _impressionListeners){
+
+          listener();
+        }
 
         break;
       case MobileAdEvent.opened:
