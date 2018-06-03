@@ -6,8 +6,12 @@
           <option name="url" value="https://github.com/AndriousSolutions/ads.git" />
           <option name="userName" value="" />
         </UrlAndUserName>
+        <UrlAndUserName>
+          <option name="url" value="https://github.com/Drawner/WorkingMemory.git" />
+          <option name="userName" value="" />
+        </UrlAndUserName>
       </list>
     </option>
-    <option name="cloneParentDir" value="C:\Programs\Tools\Projects\Flutter\libs" />
+    <option name="cloneParentDir" value="C:\Programs\Tools\Projects\Android\" />
   </component>
 </application>
