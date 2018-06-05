@@ -27,7 +27,7 @@ List<AdEventListener> _adEventListeners = [];
 
 class Ads {
 
-  static init(
+  static void init(
     String appId,
     {List<String> keywords,
     String contentUrl,
