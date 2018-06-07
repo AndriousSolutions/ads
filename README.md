@@ -3,7 +3,7 @@
 # Ads in your App in a Snap! 
 ###### A Flutter Example
 
-Here you go, copy  this gist, ads.dart, and you're on your way to monetizing your Flutter app. I've written a DART class library to utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app. Take it, make it better, and then share.
+Here you go, copy this file, ads.dart, and you're on your way to monetizing your Flutter app. I've written a DART class library to utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app. Take it, make it better, and then share.
 Ads by Example
 In the first example listed below, it takes only three lines of code, to get a banner ad displayed in your app. All that's required of you is the 'AdMob id' you got when you signed up for an Adsense account. The id listed here is a 'test id' offered by Google and is to be used during development. Of course, keep yours confidential, but when using yours during development, supply instead the second parameter, testing, to the init() function. Doing so, as you see in the example below, and setting it to true will bring up only 'test ads.'
 
