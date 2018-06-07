@@ -14,4 +14,7 @@
     </option>
     <option name="cloneParentDir" value="C:\Programs\Tools\Projects\Android\" />
   </component>
+  <component name="Vcs.Log.App.Settings">
+    <option name="MIGRATED" value="true" />
+  </component>
 </application>
