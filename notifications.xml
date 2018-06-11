@@ -1,0 +1,5 @@
+<application>
+  <component name="NotificationConfiguration">
+    <notification groupId="Remote Desktop" displayType="NONE" shouldLog="false" />
+  </component>
+</application>
