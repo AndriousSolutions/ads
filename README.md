@@ -17,10 +17,12 @@ It's best practice to call the 'Ads' init() function in a State object's iniStat
 Again, this 'Ads' library currently uses the plugin, firebase_admob, which is, as of this writing, still in beta. As such, Banner ads can only be positioned at the top or the bottom of the screen, animation is limited, the ads come in a infinite set of sizes. Lastly, 'native ads' (i.e. ads displayed on UI components native to the platform) are not yet supported.
 
 ## You've Got Options
+
 Anyone who's read my past articles knows I'm always looking for options. We software developers love options, right? Well, of course, using this library, you've got options.
 You can see, in the second example below, along with the required 'AdMob id', you've got nine other settings you can optionally use to describe the kind of ads you may wish to be associated with your app.
 
 ![Nine named parameters that match the named parameters used by the plugin.](https://github.com/AndriousSolutions/ads/blob/master/test/images/02initOptions.png)
+
 
 Ten options to initialize and display an AdMob Banner ad.
 
@@ -40,6 +42,7 @@ As you can deduce by now, this 'Ads' class is using only static members and meth
 There are three types of ads currently offered by the firebase_admob plugin. There's the traditional Banner ad, the Interstitial or full-screen ad that covers the interface of their host app when opened, and finally, there's the Video ad that also covers the screen when opened and then returns to the app when closed.
 
 ![Three types of ads.](https://github.com/AndriousSolutions/ads/blob/master/test/images/15Three%20Types%20Ads.png)
+
 
 ## It's an Event!
 Looking inside the plugin, we see it watches for seven separate events when it comes to the Banner ad and the Full-screen ad. Everything from the much-called 'loaded' event to the 'impression' event. Which I think fires each time an individual ad is displayed in your app. I'm not certain however as there's not much API documentation for this plugin at the time of this writing either.
