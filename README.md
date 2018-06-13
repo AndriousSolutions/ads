@@ -1,5 +1,3 @@
----
-
 # Ads in your App in a Snap! 
 ###### A Flutter Example
 ![Walkthrough - AdMob for Flutter Example](https://www.youtube.com/watch?v=XeBwjTS69ho)
@@ -89,8 +87,6 @@ As you see in the example below, you've options galore! You can setup all three 
 The PUB website offers an example on how to implement the firebase_admob plugin. I've included that example in the following gist, AdMob in Flutter Example. However, you guessed it, this example instead uses the 'Ads' library to demonstrate ads in a Flutter app. Below is the main.dart file found in the example. I've highlighted where the 'Ads' class library is used.
 
 ![main.dart for AdMob Example](https://github.com/AndriousSolutions/ads/blob/master/test/images/14FlutterExample.png)
-
----
 
 ## Conclusion
 This library was offered to you merely to make your life a little easier when it comes to displaying ads in your app. It may have its short-comings, but this simply is my way of contributing to our fledgling Flutter community. Flutter is the way to go in my opinion, and sharing code is one way to help make this community grow and go forward.
