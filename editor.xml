@@ -3,4 +3,7 @@
     <option name="FONT_SIZE" value="30" />
     <option name="FONT_SCALE" value="2.5" />
   </component>
+  <component name="EditorSettings">
+    <option name="USE_SOFT_WRAPS" value="" />
+  </component>
 </application>
