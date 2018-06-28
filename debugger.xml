@@ -78,9 +78,7 @@
   </component>
   <component name="XDebuggerSettings">
     <data-views />
-    <general>
-      <option name="hideDebuggerOnProcessTermination" value="true" />
-    </general>
+    <general />
     <debuggers>
       <debugger id="ObjectiveC">
         <configuration>
