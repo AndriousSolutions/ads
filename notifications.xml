@@ -1,6 +1,6 @@
 <application>
   <component name="NotificationConfiguration">
-    <notification groupId="Framework Detection" shouldLog="false" />
+    <notification groupId="Dart Analysis" displayType="TOOL_WINDOW" />
     <notification groupId="Remote Desktop" displayType="NONE" shouldLog="false" />
   </component>
 </application>
