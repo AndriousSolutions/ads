@@ -1,5 +1,7 @@
 <application>
-  <component name="NotificationConfiguration">
+  <component name="NotificationConfiguration" showBalloons="false">
+    <notification groupId="Dart Analysis" displayType="TOOL_WINDOW" />
+    <notification groupId="Find Problems" displayType="STICKY_BALLOON" />
     <notification groupId="Remote Desktop" displayType="NONE" shouldLog="false" />
   </component>
 </application>
