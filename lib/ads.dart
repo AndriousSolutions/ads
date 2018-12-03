@@ -80,6 +80,7 @@ class Ads {
 
   static DateTime birthday;
 
+  @Deprecated('This functionality is deprecated in AdMob without replacement.')
   static MobileAdGender gender;
 
   static bool designedForFamilies;
