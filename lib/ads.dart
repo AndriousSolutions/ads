@@ -43,13 +43,13 @@ class Ads {
     /// Redundancy with the assert, but kept if again made optional.
     _appId = appId == null ? FirebaseAdMob.testAppId : appId;
     /// Some keywords have to be provided if not passed int.
-    _keywords = keywords == null ? <String>['foo', 'bar'] : keywords;
+    _keywords = keywords == null ? ['foo', 'bar'] : keywords;
     _contentUrl = contentUrl;
     Ads.birthday = birthday;
     Ads.gender = gender;
     Ads.designedForFamilies = designedForFamilies;
     Ads.childDirected = childDirected;
-    _testDevices = testDevices;
+    Ads.testDevices = testDevices;
     Ads.testing = testing;
     if(listener != null) _adEventListeners.add(listener);
 
@@ -71,7 +71,7 @@ class Ads {
   static String _contentUrl;
   static get contentUrl => _contentUrl;
   static set contentUrl(String contentUrl){
-    if (_contentUrl.isEmpty){
+    if (contentUrl == null || contentUrl.isEmpty){
        _contentUrl = null;
     }else {
        _contentUrl = contentUrl;
@@ -87,9 +87,10 @@ class Ads {
 
   static bool childDirected;
 
-  static List<String> _testDevices;
+  static List _testDevices = <String>[];
   static get testDevices => _testDevices;
   static set testDevices(List<String> devices){
+    if(devices == null) return;
     /// Take in only valid entries.
     for(var device in devices){
       if(device != null && device.isNotEmpty){
@@ -211,14 +212,14 @@ class Ads {
     _screenLoaded = true;
   }
 
-  static void showVideoAd([State state]){
+  static void showVideoAd([State state])async{
     if(state != null && !state.mounted) return;
-      _videoAd.show();
-     // Load it now for the next possible showing.
-     setVideoAd();
+    _videoAd.show();
+    // Load it now for the next possible showing.
+    setVideoAd();
   }
 
-  static void setVideoAd({
+  static Future<bool> setVideoAd({
     List<String> keywords,
     String contentUrl,
     DateTime birthday,
@@ -227,7 +228,7 @@ class Ads {
     bool childDirected,
     List<String> testDevices,
     VideoEventListener listener,
-  }) {
+  }) async {
     var info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
@@ -243,7 +244,8 @@ class Ads {
     _videoAd.listener = (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       video._eventListener(event, rewardType: rewardType, rewardAmount: rewardAmount);
     };
-    _videoAd.load(adUnitId: Ads.testing ? RewardedVideoAd.testAdUnitId : Ads._appId, targetingInfo: info);
+    bool loaded = await _videoAd.load(adUnitId: Ads.testing ? RewardedVideoAd.testAdUnitId : Ads._appId, targetingInfo: info);
+    return loaded;
   }
 
   static MobileAdTargetingInfo _targetInfo({
