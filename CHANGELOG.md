@@ -22,3 +22,4 @@
 ## 0.1.2
   March 14, 2019. 
 - Corrected image in README.md
+- Format files

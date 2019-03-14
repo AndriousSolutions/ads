@@ -13,6 +13,7 @@ Key _showVideo = Key('SHOW REWARDED VIDEO');
 
 /// Library-private variable accessed by all the classes and top-level functions.
 int _coins = 0;
+
 /// Names the last event triggered.
 String _event = '';
 
@@ -104,27 +105,38 @@ void main() {
       ),
     ));
 
-
     expect(Ads.bannerAd.adUnitId, equals(FirebaseAdMob.testAppId));
     expect(Ads.bannerAd.targetingInfo.keywords.contains('android'), isTrue);
     expect(Ads.bannerAd.targetingInfo.keywords.contains('flutter'), isTrue);
-    expect(Ads.bannerAd.targetingInfo.contentUrl, equals('http://www.andrioussolutions.com'));
+    expect(Ads.bannerAd.targetingInfo.contentUrl,
+        equals('http://www.andrioussolutions.com'));
     expect(Ads.bannerAd.targetingInfo.childDirected, isFalse);
-    expect(Ads.bannerAd.targetingInfo.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
+    expect(
+        Ads.bannerAd.targetingInfo.testDevices
+            .contains('Samsung_Galaxy_SII_API_26:5554'),
+        isTrue);
 
     expect(Ads.fullScreenAd.adUnitId, equals(FirebaseAdMob.testAppId));
     expect(Ads.fullScreenAd.targetingInfo.keywords.contains('dart'), isTrue);
     expect(Ads.fullScreenAd.targetingInfo.keywords.contains('flutter'), isTrue);
-    expect(Ads.fullScreenAd.targetingInfo.contentUrl, equals('http://www.fluttertogo.com'));
+    expect(Ads.fullScreenAd.targetingInfo.contentUrl,
+        equals('http://www.fluttertogo.com'));
     expect(Ads.fullScreenAd.targetingInfo.childDirected, isFalse);
-    expect(Ads.fullScreenAd.targetingInfo.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
+    expect(
+        Ads.fullScreenAd.targetingInfo.testDevices
+            .contains('Samsung_Galaxy_SII_API_26:5554'),
+        isTrue);
 
     expect(Ads.videoAd.adUnitId, equals(FirebaseAdMob.testAppId));
     expect(Ads.videoAd.targetingInfo.keywords.contains('dart'), isTrue);
     expect(Ads.videoAd.targetingInfo.keywords.contains('java'), isTrue);
-    expect(Ads.videoAd.targetingInfo.contentUrl, equals('http://www.publang.org'));
+    expect(
+        Ads.videoAd.targetingInfo.contentUrl, equals('http://www.publang.org'));
     expect(Ads.videoAd.targetingInfo.childDirected, isFalse);
-    expect(Ads.videoAd.targetingInfo.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isFalse);
+    expect(
+        Ads.videoAd.targetingInfo.testDevices
+            .contains('Samsung_Galaxy_SII_API_26:5554'),
+        isFalse);
     expect(Ads.videoAd.listener, isNotNull);
   });
 
@@ -159,9 +171,6 @@ void main() {
         ),
       ),
     ));
-
-
-
   });
 
   testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -175,9 +184,6 @@ void main() {
         ),
       ),
     ));
-
-
-
   });
 
   testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -191,9 +197,6 @@ void main() {
         ),
       ),
     ));
-
-
-
   });
 
   testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -207,9 +210,6 @@ void main() {
         ),
       ),
     ));
-
-
-
   });
 
   testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -223,9 +223,6 @@ void main() {
         ),
       ),
     ));
-
-
-
   });
 }
 
@@ -276,7 +273,8 @@ class _TestAppState extends State<TestApp> {
         break;
       case 3:
         var eventListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.leftApplication) _event = 'MobileAdEvent.leftApplication';
+          if (event == MobileAdEvent.leftApplication)
+            _event = 'MobileAdEvent.leftApplication';
         };
 
         Ads.init('ca-app-pub-3940256099942544',
@@ -502,7 +500,7 @@ class _TestAppState extends State<TestApp> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 new RaisedButton(
-                  key: _showBanner,
+                    key: _showBanner,
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
                       Ads.showBannerAd(this);
@@ -541,4 +539,3 @@ class _TestAppState extends State<TestApp> {
     );
   }
 }
-
