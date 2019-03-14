@@ -27,3 +27,4 @@
 ## 0.1.3
   March 14, 2019. 
 - Lengthened pubspec description.
+- Delete erroneous files
