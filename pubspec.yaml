@@ -1,19 +1,19 @@
 name: ads
-description: Ads for Application
-version: 0.1.0
+description: Easily add Ads to your App with an array of options.
+version: 0.1.2
 author: Greg Perry <support@andrioussolutions.com>
 homepage: https://github.com/AndriousSolutions/ads
 
 # SDK version
 environment:
-  sdk: ">=2.0.0 <5.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # https://pub.dartlang.org/packages/firebase_admob#-installing-tab-
-  firebase_admob:  '^0.7.0'
+  # https://pub.dartlang.org/packages/firebase_admob#-changelog-tab-
+  firebase_admob: ^0.7.0
 
 dev_dependencies:
   flutter_test:
