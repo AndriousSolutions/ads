@@ -14,3 +14,7 @@
   March 14, 2019. 
 - Initial Release
 - Remove deprecated fields: birthday, gender, designedForFamilies
+
+## 0.1.1
+  March 14, 2019. 
+- Corrected images in README.md
