@@ -29,3 +29,7 @@
 - Lengthened pubspec description.
 - Delete erroneous files
 - Delete folders, _windows & codestyles
+
+## 0.1.4
+  March 14, 2019. 
+- Supplied a Homepage in pubspec.yaml

@@ -1,8 +1,8 @@
 name: ads
 description: Easily add Ads to your App with one static function call with an array of options.
-version: 0.1.3
+version: 0.1.4
 author: Greg Perry <support@andrioussolutions.com>
-homepage: https://pub.dartlang.org/packages/ads
+homepage: https://medium.com/@greg.perry/ads-in-a-snap-flutter-example-4362a2c88c0b
 repository: https://github.com/AndriousSolutions/ads
 # SDK version
 environment:
