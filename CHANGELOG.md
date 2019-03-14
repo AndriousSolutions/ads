@@ -18,3 +18,7 @@
 ## 0.1.1
   March 14, 2019. 
 - Corrected images in README.md
+
+## 0.1.2
+  March 14, 2019. 
+- Corrected image in README.md
