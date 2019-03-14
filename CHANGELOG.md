@@ -28,3 +28,4 @@
   March 14, 2019. 
 - Lengthened pubspec description.
 - Delete erroneous files
+- Delete folders, _windows & codestyles
