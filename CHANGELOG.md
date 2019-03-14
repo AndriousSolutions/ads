@@ -23,3 +23,7 @@
   March 14, 2019. 
 - Corrected image in README.md
 - Format files
+
+## 0.1.3
+  March 14, 2019. 
+- Lengthened pubspec description.

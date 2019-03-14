@@ -1,9 +1,9 @@
 name: ads
-description: Easily add Ads to your App with an array of options.
-version: 0.1.2
+description: Easily add Ads to your App with one static function call with an array of options.
+version: 0.1.3
 author: Greg Perry <support@andrioussolutions.com>
-homepage: https://github.com/AndriousSolutions/ads
-
+homepage: https://pub.dartlang.org/packages/ads
+repository: https://github.com/AndriousSolutions/ads
 # SDK version
 environment:
   sdk: ">=2.1.0 <3.0.0"
