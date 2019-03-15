@@ -97,4 +97,4 @@ The PUB website offers an example on how to implement the firebase_admob plugin.
 ## Conclusion
 This library was offered to you merely to make your life a little easier when it comes to displaying ads in your app. It may have its short-comings, but this simply is my way of contributing to our fledgling Flutter community. Flutter is the way to go in my opinion, and sharing code is one way to help make this community grow and go forward.
 ## YouTube Video 
-[![Flutter AdMob Video](http://img.youtube.com/vi/XeBwjTS69ho/0.jpg)](http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)
+[![Flutter AdMob Video](https://img.youtube.com/vi/XeBwjTS69ho/0.jpg)](http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)

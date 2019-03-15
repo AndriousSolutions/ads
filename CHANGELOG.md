@@ -45,3 +45,7 @@
 ## 0.1.5+2
   March 15, 2019. 
 - Append YouTube Video onto README.md.
+
+## 0.1.5+3
+  March 15, 2019. 
+- Supplied a secure image for the YouTube Video onto README.md.
