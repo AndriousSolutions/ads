@@ -73,7 +73,7 @@ Yes, you can assign as many listeners as you want to a particular event. You or 
 
 As you've likely suspected, the Full-screen ad also has the same array of event listeners like the Banner ad. Again, there's seven separate events you can individually assign an event listener - and as many listeners as you like at that. How about that!
 
-![Full-Screen Listeners]https://user-images.githubusercontent.com/32497443/54376808-3c0d0d00-465a-11e9-9ec4-f124b60e9e4b.png)
+![Full-Screen Listeners](https://user-images.githubusercontent.com/32497443/54376808-3c0d0d00-465a-11e9-9ec4-f124b60e9e4b.png)
 
 Finally, you guessed it, the Video ad also has all the event listeners needed to catch each of all the possibly events currently issued to it by the firebase_admob plugin-eight events as of this writing. Below, there's an example of how to 'reward' a passed amount when the user has finished viewing a video.
 
@@ -97,4 +97,4 @@ The PUB website offers an example on how to implement the firebase_admob plugin.
 ## Conclusion
 This library was offered to you merely to make your life a little easier when it comes to displaying ads in your app. It may have its short-comings, but this simply is my way of contributing to our fledgling Flutter community. Flutter is the way to go in my opinion, and sharing code is one way to help make this community grow and go forward.
 ## YouTube Video 
-[![Flutter AdMob Video](http://img.youtube.com/vi/XeBwjTS69ho/0.jpg)]("http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)
+[![Flutter AdMob Video](http://img.youtube.com/vi/XeBwjTS69ho/0.jpg)](http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)
