@@ -33,3 +33,7 @@
 ## 0.1.4
   March 14, 2019. 
 - Supplied a Homepage in pubspec.yaml
+
+## 0.1.5
+  March 15, 2019. 
+- Provided API Documentation.

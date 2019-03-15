@@ -1,15 +1,17 @@
 # Ads in your App in a Snap! 
 ###### A Flutter Example
-[Walkthrough - AdMob for Flutter Example](https://www.youtube.com/watch?v=XeBwjTS69ho)
-
-This DART class library will utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app. Take it, make it better, and then share.
-Ads by Example
+This package will utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app.
+## Ads by Example
 In the first example listed below, it takes only three lines of code, to get a banner ad displayed in your app. All that's required of you is the 'AdMob id' you got when you signed up for an Adsense account. The id listed here is a 'test id' offered by Google and is to be used during development. Of course, keep yours confidential, but when using yours during development, supply instead the second parameter, testing, to the init() function. Doing so, as you see in the example below, and setting it to true will bring up only 'test ads.'
 
 ![Flutter AdMob](https://user-images.githubusercontent.com/32497443/54377589-cb66f000-465b-11e9-9a06-1a13c432e5c8.png)
 
 ## AdMob by Google
 If you've yet to get setup for AdMob, go to this website, https://firebase.google.com/docs/admob/, after downloading this file. You'll need your 'AdMob id.' Again, test id's are supplied by the plugin to be used during development since using your own id would violate 'AdMob by Google' policy. I mean, you can't be clicking ads on your own app, don't you know! That'd be cheating! 
+## For Android, Modify AndroidManifest.xml
+A common error you may encounter when trying this package out is Google complaining that the AdMob was not properly initialized. Merely follow the directions below to resolve this:
+[![androidManifest](https://user-images.githubusercontent.com/32497443/54394329-ef89f780-4682-11e9-9539-3edeab1c7351.png)](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml)
+## Just Three Lines Of Code 
 ![Three lines of code, and you've a Banner ad.](https://user-images.githubusercontent.com/32497443/54376719-0e27c880-465a-11e9-845a-0866ee5955a9.png)
 It's best practice to call the 'Ads' init() function in a State object's iniState() function, and to call its dispose() function in the State object's corresponding dispose() function. The third function call is showBannerAd() and, as the name implies, it does just that.
 
@@ -56,7 +58,7 @@ With Video ads, there are eight events made available to watch out for. Events a
 ## Listen and Earn!
 Since the plugin supplies a whole bunch of events, I've implemented no less than eleven event listeners in this library. Look at the example below. The 'Ads.eventListener' is the granddaddy of event listeners for this library. With all the events the plugin watches out for, you can use this event listener to catch the ones you're particular interested in. It applies to the types of events shared by all three types of ads.
 
-![Ads Event Listener Example.](https://user-images.githubusercontent.com/32497443/54376791-344d6880-465a-11e9-8c78-28bec025a092.png)
+![Ads Event Listener Example.]https://user-images.githubusercontent.com/32497443/54376791-344d6880-465a-11e9-8c78-28bec025a092.png)
 
 ## Listen Up!
 Again, you have three types of ads, and so, instead of using that 'granddaddy' listener above, each has its own set of event listeners. There's the bannerListener, the screenListner, and the videoListener. As you know, the Banner ad and the FullScreen ad use the same set of 'MobileAdEvent' events while the Video Ad has its own set under the event type, 'RewardedVideoAdEvent'. This means you can break up your event listeners by the type of ad if you want.
@@ -94,3 +96,5 @@ The PUB website offers an example on how to implement the firebase_admob plugin.
 
 ## Conclusion
 This library was offered to you merely to make your life a little easier when it comes to displaying ads in your app. It may have its short-comings, but this simply is my way of contributing to our fledgling Flutter community. Flutter is the way to go in my opinion, and sharing code is one way to help make this community grow and go forward.
+## YouTube Video 
+[![Flutter AdMob Video](http://img.youtube.com/vi/XeBwjTS69ho/0.jpg)]("http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)
