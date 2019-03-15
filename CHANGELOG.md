@@ -37,3 +37,7 @@
 ## 0.1.5
   March 15, 2019. 
 - Provided API Documentation.
+
+## 0.1.5+1
+  March 15, 2019. 
+- Updated README.md.

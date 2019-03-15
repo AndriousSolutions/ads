@@ -58,7 +58,7 @@ With Video ads, there are eight events made available to watch out for. Events a
 ## Listen and Earn!
 Since the plugin supplies a whole bunch of events, I've implemented no less than eleven event listeners in this library. Look at the example below. The 'Ads.eventListener' is the granddaddy of event listeners for this library. With all the events the plugin watches out for, you can use this event listener to catch the ones you're particular interested in. It applies to the types of events shared by all three types of ads.
 
-![Ads Event Listener Example.]https://user-images.githubusercontent.com/32497443/54376791-344d6880-465a-11e9-8c78-28bec025a092.png)
+![Ads Event Listener Example.](https://user-images.githubusercontent.com/32497443/54376791-344d6880-465a-11e9-8c78-28bec025a092.png)
 
 ## Listen Up!
 Again, you have three types of ads, and so, instead of using that 'granddaddy' listener above, each has its own set of event listeners. There's the bannerListener, the screenListner, and the videoListener. As you know, the Banner ad and the FullScreen ad use the same set of 'MobileAdEvent' events while the Video Ad has its own set under the event type, 'RewardedVideoAdEvent'. This means you can break up your event listeners by the type of ad if you want.
