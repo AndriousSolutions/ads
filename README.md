@@ -1,15 +1,17 @@
 # Ads in your App in a Snap! 
 ###### A Flutter Example
-[Walkthrough - AdMob for Flutter Example](https://www.youtube.com/watch?v=XeBwjTS69ho)
-
-This DART class library will utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app. Take it, make it better, and then share.
-Ads by Example
+This package will utilize the plugin, firebase_admob, so to quickly and easily implement ads into a Flutter app.
+## Ads by Example
 In the first example listed below, it takes only three lines of code, to get a banner ad displayed in your app. All that's required of you is the 'AdMob id' you got when you signed up for an Adsense account. The id listed here is a 'test id' offered by Google and is to be used during development. Of course, keep yours confidential, but when using yours during development, supply instead the second parameter, testing, to the init() function. Doing so, as you see in the example below, and setting it to true will bring up only 'test ads.'
 
 ![Flutter AdMob](https://user-images.githubusercontent.com/32497443/54377589-cb66f000-465b-11e9-9a06-1a13c432e5c8.png)
 
 ## AdMob by Google
 If you've yet to get setup for AdMob, go to this website, https://firebase.google.com/docs/admob/, after downloading this file. You'll need your 'AdMob id.' Again, test id's are supplied by the plugin to be used during development since using your own id would violate 'AdMob by Google' policy. I mean, you can't be clicking ads on your own app, don't you know! That'd be cheating! 
+## For Android, Modify AndroidManifest.xml
+A common error you may encounter when trying this package out is Google complaining that the AdMob was not properly initialized. Merely follow the directions below to resolve this:
+[![androidManifest](https://user-images.githubusercontent.com/32497443/54394329-ef89f780-4682-11e9-9539-3edeab1c7351.png)](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml)
+## Just Three Lines Of Code 
 ![Three lines of code, and you've a Banner ad.](https://user-images.githubusercontent.com/32497443/54376719-0e27c880-465a-11e9-845a-0866ee5955a9.png)
 It's best practice to call the 'Ads' init() function in a State object's iniState() function, and to call its dispose() function in the State object's corresponding dispose() function. The third function call is showBannerAd() and, as the name implies, it does just that.
 
@@ -71,7 +73,7 @@ Yes, you can assign as many listeners as you want to a particular event. You or 
 
 As you've likely suspected, the Full-screen ad also has the same array of event listeners like the Banner ad. Again, there's seven separate events you can individually assign an event listener - and as many listeners as you like at that. How about that!
 
-![Full-Screen Listeners]https://user-images.githubusercontent.com/32497443/54376808-3c0d0d00-465a-11e9-9ec4-f124b60e9e4b.png)
+![Full-Screen Listeners](https://user-images.githubusercontent.com/32497443/54376808-3c0d0d00-465a-11e9-9ec4-f124b60e9e4b.png)
 
 Finally, you guessed it, the Video ad also has all the event listeners needed to catch each of all the possibly events currently issued to it by the firebase_admob plugin-eight events as of this writing. Below, there's an example of how to 'reward' a passed amount when the user has finished viewing a video.
 
@@ -94,3 +96,5 @@ The PUB website offers an example on how to implement the firebase_admob plugin.
 
 ## Conclusion
 This library was offered to you merely to make your life a little easier when it comes to displaying ads in your app. It may have its short-comings, but this simply is my way of contributing to our fledgling Flutter community. Flutter is the way to go in my opinion, and sharing code is one way to help make this community grow and go forward.
+## YouTube Video 
+[![Flutter AdMob Video](https://img.youtube.com/vi/XeBwjTS69ho/0.jpg)](http://www.youtube.com/watch?feature=player_embedded&v=XeBwjTS69ho)

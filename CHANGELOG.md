@@ -33,3 +33,19 @@
 ## 0.1.4
   March 14, 2019. 
 - Supplied a Homepage in pubspec.yaml
+
+## 0.1.5
+  March 15, 2019. 
+- Provided API Documentation.
+
+## 0.1.5+1
+  March 15, 2019. 
+- Updated README.md.
+
+## 0.1.5+2
+  March 15, 2019. 
+- Append YouTube Video onto README.md.
+
+## 0.1.5+3
+  March 15, 2019. 
+- Supplied a secure image for the YouTube Video onto README.md.

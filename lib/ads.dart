@@ -40,6 +40,7 @@ typedef void RewardListener(String rewardType, int rewardAmount);
 List<AdEventListener> _adEventListeners = [];
 
 class Ads {
+  /// Initialize the Firebase AdMob plugin with a number of options.
   static void init(
     String appId, {
     List<String> keywords,
@@ -119,6 +120,7 @@ class Ads {
 
   static bool _screenLoaded = false;
 
+  /// Close any Ads, clean up memory and clear resources.
   static void dispose() {
     hideBannerAd();
     hideFullScreenAd();
@@ -132,6 +134,7 @@ class Ads {
     _videoAd = null;
   }
 
+  /// Show a Banner Ad.
   static void showBannerAd([State state]) {
     if (state != null && !state.mounted) return;
     if (_bannerAd == null) setBannerAd();
@@ -140,11 +143,13 @@ class Ads {
       ..show();
   }
 
+  /// Hide a Banner Ad.
   static void hideBannerAd() {
     _bannerAd?.dispose();
     _bannerAd = null;
   }
 
+  /// Set the Banner Ad options.
   static void setBannerAd({
     AdSize size = AdSize.banner,
     List<String> keywords,
@@ -170,6 +175,7 @@ class Ads {
     );
   }
 
+  /// Show a Full Screen Ad.
   static void showFullScreenAd([State state]) {
     if (state != null && !state.mounted) return;
     if (_fullScreenAd == null || !_screenLoaded) setFullScreenAd();
@@ -177,11 +183,13 @@ class Ads {
     _screenLoaded = false;
   }
 
+  /// Hide the Full Screen Ad.
   static void hideFullScreenAd() {
     _fullScreenAd?.dispose();
     _fullScreenAd = null;
   }
 
+  /// Set the Full Screen Ad options.
   static void setFullScreenAd({
     List<String> keywords,
     String contentUrl,
@@ -209,6 +217,7 @@ class Ads {
     _screenLoaded = true;
   }
 
+  /// Show a Video Ad.
   static void showVideoAd([State state]) async {
     if (state != null && !state.mounted) return;
     _videoAd.ad.show();
@@ -216,6 +225,7 @@ class Ads {
     setVideoAd();
   }
 
+  /// Set the Video Ad options.
   static Future<bool> setVideoAd({
     List<String> keywords,
     String contentUrl,
@@ -248,6 +258,7 @@ class Ads {
     return loaded;
   }
 
+  /// Return the target audience information
   static MobileAdTargetingInfo _targetInfo({
     List<String> keywords,
     String contentUrl,
@@ -278,34 +289,54 @@ class Ads {
     );
   }
 
+  /// Set an Ad Event Listener.
   static set eventListener(AdEventListener listener) =>
       _adEventListeners.add(listener);
+
+  /// Remove a specific Add Event Listener.
   static set removeEvent(AdEventListener listener) =>
       _adEventListeners.remove(listener);
+
+  /// Clear all Ad Event Listeners.
   static clearEventListeners() => _adEventListeners.clear();
 
   static final banner = _AdListener();
 
+  /// Set a Banner Ad Event Listener.
   static set bannerListener(AdEventListener listener) =>
       banner._eventListeners.add(listener);
+
+  /// Remove a specific Banner Ad Event Listener.
   static set removeBanner(AdEventListener listener) =>
       banner._eventListeners.remove(listener);
+
+  /// Clear all Banner Ad Event Listeners.
   static clearBannerListeners() => banner._eventListeners.clear();
 
   static final screen = _AdListener();
 
+  /// Set a Full Screen Ad Event Listener.
   static set screenListener(AdEventListener listener) =>
       screen._eventListeners.add(listener);
+
+  /// Remove a Full Screen Ad Event Listener.
   static set removeScreen(AdEventListener listener) =>
       screen._eventListeners.remove(listener);
+
+  /// Clear all Full Screen Ad Event Listeners.
   static clearScreenListeners() => screen._eventListeners.clear();
 
   static final video = _VidListener();
 
+  /// Set a Video Ad Event Listener
   static set videoListener(VideoEventListener listener) =>
       video._eventListeners.add(listener);
+
+  /// Remove a specific Video Ad Event Listener.
   static set removeVideo(VideoEventListener listener) =>
       video._eventListeners.remove(listener);
+
+  /// Clear all Video Ad Event Listeners.
   static clearVideoListeners() => video._eventListeners.clear();
 }
 
@@ -538,6 +569,7 @@ class _VidListener {
     }
   }
 
+  /// Clear all possible types of Ad listeners on one call.
   clearAll() {
     clearLoaded();
     clearFailed();
