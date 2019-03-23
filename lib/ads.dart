@@ -135,12 +135,15 @@ class Ads {
   }
 
   /// Show a Banner Ad.
-  static void showBannerAd([State state]) {
+  static void showBannerAd([State state, double anchorOffset = 0.0, AnchorType anchorType = AnchorType.bottom]) {
     if (state != null && !state.mounted) return;
     if (_bannerAd == null) setBannerAd();
     _bannerAd
       ..load()
-      ..show();
+      ..show(
+        anchorOffset: anchorOffset,
+        anchorType: anchorType,
+      );
   }
 
   /// Hide a Banner Ad.
