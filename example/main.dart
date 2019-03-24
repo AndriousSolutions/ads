@@ -175,7 +175,7 @@ class _MyAppState extends StateMVC {
       case 7:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.bannerListener = (MobileAdEvent event) {
           if (event == MobileAdEvent.opened) {
@@ -273,13 +273,13 @@ class _MyAppState extends StateMVC {
 
     switch (adType) {
       case 'screen':
-        Ads.showFullScreenAd(this);
+        Ads.showFullScreenAd(state: this);
         break;
       case 'video':
-        Ads.showVideoAd(this);
+        Ads.showVideoAd(state: this);
         break;
       default:
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
     }
   }
 
@@ -306,7 +306,7 @@ class _MyAppState extends StateMVC {
                 new RaisedButton(
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
-                      Ads.showBannerAd(this);
+                      Ads.showBannerAd(state: this);
                       Prefs.setString(ADS_PREF, 'banner');
                     }),
                 new RaisedButton(
@@ -317,14 +317,14 @@ class _MyAppState extends StateMVC {
                 new RaisedButton(
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
-                    Ads.showFullScreenAd(this);
+                    Ads.showFullScreenAd(state: this);
                     Prefs.setString(ADS_PREF, 'screen');
                   },
                 ),
                 new RaisedButton(
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
-                    Ads.showVideoAd(this);
+                    Ads.showVideoAd(state: this);
                     Prefs.setString(ADS_PREF, 'video');
                   },
                 ),

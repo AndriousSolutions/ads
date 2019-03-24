@@ -135,12 +135,20 @@ class Ads {
   }
 
   /// Show a Banner Ad.
-  static void showBannerAd([State state]) {
+  ///
+  /// parameters:
+  /// state is passed to determine if the app is not terminating. No need to show ad.
+  /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  /// anchorType place advert at top or bottom of screen (default bottom)
+  static void showBannerAd(
+      {State state,
+      double anchorOffset = 0.0,
+      AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
     if (_bannerAd == null) setBannerAd();
     _bannerAd
       ..load()
-      ..show();
+      ..show(anchorOffset: anchorOffset, anchorType: anchorType);
   }
 
   /// Hide a Banner Ad.
@@ -176,10 +184,18 @@ class Ads {
   }
 
   /// Show a Full Screen Ad.
-  static void showFullScreenAd([State state]) {
+  ///
+  /// parameters:
+  /// state is passed to determine if the app is not terminating. No need to show ad.
+  /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  /// anchorType place advert at top or bottom of screen (default bottom)
+  static void showFullScreenAd(
+      {State state,
+      double anchorOffset = 0.0,
+      AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
     if (_fullScreenAd == null || !_screenLoaded) setFullScreenAd();
-    _fullScreenAd.show();
+    _fullScreenAd.show(anchorOffset: anchorOffset, anchorType: anchorType);
     _screenLoaded = false;
   }
 
@@ -218,7 +234,10 @@ class Ads {
   }
 
   /// Show a Video Ad.
-  static void showVideoAd([State state]) async {
+  ///
+  /// parameters:
+  /// state is passed to determine if the app is not terminating. No need to show ad.
+  static void showVideoAd({State state}) async {
     if (state != null && !state.mounted) return;
     _videoAd.ad.show();
     // Load it now for the next possible showing.

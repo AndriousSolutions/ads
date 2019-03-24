@@ -49,3 +49,8 @@
 ## 0.1.5+3
   March 15, 2019. 
 - Supplied a secure image for the YouTube Video onto README.md.
+
+## 0.2.0
+  March 24, 2019. 
+- The named parameters, anchorOffset and anchorType, are supplied to the functions, showBannerAd() and showFullScreenAd()
+- **Breaking Change** As a consequence the named parameter, state, is now used in all the show() functions.

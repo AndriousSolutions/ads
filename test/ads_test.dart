@@ -243,7 +243,7 @@ class _TestAppState extends State<TestApp> {
       case 1:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.video.rewardedListener = (String rewardType, int rewardAmount) {
           _event = 'video.rewardedListener';
@@ -268,7 +268,7 @@ class _TestAppState extends State<TestApp> {
           listener: eventListener,
         );
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         break;
       case 3:
@@ -292,7 +292,7 @@ class _TestAppState extends State<TestApp> {
           }
         };
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         break;
       case 4:
@@ -382,14 +382,14 @@ class _TestAppState extends State<TestApp> {
           }
         };
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         break;
 
       case 7:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.bannerListener = (MobileAdEvent event) {
           if (event == MobileAdEvent.opened) {
@@ -414,7 +414,7 @@ class _TestAppState extends State<TestApp> {
       case 8:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.banner.openedListener = () {
           _event = 'banner.openedListener One ';
@@ -436,7 +436,7 @@ class _TestAppState extends State<TestApp> {
       case 9:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.screen.openedListener = () {
           _event = 'screen.openedListener One';
@@ -458,7 +458,7 @@ class _TestAppState extends State<TestApp> {
       case 10:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
 
         Ads.video.closedListener = () {
           _event = 'video.closedListener';
@@ -476,7 +476,7 @@ class _TestAppState extends State<TestApp> {
       default:
         Ads.init('ca-app-pub-3940256099942544', testing: true);
 
-        Ads.showBannerAd(this);
+        Ads.showBannerAd(state: this);
     }
   }
 
@@ -503,7 +503,7 @@ class _TestAppState extends State<TestApp> {
                     key: _showBanner,
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
-                      Ads.showBannerAd(this);
+                      Ads.showBannerAd(state: this);
                     }),
                 new RaisedButton(
                     key: _removeBanner,
@@ -515,14 +515,14 @@ class _TestAppState extends State<TestApp> {
                   key: _showFullScreen,
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
-                    Ads.showFullScreenAd(this);
+                    Ads.showFullScreenAd(state: this);
                   },
                 ),
                 new RaisedButton(
                   key: _showVideo,
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
-                    Ads.showVideoAd(this);
+                    Ads.showVideoAd(state: this);
                   },
                 ),
                 new Text("You have $_coins coins."),
