@@ -21,7 +21,7 @@ library ads;
 ///
 ///          Created  27 May 2018
 ///
-///
+///   Dart Packages.org: https://pub.dartlang.org/packages/ads#-changelog-tab-
 ///
 
 import 'package:flutter/widgets.dart' show State;
@@ -43,6 +43,9 @@ class Ads {
   /// Initialize the Firebase AdMob plugin with a number of options.
   static void init(
     String appId, {
+    String bannerUnitId,
+    String screenUnitId,
+    String videoUnitId,
     List<String> keywords,
     String contentUrl,
     DateTime birthday,
@@ -56,6 +59,19 @@ class Ads {
 
     /// Redundancy with the assert, but kept if again made optional.
     _appId = appId == null ? FirebaseAdMob.testAppId : appId;
+
+    if (bannerUnitId != null) {
+      bannerUnitId = bannerUnitId.trim();
+      _bannerUnitId = bannerUnitId;
+    }
+    if (screenUnitId != null) {
+      screenUnitId = screenUnitId.trim();
+      _screenUnitId = screenUnitId;
+    }
+    if (videoUnitId != null) {
+      videoUnitId = videoUnitId.trim();
+      _videoUnitId = videoUnitId;
+    }
 
     /// Some keywords have to be provided if not passed int.
     _keywords = keywords == null ? ['foo', 'bar'] : keywords;
@@ -74,6 +90,15 @@ class Ads {
 
   static String _appId;
   static String get appId => _appId;
+
+  static String _bannerUnitId = '';
+  static String get bannerUnitId => _bannerUnitId;
+
+  static String _screenUnitId = '';
+  static String get screenUnitId => _screenUnitId;
+
+  static String _videoUnitId = '';
+  static String get videoUnitId => _videoUnitId;
 
   static List<String> _keywords;
   static List<String> get keywords => _keywords;
@@ -141,11 +166,12 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showBannerAd(
-      {State state,
+      {String adUnitId,
+      State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
-    if (_bannerAd == null) setBannerAd();
+    if (_bannerAd == null) setBannerAd(adUnitId: adUnitId);
     _bannerAd
       ..load()
       ..show(anchorOffset: anchorOffset, anchorType: anchorType);
@@ -159,6 +185,7 @@ class Ads {
 
   /// Set the Banner Ad options.
   static void setBannerAd({
+    String adUnitId,
     AdSize size = AdSize.banner,
     List<String> keywords,
     String contentUrl,
@@ -166,6 +193,10 @@ class Ads {
     List<String> testDevices,
     AdEventListener listener,
   }) {
+    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+
+    if (_bannerUnitId.isEmpty) _bannerUnitId = adUnitId.trim();
+
     var info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
@@ -176,7 +207,9 @@ class Ads {
     if (listener != null) banner._eventListeners.add(listener);
 
     _bannerAd = BannerAd(
-      adUnitId: Ads.testing ? BannerAd.testAdUnitId : Ads._appId,
+      adUnitId: Ads.testing
+          ? BannerAd.testAdUnitId
+          : _bannerUnitId.isEmpty ? BannerAd.testAdUnitId : _bannerUnitId,
       size: size,
       targetingInfo: info,
       listener: banner._eventListener,
@@ -190,11 +223,13 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showFullScreenAd(
-      {State state,
+      {String adUnitId,
+      State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
-    if (_fullScreenAd == null || !_screenLoaded) setFullScreenAd();
+    if (_fullScreenAd == null || !_screenLoaded)
+      setFullScreenAd(adUnitId: adUnitId);
     _fullScreenAd.show(anchorOffset: anchorOffset, anchorType: anchorType);
     _screenLoaded = false;
   }
@@ -207,12 +242,17 @@ class Ads {
 
   /// Set the Full Screen Ad options.
   static void setFullScreenAd({
+    adUnitId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     AdEventListener listener,
   }) {
+    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+
+    if (_screenUnitId.isEmpty) _screenUnitId = adUnitId.trim();
+
     var info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
@@ -223,7 +263,9 @@ class Ads {
     if (listener != null) screen._eventListeners.add(listener);
 
     _fullScreenAd = InterstitialAd(
-      adUnitId: Ads.testing ? InterstitialAd.testAdUnitId : Ads._appId,
+      adUnitId: Ads.testing
+          ? InterstitialAd.testAdUnitId
+          : _screenUnitId.isEmpty ? InterstitialAd.testAdUnitId : _screenUnitId,
       targetingInfo: info,
       listener: screen._eventListener,
     );
@@ -237,21 +279,26 @@ class Ads {
   ///
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
-  static void showVideoAd({State state}) async {
+  static void showVideoAd({String adUnitId, State state}) async {
     if (state != null && !state.mounted) return;
     _videoAd.ad.show();
     // Load it now for the next possible showing.
-    setVideoAd();
+    setVideoAd(adUnitId: adUnitId);
   }
 
   /// Set the Video Ad options.
   static Future<bool> setVideoAd({
+    adUnitId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     VideoEventListener listener,
   }) async {
+    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+
+    if (_videoUnitId.isEmpty) _videoUnitId = adUnitId.trim();
+
     var info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
@@ -267,7 +314,9 @@ class Ads {
           rewardType: rewardType, rewardAmount: rewardAmount);
     };
 
-    String adModId = Ads.testing ? RewardedVideoAd.testAdUnitId : Ads._appId;
+    String adModId = Ads.testing
+        ? RewardedVideoAd.testAdUnitId
+        : _videoUnitId.isEmpty ? RewardedVideoAd.testAdUnitId : _videoUnitId;
 
     bool loaded =
         await _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);

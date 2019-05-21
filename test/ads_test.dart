@@ -19,7 +19,7 @@ String _event = '';
 
 void main() {
 //  testWidgets('Test Rewarded Video', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -44,7 +44,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -69,7 +69,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -94,7 +94,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -141,7 +141,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -161,7 +161,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -174,7 +174,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -187,7 +187,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -200,7 +200,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -213,7 +213,7 @@ void main() {
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = new UniqueKey();
+//    Key key = UniqueKey();
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
@@ -488,46 +488,46 @@ class _TestAppState extends State<TestApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('AdMob Plugin Test App'),
         ),
-        body: new SingleChildScrollView(
-          child: new Center(
-            child: new Column(
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new RaisedButton(
+                RaisedButton(
                     key: _showBanner,
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
                       Ads.showBannerAd(state: this);
                     }),
-                new RaisedButton(
+                RaisedButton(
                     key: _removeBanner,
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
                       Ads.hideBannerAd();
                     }),
-                new RaisedButton(
+                RaisedButton(
                   key: _showFullScreen,
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
                     Ads.showFullScreenAd(state: this);
                   },
                 ),
-                new RaisedButton(
+                RaisedButton(
                   key: _showVideo,
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
                     Ads.showVideoAd(state: this);
                   },
                 ),
-                new Text("You have $_coins coins."),
+                Text("You have $_coins coins."),
               ].map((Widget button) {
-                return new Padding(
+                return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: button,
                 );

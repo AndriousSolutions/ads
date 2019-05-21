@@ -18,7 +18,7 @@ const String ADS_PREF = 'ads';
 
 class MyApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends StateMVC {
@@ -292,45 +292,45 @@ class _MyAppState extends StateMVC {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('AdMob Plugin example app'),
         ),
-        body: new SingleChildScrollView(
-          child: new Center(
-            child: new Column(
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new RaisedButton(
+                RaisedButton(
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
                       Ads.showBannerAd(state: this);
                       Prefs.setString(ADS_PREF, 'banner');
                     }),
-                new RaisedButton(
+                RaisedButton(
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
                       Ads.hideBannerAd();
                     }),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
                     Ads.showFullScreenAd(state: this);
                     Prefs.setString(ADS_PREF, 'screen');
                   },
                 ),
-                new RaisedButton(
+                RaisedButton(
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
                     Ads.showVideoAd(state: this);
                     Prefs.setString(ADS_PREF, 'video');
                   },
                 ),
-                new Text("You have $_coins coins."),
+                Text("You have $_coins coins."),
               ].map((Widget button) {
-                return new Padding(
+                return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: button,
                 );
@@ -344,5 +344,5 @@ class _MyAppState extends StateMVC {
 }
 
 void main() {
-  runApp(new MyApp());
+  runApp(MyApp());
 }

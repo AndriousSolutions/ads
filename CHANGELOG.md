@@ -1,4 +1,7 @@
-# Ads
+## 0.4.0
+  May 21, 2019
+- A distinction now between App id and Unit id
+- Each type of ad has been designated their own unit id.
 
 ## 0.3.0
   April 02, 2019
