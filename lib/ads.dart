@@ -61,16 +61,13 @@ class Ads {
     _appId = appId == null ? FirebaseAdMob.testAppId : appId;
 
     if (bannerUnitId != null) {
-      bannerUnitId = bannerUnitId.trim();
-      _bannerUnitId = bannerUnitId;
+      _bannerUnitId = bannerUnitId.trim();
     }
     if (screenUnitId != null) {
-      screenUnitId = screenUnitId.trim();
-      _screenUnitId = screenUnitId;
+      _screenUnitId = screenUnitId.trim();
     }
     if (videoUnitId != null) {
-      videoUnitId = videoUnitId.trim();
-      _videoUnitId = videoUnitId;
+      _videoUnitId = videoUnitId.trim();
     }
 
     /// Some keywords have to be provided if not passed int.
@@ -89,18 +86,23 @@ class Ads {
   }
 
   static String _appId;
+  /// Get the app id.
   static String get appId => _appId;
 
   static String _bannerUnitId = '';
+  /// Get the banner ad unit id.
   static String get bannerUnitId => _bannerUnitId;
 
   static String _screenUnitId = '';
+  /// Get the interstitial ad unit id.
   static String get screenUnitId => _screenUnitId;
 
   static String _videoUnitId = '';
+  /// Get the video ad unit id.
   static String get videoUnitId => _videoUnitId;
 
   static List<String> _keywords;
+  /// Get and initialized ad keywords
   static List<String> get keywords => _keywords;
   static set keywords(List<String> keywords) {
     _keywords = keywords == null ? <String>['foo', 'bar'] : keywords;
@@ -134,13 +136,16 @@ class Ads {
   static bool testing;
 
   static BannerAd _bannerAd;
+  /// Get Banner Ad object
   static BannerAd get bannerAd => _bannerAd;
 
   static InterstitialAd _fullScreenAd;
+  /// Get Interstitial Ad object
   static InterstitialAd get fullScreenAd => _fullScreenAd;
 
   static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
   static _VideoAd _videoAd;
+  /// Get Video Ad object
   static _VideoAd get videoAd => _videoAd;
 
   static bool _screenLoaded = false;
@@ -195,7 +200,7 @@ class Ads {
   }) {
     if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
 
-    if (_bannerUnitId.isEmpty) _bannerUnitId = adUnitId.trim();
+    if (adUnitId.isNotEmpty) _bannerUnitId = adUnitId.trim();
 
     var info = _targetInfo(
       keywords: keywords,
@@ -242,7 +247,7 @@ class Ads {
 
   /// Set the Full Screen Ad options.
   static void setFullScreenAd({
-    adUnitId,
+    String adUnitId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
@@ -251,7 +256,7 @@ class Ads {
   }) {
     if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
 
-    if (_screenUnitId.isEmpty) _screenUnitId = adUnitId.trim();
+    if (adUnitId.isNotEmpty) _screenUnitId = adUnitId.trim();
 
     var info = _targetInfo(
       keywords: keywords,
@@ -288,7 +293,7 @@ class Ads {
 
   /// Set the Video Ad options.
   static Future<bool> setVideoAd({
-    adUnitId,
+    String adUnitId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
@@ -297,7 +302,7 @@ class Ads {
   }) async {
     if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
 
-    if (_videoUnitId.isEmpty) _videoUnitId = adUnitId.trim();
+    if (adUnitId.isNotEmpty) _videoUnitId = adUnitId.trim();
 
     var info = _targetInfo(
       keywords: keywords,
