@@ -70,8 +70,11 @@ class Ads {
       _videoUnitId = videoUnitId.trim();
     }
 
-    /// Some keywords have to be provided if not passed int.
-    _keywords = keywords == null ? ['foo', 'bar'] : keywords;
+    /// Some keywords have to be provided if not passed in.
+    _keywords =
+        keywords == null || keywords.every((String s) => s == null || s.isEmpty)
+            ? ['the']
+            : keywords;
     _contentUrl = contentUrl;
     Ads.childDirected = childDirected;
     Ads.testDevices = testDevices;
@@ -86,30 +89,54 @@ class Ads {
   }
 
   static String _appId;
+
   /// Get the app id.
   static String get appId => _appId;
 
   static String _bannerUnitId = '';
+
   /// Get the banner ad unit id.
   static String get bannerUnitId => _bannerUnitId;
+  /// Set the banner ad unit id.
+  static set bannerUnitId(String unitId) {
+    if (unitId != null) _bannerUnitId = unitId.trim();
+  }
 
   static String _screenUnitId = '';
+
   /// Get the interstitial ad unit id.
   static String get screenUnitId => _screenUnitId;
+  /// Set the interstitial ad unit id.
+  static set screenUnitId(String unitId) {
+    if (unitId != null) _screenUnitId = unitId.trim();
+  }
 
   static String _videoUnitId = '';
+
   /// Get the video ad unit id.
   static String get videoUnitId => _videoUnitId;
+  /// Set the video ad unit id.
+  static set videoUnitId(String unitId) {
+    if (unitId != null) _videoUnitId = unitId.trim();
+  }
 
   static List<String> _keywords;
-  /// Get and initialized ad keywords
+
+  /// Get ad keywords
   static List<String> get keywords => _keywords;
+  /// Set ad keywords
   static set keywords(List<String> keywords) {
-    _keywords = keywords == null ? <String>['foo', 'bar'] : keywords;
+    if (keywords != null) {
+      if (keywords.every((String s) => s == null || s.isEmpty)) return;
+      _keywords = keywords;
+    }
   }
 
   static String _contentUrl;
+
+  /// Get the url providing ad content
   static String get contentUrl => _contentUrl;
+  /// Set the url providing ad content
   static set contentUrl(String contentUrl) {
     if (contentUrl == null || contentUrl.isEmpty) {
       _contentUrl = null;
@@ -121,7 +148,10 @@ class Ads {
   static bool childDirected;
 
   static List _testDevices = <String>[];
+
+  /// Get list of test devices.
   static List<String> get testDevices => _testDevices;
+  /// Set list of test devices.
   static set testDevices(List<String> devices) {
     if (devices == null) return;
 
@@ -136,19 +166,23 @@ class Ads {
   static bool testing;
 
   static BannerAd _bannerAd;
+
   /// Get Banner Ad object
   static BannerAd get bannerAd => _bannerAd;
 
   static InterstitialAd _fullScreenAd;
+
   /// Get Interstitial Ad object
   static InterstitialAd get fullScreenAd => _fullScreenAd;
 
   static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
   static _VideoAd _videoAd;
+
   /// Get Video Ad object
   static _VideoAd get videoAd => _videoAd;
 
   static bool _screenLoaded = false;
+  static bool _showVideo = false;
 
   /// Close any Ads, clean up memory and clear resources.
   static void dispose() {
@@ -211,6 +245,9 @@ class Ads {
 
     if (listener != null) banner._eventListeners.add(listener);
 
+    // Clear memory of any previously set banner ad.
+    hideBannerAd();
+
     _bannerAd = BannerAd(
       adUnitId: Ads.testing
           ? BannerAd.testAdUnitId
@@ -267,6 +304,9 @@ class Ads {
 
     if (listener != null) screen._eventListeners.add(listener);
 
+    // Clear memory of any previously set interstitial ad.
+    hideFullScreenAd();
+
     _fullScreenAd = InterstitialAd(
       adUnitId: Ads.testing
           ? InterstitialAd.testAdUnitId
@@ -284,15 +324,20 @@ class Ads {
   ///
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
-  static void showVideoAd({String adUnitId, State state}) async {
+  static Future<void> showVideoAd({String adUnitId, State state}) async {
     if (state != null && !state.mounted) return;
-    _videoAd.ad.show();
-    // Load it now for the next possible showing.
-    setVideoAd(adUnitId: adUnitId);
+    if (_showVideo) {
+      _videoAd.ad.show();
+      _showVideo = false;
+    } else {
+      /// calling with parameters will NOT show the video ad.
+      setVideoAd(show: true, adUnitId: adUnitId);
+    }
   }
 
   /// Set the Video Ad options.
   static Future<bool> setVideoAd({
+    bool show = false,
     String adUnitId,
     List<String> keywords,
     String contentUrl,
@@ -313,8 +358,25 @@ class Ads {
 
     if (listener != null) video._eventListeners.add(listener);
 
+    // show set to true and these other parameters not passed.
+    _showVideo = show &&
+        keywords == null &&
+        contentUrl == null &&
+        childDirected == null &&
+        testDevices == null &&
+        listener == null;
+
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
+      if (event == RewardedVideoAdEvent.loaded) {
+        if (_showVideo) {
+          _videoAd.ad.show();
+          _showVideo = false;
+        }else{
+          _showVideo = true;
+        }
+      }
+
       video._eventListener(event,
           rewardType: rewardType, rewardAmount: rewardAmount);
     };

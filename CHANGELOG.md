@@ -1,3 +1,13 @@
+## 0.4.2
+  May 22, 2019
+- Provided setters for adUnitId
+- Clear memory variables before setting ad
+- Show Video after RewardedVideoAdEvent.loaded
+
+## 0.4.1
+  May 21, 2019
+- if (adUnitId.isNotEmpty) _bannerUnitId = adUnitId.trim();
+
 ## 0.4.0
   May 21, 2019
 - A distinction now between App id and Unit id
