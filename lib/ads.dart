@@ -97,6 +97,7 @@ class Ads {
 
   /// Get the banner ad unit id.
   static String get bannerUnitId => _bannerUnitId;
+
   /// Set the banner ad unit id.
   static set bannerUnitId(String unitId) {
     if (unitId != null) _bannerUnitId = unitId.trim();
@@ -106,6 +107,7 @@ class Ads {
 
   /// Get the interstitial ad unit id.
   static String get screenUnitId => _screenUnitId;
+
   /// Set the interstitial ad unit id.
   static set screenUnitId(String unitId) {
     if (unitId != null) _screenUnitId = unitId.trim();
@@ -115,6 +117,7 @@ class Ads {
 
   /// Get the video ad unit id.
   static String get videoUnitId => _videoUnitId;
+
   /// Set the video ad unit id.
   static set videoUnitId(String unitId) {
     if (unitId != null) _videoUnitId = unitId.trim();
@@ -124,6 +127,7 @@ class Ads {
 
   /// Get ad keywords
   static List<String> get keywords => _keywords;
+
   /// Set ad keywords
   static set keywords(List<String> keywords) {
     if (keywords != null) {
@@ -136,6 +140,7 @@ class Ads {
 
   /// Get the url providing ad content
   static String get contentUrl => _contentUrl;
+
   /// Set the url providing ad content
   static set contentUrl(String contentUrl) {
     if (contentUrl == null || contentUrl.isEmpty) {
@@ -151,6 +156,7 @@ class Ads {
 
   /// Get list of test devices.
   static List<String> get testDevices => _testDevices;
+
   /// Set list of test devices.
   static set testDevices(List<String> devices) {
     if (devices == null) return;
@@ -176,6 +182,7 @@ class Ads {
   static InterstitialAd get fullScreenAd => _fullScreenAd;
 
   static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
+
   static _VideoAd _videoAd;
 
   /// Get Video Ad object
@@ -372,7 +379,7 @@ class Ads {
         if (_showVideo) {
           _videoAd.ad.show();
           _showVideo = false;
-        }else{
+        } else {
           _showVideo = true;
         }
       }

@@ -3,37 +3,40 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:ads/ads.dart';
-import 'package:prefs/prefs.dart';
-
+import 'dart:io' show Platform;
 import 'package:firebase_admob/firebase_admob.dart';
 
-import 'package:mvc_pattern/mvc_pattern.dart';
+import 'package:ads/ads.dart';
 
-// You can also test with your own ad unit IDs by registering your device as a
-// test device. Check the logs for your device's ID value.
-const String testDevice = 'Samsung_Galaxy_SII_API_26:5554';
-
-const String ADS_PREF = 'ads';
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+void main() {
+  runApp(MyApp(initOption: 1));
 }
 
-class _MyAppState extends StateMVC {
+class MyApp extends StatefulWidget {
+  const MyApp({this.initOption, Key key}) : super(key: key);
+
+  final int initOption;
+  @override
+  _MyAppState createState() => _MyAppState(initOption: initOption);
+}
+
+class _MyAppState extends State<MyApp> {
+  _MyAppState({this.initOption = 1});
+
+  final int initOption;
   int _coins = 0;
 
   @override
   void initState() {
     super.initState();
-    Prefs.init();
-
-    var initOption = 1;
 
     switch (initOption) {
       case 1:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.video.rewardedListener = (String rewardType, int rewardAmount) {
           setState(() {
@@ -48,9 +51,22 @@ class _MyAppState extends StateMVC {
         };
 
         Ads.init(
-          'ca-app-pub-3940256099942544',
+          Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544~3347511713'
+              : 'ca-app-pub-3940256099942544~1458002511',
+          bannerUnitId: Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/6300978111'
+              : 'ca-app-pub-3940256099942544/2934735716',
+          screenUnitId: Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/1033173712'
+              : 'ca-app-pub-3940256099942544/4411468910',
+          videoUnitId: Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/5224354917'
+              : 'ca-app-pub-3940256099942544/1712485313',
           keywords: <String>['ibm', 'computers'],
           contentUrl: 'http://www.ibm.com',
+          birthday: DateTime.utc(1989, 11, 9),
+          designedForFamilies: true,
           childDirected: false,
           testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
           testing: false,
@@ -64,9 +80,21 @@ class _MyAppState extends StateMVC {
           if (event == MobileAdEvent.closed) print("Returned to the app.");
         };
 
-        Ads.init('ca-app-pub-3940256099942544',
-            listener: eventListener, testing: true);
-
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            listener: eventListener,
+            testing: true);
+        Ads.bannerUnitId = Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/6300978111'
+            : 'ca-app-pub-3940256099942544/2934735716';
+        Ads.screenUnitId = Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/1033173712'
+            : 'ca-app-pub-3940256099942544/4411468910';
+        Ads.videoUnitId = Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544/5224354917'
+            : 'ca-app-pub-3940256099942544/1712485313';
         // You can set individual settings
         Ads.keywords = ['cats', 'dogs'];
         Ads.contentUrl = 'http://www.animalsaspets.com';
@@ -82,7 +110,9 @@ class _MyAppState extends StateMVC {
         break;
 
       case 4:
-        Ads.init('ca-app-pub-3940256099942544');
+        Ads.init(Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544~3347511713'
+            : 'ca-app-pub-3940256099942544~1458002511');
 
         var eventListener = (MobileAdEvent event) {
           if (event == MobileAdEvent.closed) print("Returned to the app.");
@@ -91,6 +121,9 @@ class _MyAppState extends StateMVC {
         /// You can set the Banner, Fullscreen and Video Ads separately.
 
         Ads.setBannerAd(
+          adUnitId: Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/6300978111'
+              : 'ca-app-pub-3940256099942544/2934735716',
           size: AdSize.banner,
           keywords: ['andriod, flutter'],
           contentUrl: 'http://www.andrioussolutions.com',
@@ -100,6 +133,9 @@ class _MyAppState extends StateMVC {
         );
 
         Ads.setFullScreenAd(
+            adUnitId: Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544/1033173712'
+                : 'ca-app-pub-3940256099942544/4411468910',
             keywords: ['dart', 'flutter'],
             contentUrl: 'http://www.fluttertogo.com',
             childDirected: false,
@@ -116,6 +152,9 @@ class _MyAppState extends StateMVC {
         };
 
         Ads.setVideoAd(
+          adUnitId: Platform.isAndroid
+              ? 'ca-app-pub-3940256099942544/5224354917'
+              : 'ca-app-pub-3940256099942544/1712485313',
           keywords: ['dart', 'java'],
           contentUrl: 'http://www.publang.org',
           childDirected: false,
@@ -125,12 +164,16 @@ class _MyAppState extends StateMVC {
 
         break;
       case 5:
-        Ads.init('ca-app-pub-3940256099942544');
+        Ads.init(Platform.isAndroid
+            ? 'ca-app-pub-3940256099942544~3347511713'
+            : 'ca-app-pub-3940256099942544~1458002511');
 
         /// You can set individual settings
         Ads.keywords = ['cats', 'dogs'];
         Ads.contentUrl = 'http://www.animalsaspets.com';
         Ads.childDirected = false;
+        // You can also test with your own ad unit IDs by registering your device as a
+        // test device. Check the logs for your device's ID value.
         Ads.testDevices = ['Samsung_Galaxy_SII_API_26:5554'];
 
         /// Can set this at the init() function instead.
@@ -139,7 +182,11 @@ class _MyAppState extends StateMVC {
         break;
 
       case 6:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.eventListener = (MobileAdEvent event) {
           switch (event) {
@@ -173,7 +220,11 @@ class _MyAppState extends StateMVC {
         break;
 
       case 7:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.showBannerAd(state: this);
 
@@ -198,7 +249,11 @@ class _MyAppState extends StateMVC {
 
         break;
       case 8:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.banner.openedListener = () {
           print("This is the first listener when you open the banner ad.");
@@ -218,7 +273,11 @@ class _MyAppState extends StateMVC {
 
         break;
       case 9:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.screen.openedListener = () {
           print("This is the first listener when you open the full screen ad.");
@@ -239,7 +298,11 @@ class _MyAppState extends StateMVC {
 
         break;
       case 10:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
 
         Ads.video.closedListener = () {
           print("You've closed the video.");
@@ -254,38 +317,23 @@ class _MyAppState extends StateMVC {
         break;
 
       default:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
+        Ads.init(
+            Platform.isAndroid
+                ? 'ca-app-pub-3940256099942544~3347511713'
+                : 'ca-app-pub-3940256099942544~1458002511',
+            testing: true);
     }
 
-    var one = Ads.appId;
-    var two = Ads.keywords;
-    var three = Ads.contentUrl;
-
-    var seven = Ads.childDirected;
-    var eight = Ads.testDevices;
-    var nine = Ads.testing;
-
-    showAd();
-  }
-
-  void showAd() async {
-    String adType = await Prefs.getStringF(ADS_PREF);
-
-    switch (adType) {
-      case 'screen':
-        Ads.showFullScreenAd(state: this);
-        break;
-      case 'video':
-        Ads.showVideoAd(state: this);
-        break;
-      default:
-        Ads.showBannerAd(state: this);
-    }
+    String one = Ads.appId;
+    List<String> two = Ads.keywords;
+    String three = Ads.contentUrl;
+    bool seven = Ads.childDirected;
+    List<String> eight = Ads.testDevices;
+    bool nine = Ads.testing;
   }
 
   @override
   void dispose() {
-    Prefs.dispose();
     Ads.dispose();
     super.dispose();
   }
@@ -304,31 +352,35 @@ class _MyAppState extends StateMVC {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 RaisedButton(
+                    key: ValueKey<String>('SHOW BANNER'),
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
                       Ads.showBannerAd(state: this);
-                      Prefs.setString(ADS_PREF, 'banner');
                     }),
                 RaisedButton(
+                    key: ValueKey<String>('REMOVE BANNER'),
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
                       Ads.hideBannerAd();
                     }),
                 RaisedButton(
+                  key: ValueKey<String>('SHOW INTERSTITIAL'),
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
                     Ads.showFullScreenAd(state: this);
-                    Prefs.setString(ADS_PREF, 'screen');
                   },
                 ),
                 RaisedButton(
+                  key: ValueKey<String>('SHOW REWARDED VIDEO'),
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
                     Ads.showVideoAd(state: this);
-                    Prefs.setString(ADS_PREF, 'video');
                   },
                 ),
-                Text("You have $_coins coins."),
+                Text(
+                  "You have $_coins coins.",
+                  key: ValueKey<String>('COINS'),
+                ),
               ].map((Widget button) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -341,8 +393,4 @@ class _MyAppState extends StateMVC {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MyApp());
 }

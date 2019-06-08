@@ -1,3 +1,8 @@
+## 0.5.0
+  June 08, 2019
+- Allow for always the most recent firebase_admob plugin
+
+
 ## 0.4.2
   May 22, 2019
 - Provided setters for adUnitId

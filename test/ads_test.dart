@@ -6,58 +6,96 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ads/ads.dart';
 
-Key _showBanner = Key('SHOW BANNER');
-Key _removeBanner = Key('REMOVE BANNER');
-Key _showFullScreen = Key('SHOW INTERSTITIAL');
-Key _showVideo = Key('SHOW REWARDED VIDEO');
+import '../example/main.dart';
 
-/// Library-private variable accessed by all the classes and top-level functions.
-int _coins = 0;
+Key _showBanner = ValueKey<String>('SHOW BANNER');
+Key _removeBanner = ValueKey<String>('REMOVE BANNER');
+Key _showFullScreen = ValueKey<String>('SHOW INTERSTITIAL');
+Key _showVideo = ValueKey<String>('SHOW REWARDED VIDEO');
 
 /// Names the last event triggered.
 String _event = '';
 
 void main() {
-//  testWidgets('Test Rewarded Video', (WidgetTester tester) async {
-//    Key key = UniqueKey();
-//
-//    await tester.pumpWidget(MaterialApp(
-//      home: Material(
-//        child: TestApp(
-//          1,
-//          key: key,
-//        ),
-//      ),
-//    ));
-//
-//    await tester.tap(find.byKey(_showVideo));
-//
-//    expect(_coins, equals(10));
-//
-//    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.keywords.contains('foo'), isTrue);
-//    expect(Ads.keywords.contains('bar'), isTrue);
-//    expect(Ads.contentUrl, isNull);
-//    expect(Ads.childDirected, isFalse);
-//    expect(Ads.testDevices, isEmpty);
-//    expect(Ads.testing, isTrue);
-//  });
-//
+  testWidgets('Test Rewarded Video', (WidgetTester tester) async {
+    Key key = UniqueKey();
+
+    await tester.pumpWidget(MaterialApp(
+      home: MyApp(
+        initOption: 1,
+        key: key,
+      ),
+    ));
+
+    Ads.video.startedListener = () {
+      _event = 'started';
+    };
+
+    Ads.video.completedListener = () {};
+
+    // Play a video ad.
+    await tester.tap(find.byKey(_showVideo));
+    await tester.pumpAndSettle();
+//    await tester.idle();
+
+    Text _coins = tester.widget(find.byKey(ValueKey<String>('COINS')));
+    String value = _coins.data;
+
+    // Verify the current counter.
+    expect(find.text(value), findsOneWidget);
+
+    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
+    expect(Ads.keywords.contains('the'), isTrue);
+    expect(Ads.contentUrl, isNull);
+    expect(Ads.childDirected, isFalse);
+    expect(Ads.testDevices, isEmpty);
+    expect(Ads.testing, isTrue);
+  });
+
+  String where = '';
+
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
-//    Key key = UniqueKey();
-//
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          2,
-//          key: key,
+//        child: MyApp(
+//          initOption: 2,
 //        ),
 //      ),
 //    ));
 //
-//    await tester.tap(find.byType(BannerAd));
+//    Ads.banner.loadedListener = () {
+//      where = 'loaded';
+//    };
 //
-//    expect(_event, equals('MobileAdEvent.opened'));
+//    Ads.banner.clickedListener = () {
+//      where = 'clicked';
+//    };
+//
+//    Ads.banner.openedListener = () {
+//      where = 'opened';
+//    };
+//
+//    Ads.banner.leftAppListener = () {
+//      where = 'left';
+//    };
+//
+//    Ads.banner.closedListener = () {
+//      where = 'closed';
+//    };
+//
+//    Ads.video.openedListener = () {
+//      where = 'opened';
+//    };
+//
+//    await tester.tap(find.byKey(_showBanner));
+//    await tester.pumpAndSettle();
+//
+////    expect(where, equals('MobileAdEvent.opened'));
+//
+//
+////    Ads.clearVideoListeners();
+//
+////    Ads.videoListener(VideoEventListener listener) =>
 //
 //    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
 //    expect(Ads.keywords.contains('ibm'), isTrue);
@@ -66,6 +104,8 @@ void main() {
 //    expect(Ads.childDirected, isFalse);
 //    expect(Ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
 //    expect(Ads.testing, isFalse);
+////    Ads.banner.clearAll();
+//
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -73,8 +113,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          3,
+//        child: MyApp(
+//          initOption: 3,
 //          key: key,
 //        ),
 //      ),
@@ -98,8 +138,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          4,
+//        child: MyApp(
+//          initOption: 4,
 //          key: key,
 //        ),
 //      ),
@@ -145,8 +185,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          5,
+//        child: MyApp(
+//          initOption: 5,
 //          key: key,
 //        ),
 //      ),
@@ -165,8 +205,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          6,
+//        child: MyApp(
+//          initOption: 6,
 //          key: key,
 //        ),
 //      ),
@@ -178,8 +218,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          7,
+//        child: MyApp(
+//          initOption: 7,
 //          key: key,
 //        ),
 //      ),
@@ -191,8 +231,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          8,
+//        child: MyApp(
+//          initOption: 8,
 //          key: key,
 //        ),
 //      ),
@@ -204,8 +244,8 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          9,
+//        child: MyApp(
+//          initOption: 9,
 //          key: key,
 //        ),
 //      ),
@@ -217,325 +257,11 @@ void main() {
 //
 //    await tester.pumpWidget(MaterialApp(
 //      home: Material(
-//        child: TestApp(
-//          10,
+//        child: MyApp(
+//          initOption: 10,
 //          key: key,
 //        ),
 //      ),
 //    ));
 //  });
-}
-
-class TestApp extends StatefulWidget {
-  TestApp(this.option, {Key key}) : super(key: key);
-  final int option;
-  @override
-  _TestAppState createState() => _TestAppState(opt: option);
-}
-
-class _TestAppState extends State<TestApp> {
-  _TestAppState({this.opt = 1});
-  int opt;
-  @override
-  void initState() {
-    super.initState();
-    switch (opt) {
-      case 1:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-
-        Ads.video.rewardedListener = (String rewardType, int rewardAmount) {
-          _event = 'video.rewardedListener';
-          setState(() {
-            _coins += rewardAmount;
-          });
-        };
-
-        break;
-      case 2:
-        var eventListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.opened) _event = 'MobileAdEvent.opened';
-        };
-
-        Ads.init(
-          'ca-app-pub-3940256099942544',
-          keywords: <String>['ibm', 'computers'],
-          contentUrl: 'http://www.ibm.com',
-          childDirected: false,
-          testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
-          testing: false,
-          listener: eventListener,
-        );
-
-        Ads.showBannerAd(state: this);
-
-        break;
-      case 3:
-        var eventListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.leftApplication)
-            _event = 'MobileAdEvent.leftApplication';
-        };
-
-        Ads.init('ca-app-pub-3940256099942544',
-            listener: eventListener, testing: true);
-
-        // You can set individual settings
-        Ads.keywords = ['cats', 'dogs'];
-        Ads.contentUrl = 'http://www.animalsaspets.com';
-        Ads.childDirected = false;
-        Ads.testDevices = ['Samsung_Galaxy_SII_API_26:5554'];
-        Ads.testing = true;
-        Ads.bannerListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.opened) {
-            print("This is the first listener.");
-          }
-        };
-
-        Ads.showBannerAd(state: this);
-
-        break;
-      case 4:
-        Ads.init('ca-app-pub-3940256099942544');
-
-        var eventListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.closed) _event = 'MobileAdEvent.closed';
-        };
-
-        /// You can set the Banner, Fullscreen and Video Ads separately.
-
-        Ads.setBannerAd(
-          size: AdSize.banner,
-          keywords: ['andriod, flutter'],
-          contentUrl: 'http://www.andrioussolutions.com',
-          childDirected: false,
-          testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
-          listener: eventListener,
-        );
-
-        Ads.setFullScreenAd(
-            keywords: ['dart', 'flutter'],
-            contentUrl: 'http://www.fluttertogo.com',
-            childDirected: false,
-            testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
-            listener: (MobileAdEvent event) {
-              if (event == MobileAdEvent.opened) print("Opened the Ad.");
-            });
-
-        var videoListener = (RewardedVideoAdEvent event,
-            {String rewardType, int rewardAmount}) {
-          if (event == RewardedVideoAdEvent.closed) {
-            print("Returned to the app.");
-          }
-        };
-
-        Ads.setVideoAd(
-          keywords: ['dart', 'java'],
-          contentUrl: 'http://www.publang.org',
-          childDirected: false,
-          testDevices: null,
-          listener: videoListener,
-        );
-
-        break;
-      case 5:
-        Ads.init('ca-app-pub-3940256099942544');
-
-        /// You can set individual settings
-        Ads.keywords = ['cats', 'dogs'];
-        Ads.contentUrl = 'http://www.animalsaspets.com';
-        Ads.childDirected = false;
-        Ads.testDevices = ['Samsung_Galaxy_SII_API_26:5554'];
-
-        /// Can set this at the init() function instead.
-        Ads.testing = true;
-        break;
-
-      case 6:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.eventListener = (MobileAdEvent event) {
-          switch (event) {
-            case MobileAdEvent.loaded:
-              _event = 'loaded';
-              break;
-            case MobileAdEvent.failedToLoad:
-              _event += 'failedToLoad';
-              break;
-            case MobileAdEvent.clicked:
-              _event += 'clicked';
-              break;
-            case MobileAdEvent.impression:
-              _event += 'impression';
-              break;
-            case MobileAdEvent.opened:
-              _event += 'opened';
-              break;
-            case MobileAdEvent.leftApplication:
-              _event += 'leftApplication';
-              break;
-            case MobileAdEvent.closed:
-              _event += 'closed';
-              break;
-            default:
-              _event += 'default';
-          }
-        };
-
-        Ads.showBannerAd(state: this);
-
-        break;
-
-      case 7:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-
-        Ads.bannerListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.opened) {
-            _event = 'MobileAdEvent.opened';
-          }
-        };
-
-        Ads.screenListener = (MobileAdEvent event) {
-          if (event == MobileAdEvent.opened) {
-            _event = 'MobileAdEvent.opened';
-          }
-        };
-
-        Ads.videoListener = (RewardedVideoAdEvent event,
-            {String rewardType, int rewardAmount}) {
-          if (event == RewardedVideoAdEvent.opened) {
-            _event = 'RewardedVideoAdEvent.opened';
-          }
-        };
-
-        break;
-      case 8:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-
-        Ads.banner.openedListener = () {
-          _event = 'banner.openedListener One ';
-        };
-
-        Ads.banner.openedListener = () {
-          _event = 'banner.openedListener Two';
-        };
-
-        Ads.banner.leftAppListener = () {
-          _event = 'banner.leftAppListener';
-        };
-
-        Ads.banner.closedListener = () {
-          _event = 'banner.closedListener';
-        };
-
-        break;
-      case 9:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-
-        Ads.screen.openedListener = () {
-          _event = 'screen.openedListener One';
-        };
-
-        Ads.screen.openedListener = () {
-          _event = 'screen.openedListener Two';
-        };
-
-        Ads.screen.leftAppListener = () {
-          _event = 'screen.leftAppListener';
-        };
-
-        Ads.screen.closedListener = () {
-          _event = 'screen.closedListener';
-        };
-
-        break;
-      case 10:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-
-        Ads.video.closedListener = () {
-          _event = 'video.closedListener';
-        };
-
-        Ads.video.rewardedListener = (String rewardType, int rewardAmount) {
-          _event = 'video.rewardedListener';
-          setState(() {
-            _coins += rewardAmount;
-          });
-        };
-
-        break;
-
-      default:
-        Ads.init('ca-app-pub-3940256099942544', testing: true);
-
-        Ads.showBannerAd(state: this);
-    }
-  }
-
-  @override
-  void dispose() {
-    Ads.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('AdMob Plugin Test App'),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                RaisedButton(
-                    key: _showBanner,
-                    child: const Text('SHOW BANNER'),
-                    onPressed: () {
-                      Ads.showBannerAd(state: this);
-                    }),
-                RaisedButton(
-                    key: _removeBanner,
-                    child: const Text('REMOVE BANNER'),
-                    onPressed: () {
-                      Ads.hideBannerAd();
-                    }),
-                RaisedButton(
-                  key: _showFullScreen,
-                  child: const Text('SHOW INTERSTITIAL'),
-                  onPressed: () {
-                    Ads.showFullScreenAd(state: this);
-                  },
-                ),
-                RaisedButton(
-                  key: _showVideo,
-                  child: const Text('SHOW REWARDED VIDEO'),
-                  onPressed: () {
-                    Ads.showVideoAd(state: this);
-                  },
-                ),
-                Text("You have $_coins coins."),
-              ].map((Widget button) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: button,
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
