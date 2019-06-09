@@ -1,3 +1,7 @@
+## 0.5.1
+  June 08, 2019
+- Allow for the most recent firebase_admob plugin in the example as well
+
 ## 0.5.0
   June 08, 2019
 - Allow for always the most recent firebase_admob plugin
