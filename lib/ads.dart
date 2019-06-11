@@ -48,8 +48,6 @@ class Ads {
     String videoUnitId,
     List<String> keywords,
     String contentUrl,
-    DateTime birthday,
-    bool designedForFamilies = true,
     bool childDirected = false,
     List<String> testDevices,
     bool testing = false,
@@ -209,7 +207,9 @@ class Ads {
   ///
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
+  ///
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  /// 
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showBannerAd(
       {String adUnitId,
@@ -223,15 +223,9 @@ class Ads {
       ..show(anchorOffset: anchorOffset, anchorType: anchorType);
   }
 
-  /// Hide a Banner Ad.
-  static void hideBannerAd() {
-    _bannerAd?.dispose();
-    _bannerAd = null;
-  }
-
   /// Set the Banner Ad options.
   static void setBannerAd({
-    String adUnitId,
+    String adUnitId = '',
     AdSize size = AdSize.banner,
     List<String> keywords,
     String contentUrl,
@@ -239,9 +233,14 @@ class Ads {
     List<String> testDevices,
     AdEventListener listener,
   }) {
-    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+    String unitId;
 
-    if (adUnitId.isNotEmpty) _bannerUnitId = adUnitId.trim();
+    if (adUnitId == null || adUnitId.isEmpty) {
+      // Use the id passed to the init() function if any.
+      unitId = _bannerUnitId;
+    }else{
+      unitId = adUnitId.trim();
+    }
 
     var info = _targetInfo(
       keywords: keywords,
@@ -258,11 +257,17 @@ class Ads {
     _bannerAd = BannerAd(
       adUnitId: Ads.testing
           ? BannerAd.testAdUnitId
-          : _bannerUnitId.isEmpty ? BannerAd.testAdUnitId : _bannerUnitId,
-      size: size,
+          : unitId.isEmpty ? BannerAd.testAdUnitId : unitId,
+      size: size ?? AdSize.banner,
       targetingInfo: info,
       listener: banner._eventListener,
     );
+  }
+
+  /// Hide a Banner Ad.
+  static void hideBannerAd() {
+    _bannerAd?.dispose();
+    _bannerAd = null;
   }
 
   /// Show a Full Screen Ad.
@@ -283,24 +288,22 @@ class Ads {
     _screenLoaded = false;
   }
 
-  /// Hide the Full Screen Ad.
-  static void hideFullScreenAd() {
-    _fullScreenAd?.dispose();
-    _fullScreenAd = null;
-  }
-
   /// Set the Full Screen Ad options.
   static void setFullScreenAd({
-    String adUnitId,
+    String adUnitId = '',
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     AdEventListener listener,
   }) {
-    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+    String unitId;
 
-    if (adUnitId.isNotEmpty) _screenUnitId = adUnitId.trim();
+    if (adUnitId == null || adUnitId.isEmpty) {
+      unitId = _screenUnitId;
+    }else{
+      unitId = adUnitId.trim();
+    }
 
     var info = _targetInfo(
       keywords: keywords,
@@ -317,7 +320,7 @@ class Ads {
     _fullScreenAd = InterstitialAd(
       adUnitId: Ads.testing
           ? InterstitialAd.testAdUnitId
-          : _screenUnitId.isEmpty ? InterstitialAd.testAdUnitId : _screenUnitId,
+          : unitId.isEmpty ? InterstitialAd.testAdUnitId : unitId,
       targetingInfo: info,
       listener: screen._eventListener,
     );
@@ -325,6 +328,12 @@ class Ads {
     _fullScreenAd.load();
 
     _screenLoaded = true;
+  }
+
+  /// Hide the Full Screen Ad.
+  static void hideFullScreenAd() {
+    _fullScreenAd?.dispose();
+    _fullScreenAd = null;
   }
 
   /// Show a Video Ad.
@@ -345,16 +354,20 @@ class Ads {
   /// Set the Video Ad options.
   static Future<bool> setVideoAd({
     bool show = false,
-    String adUnitId,
+    String adUnitId = '',
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     VideoEventListener listener,
   }) async {
-    if (adUnitId == null || adUnitId.isEmpty) adUnitId = '';
+    String unitId;
 
-    if (adUnitId.isNotEmpty) _videoUnitId = adUnitId.trim();
+    if (adUnitId == null || adUnitId.isEmpty) {
+      unitId = _videoUnitId;
+    }else{
+      unitId = adUnitId.trim();
+    }
 
     var info = _targetInfo(
       keywords: keywords,
@@ -390,7 +403,7 @@ class Ads {
 
     String adModId = Ads.testing
         ? RewardedVideoAd.testAdUnitId
-        : _videoUnitId.isEmpty ? RewardedVideoAd.testAdUnitId : _videoUnitId;
+        : unitId.isEmpty ? RewardedVideoAd.testAdUnitId : unitId;
 
     bool loaded =
         await _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);

@@ -1,3 +1,8 @@
+## 0.6.0
+  June 10, 2019
+- Allow for multiple unitId's: One at init() and one when setting ads.
+- Removed the deprecated parameters: designedForFamilies and birthday 
+
 ## 0.5.1
   June 08, 2019
 - Allow for the most recent firebase_admob plugin in the example as well
