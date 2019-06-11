@@ -65,8 +65,6 @@ class _MyAppState extends State<MyApp> {
               : 'ca-app-pub-3940256099942544/1712485313',
           keywords: <String>['ibm', 'computers'],
           contentUrl: 'http://www.ibm.com',
-          birthday: DateTime.utc(1989, 11, 9),
-          designedForFamilies: true,
           childDirected: false,
           testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
           testing: false,
