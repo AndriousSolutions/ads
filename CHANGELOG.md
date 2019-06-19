@@ -1,3 +1,7 @@
+## 0.7.1
+  June 19, 2019
+- Supply the getter, testing.
+
 ## 0.7.0
   June 19, 2019
 - Removed the property, testing.

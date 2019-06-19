@@ -173,6 +173,9 @@ class Ads {
 
   static bool _testing;
 
+  /// Determine if testing or not
+  static bool get testing => _testing;
+
   static BannerAd _bannerAd;
 
   /// Get Banner Ad object
@@ -191,6 +194,7 @@ class Ads {
   static _VideoAd get videoAd => _videoAd;
 
   static bool _screenLoaded = false;
+
   static bool _showVideo = false;
 
   /// Close any Ads, clean up memory and clear resources.
