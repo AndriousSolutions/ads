@@ -98,7 +98,6 @@ class _MyAppState extends State<MyApp> {
         Ads.contentUrl = 'http://www.animalsaspets.com';
         Ads.childDirected = false;
         Ads.testDevices = ['Samsung_Galaxy_SII_API_26:5554'];
-        Ads.testing = true;
         Ads.bannerListener = (MobileAdEvent event) {
           if (event == MobileAdEvent.opened) {
             print("This is the first listener.");
@@ -173,9 +172,6 @@ class _MyAppState extends State<MyApp> {
         // You can also test with your own ad unit IDs by registering your device as a
         // test device. Check the logs for your device's ID value.
         Ads.testDevices = ['Samsung_Galaxy_SII_API_26:5554'];
-
-        /// Can set this at the init() function instead.
-        Ads.testing = true;
 
         break;
 
@@ -327,7 +323,6 @@ class _MyAppState extends State<MyApp> {
     String three = Ads.contentUrl;
     bool seven = Ads.childDirected;
     List<String> eight = Ads.testDevices;
-    bool nine = Ads.testing;
   }
 
   @override

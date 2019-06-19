@@ -1,3 +1,8 @@
+## 0.7.0
+  June 19, 2019
+- Removed the property, testing.
+- Add testing parameter to 'set' functions.
+
 ## 0.6.1
   June 19,2019
 - assert(appId != null && appId.isNotEmpty)
@@ -15,7 +20,6 @@
 ## 0.5.0
   June 08, 2019
 - Allow for always the most recent firebase_admob plugin
-
 
 ## 0.4.2
   May 22, 2019

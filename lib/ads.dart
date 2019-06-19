@@ -55,7 +55,7 @@ class Ads {
   }) {
     assert(appId != null && appId.isNotEmpty, 'Ads.init(): appId is required.');
 
-    /// Redundancy with the assert, but kept if again made optional.
+    /// Test for parameters being pass null in production
     _appId = appId == null || appId.isEmpty ? FirebaseAdMob.testAppId : appId;
 
     if (bannerUnitId != null) {
@@ -68,15 +68,19 @@ class Ads {
       _videoUnitId = videoUnitId.trim();
     }
 
-    /// Some keywords have to be provided if not passed in.
     _keywords =
         keywords == null || keywords.every((String s) => s == null || s.isEmpty)
             ? ['the']
             : keywords;
+
     _contentUrl = contentUrl;
-    Ads.childDirected = childDirected;
-    Ads.testDevices = testDevices;
-    Ads.testing = testing;
+
+    Ads.childDirected = childDirected == null ? false : childDirected;
+
+    Ads.testDevices = testDevices == null ? List<String>() : testDevices;
+
+    _testing = testing == null ? false : testing;
+
     if (listener != null) _adEventListeners.add(listener);
 
     FirebaseAdMob.instance
@@ -167,7 +171,7 @@ class Ads {
     }
   }
 
-  static bool testing;
+  static bool _testing;
 
   static BannerAd _bannerAd;
 
@@ -209,7 +213,7 @@ class Ads {
   /// state is passed to determine if the app is not terminating. No need to show ad.
   ///
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
-  /// 
+  ///
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showBannerAd(
       {String adUnitId,
@@ -231,6 +235,7 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool testing,
     AdEventListener listener,
   }) {
     String unitId;
@@ -238,7 +243,7 @@ class Ads {
     if (adUnitId == null || adUnitId.isEmpty) {
       // Use the id passed to the init() function if any.
       unitId = _bannerUnitId;
-    }else{
+    } else {
       unitId = adUnitId.trim();
     }
 
@@ -249,13 +254,15 @@ class Ads {
       testDevices: testDevices,
     );
 
+    if (testing == null) testing = _testing;
+
     if (listener != null) banner._eventListeners.add(listener);
 
     // Clear memory of any previously set banner ad.
     hideBannerAd();
 
     _bannerAd = BannerAd(
-      adUnitId: Ads.testing
+      adUnitId: testing
           ? BannerAd.testAdUnitId
           : unitId.isEmpty ? BannerAd.testAdUnitId : unitId,
       size: size ?? AdSize.banner,
@@ -295,13 +302,14 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool testing,
     AdEventListener listener,
   }) {
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
       unitId = _screenUnitId;
-    }else{
+    } else {
       unitId = adUnitId.trim();
     }
 
@@ -312,13 +320,15 @@ class Ads {
       testDevices: testDevices,
     );
 
+    if (testing == null) testing = _testing;
+
     if (listener != null) screen._eventListeners.add(listener);
 
     // Clear memory of any previously set interstitial ad.
     hideFullScreenAd();
 
     _fullScreenAd = InterstitialAd(
-      adUnitId: Ads.testing
+      adUnitId: testing
           ? InterstitialAd.testAdUnitId
           : unitId.isEmpty ? InterstitialAd.testAdUnitId : unitId,
       targetingInfo: info,
@@ -359,13 +369,14 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool testing,
     VideoEventListener listener,
   }) async {
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
       unitId = _videoUnitId;
-    }else{
+    } else {
       unitId = adUnitId.trim();
     }
 
@@ -375,6 +386,8 @@ class Ads {
       childDirected: childDirected,
       testDevices: testDevices,
     );
+
+    if (testing == null) testing = _testing;
 
     if (listener != null) video._eventListeners.add(listener);
 
@@ -401,7 +414,7 @@ class Ads {
           rewardType: rewardType, rewardAmount: rewardAmount);
     };
 
-    String adModId = Ads.testing
+    String adModId = testing
         ? RewardedVideoAd.testAdUnitId
         : unitId.isEmpty ? RewardedVideoAd.testAdUnitId : unitId;
 

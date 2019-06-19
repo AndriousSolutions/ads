@@ -49,7 +49,6 @@ void main() {
     expect(Ads.contentUrl, isNull);
     expect(Ads.childDirected, isFalse);
     expect(Ads.testDevices, isEmpty);
-    expect(Ads.testing, isTrue);
   });
 
   String where = '';
