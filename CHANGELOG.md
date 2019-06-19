@@ -1,3 +1,8 @@
+## 0.6.1
+  June 19,2019
+- assert(appId != null && appId.isNotEmpty)
+- Semantic versioning ^0.9.0
+
 ## 0.6.0
   June 10, 2019
 - Allow for multiple unitId's: One at init() and one when setting ads.
