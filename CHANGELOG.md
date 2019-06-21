@@ -1,3 +1,11 @@
+## 0.8.0
+  June 21, 2019
+- Added all parameters to showBannerAd(), showFullScreenAd() and showVideoAd() 
+- Add getter, childDirected.
+- Removed setters bannerUnitId, screenUnitId, videoUnitId, keywords, contentUrl
+- Removed getters appId, bannerUnitId, screenUnitId, videoUnitId
+- Deprecated getters bannerAd, fullScreenAd and videoAd
+
 ## 0.7.1
   June 19, 2019
 - Supply the getter, testing.

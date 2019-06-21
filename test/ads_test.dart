@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_admob/firebase_admob.dart';
-
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ads/ads.dart';
@@ -44,11 +42,10 @@ void main() {
     // Verify the current counter.
     expect(find.text(value), findsOneWidget);
 
-    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
-    expect(Ads.keywords.contains('the'), isTrue);
-    expect(Ads.contentUrl, isNull);
+    expect(Ads.keywords.contains('ibm'), isTrue);
+    expect(Ads.contentUrl.contains('ibm'), isTrue);
     expect(Ads.childDirected, isFalse);
-    expect(Ads.testDevices, isEmpty);
+    expect(Ads.testDevices, isNotEmpty);
   });
 
   String where = '';

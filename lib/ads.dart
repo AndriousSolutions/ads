@@ -68,16 +68,13 @@ class Ads {
       _videoUnitId = videoUnitId.trim();
     }
 
-    _keywords =
-        keywords == null || keywords.every((String s) => s == null || s.isEmpty)
-            ? ['the']
-            : keywords;
+    _keywords = keywords;
 
     _contentUrl = contentUrl;
 
-    Ads.childDirected = childDirected == null ? false : childDirected;
+    _childDirected = childDirected;
 
-    Ads.testDevices = testDevices == null ? List<String>() : testDevices;
+    _testDevices = testDevices;
 
     _testing = testing == null ? false : testing;
 
@@ -85,91 +82,34 @@ class Ads {
 
     FirebaseAdMob.instance
         .initialize(appId: testing ? FirebaseAdMob.testAppId : Ads._appId);
-
-    // Load the video ad now. It takes time.
-    setVideoAd();
   }
 
   static String _appId;
 
-  /// Get the app id.
-  static String get appId => _appId;
-
   static String _bannerUnitId = '';
-
-  /// Get the banner ad unit id.
-  static String get bannerUnitId => _bannerUnitId;
-
-  /// Set the banner ad unit id.
-  static set bannerUnitId(String unitId) {
-    if (unitId != null) _bannerUnitId = unitId.trim();
-  }
 
   static String _screenUnitId = '';
 
-  /// Get the interstitial ad unit id.
-  static String get screenUnitId => _screenUnitId;
-
-  /// Set the interstitial ad unit id.
-  static set screenUnitId(String unitId) {
-    if (unitId != null) _screenUnitId = unitId.trim();
-  }
-
   static String _videoUnitId = '';
-
-  /// Get the video ad unit id.
-  static String get videoUnitId => _videoUnitId;
-
-  /// Set the video ad unit id.
-  static set videoUnitId(String unitId) {
-    if (unitId != null) _videoUnitId = unitId.trim();
-  }
 
   static List<String> _keywords;
 
   /// Get ad keywords
   static List<String> get keywords => _keywords;
 
-  /// Set ad keywords
-  static set keywords(List<String> keywords) {
-    if (keywords != null) {
-      if (keywords.every((String s) => s == null || s.isEmpty)) return;
-      _keywords = keywords;
-    }
-  }
-
   static String _contentUrl;
 
   /// Get the url providing ad content
   static String get contentUrl => _contentUrl;
 
-  /// Set the url providing ad content
-  static set contentUrl(String contentUrl) {
-    if (contentUrl == null || contentUrl.isEmpty) {
-      _contentUrl = null;
-    } else {
-      _contentUrl = contentUrl;
-    }
-  }
+  static bool _childDirected;
 
-  static bool childDirected;
+  static bool get childDirected => _childDirected;
 
   static List _testDevices = <String>[];
 
   /// Get list of test devices.
   static List<String> get testDevices => _testDevices;
-
-  /// Set list of test devices.
-  static set testDevices(List<String> devices) {
-    if (devices == null) return;
-
-    /// Take in only valid entries.
-    for (var device in devices) {
-      if (device != null && device.isNotEmpty) {
-        _testDevices.add(device);
-      }
-    }
-  }
 
   static bool _testing;
 
@@ -179,11 +119,13 @@ class Ads {
   static BannerAd _bannerAd;
 
   /// Get Banner Ad object
+  @ deprecated
   static BannerAd get bannerAd => _bannerAd;
 
   static InterstitialAd _fullScreenAd;
 
   /// Get Interstitial Ad object
+  @ deprecated
   static InterstitialAd get fullScreenAd => _fullScreenAd;
 
   static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
@@ -191,6 +133,7 @@ class Ads {
   static _VideoAd _videoAd;
 
   /// Get Video Ad object
+  @ deprecated
   static _VideoAd get videoAd => _videoAd;
 
   static bool _screenLoaded = false;
@@ -220,12 +163,40 @@ class Ads {
   ///
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showBannerAd(
-      {String adUnitId,
+      {String adUnitId = '',
+      AdSize size = AdSize.banner,
+      List<String> keywords,
+      String contentUrl,
+      bool childDirected,
+      List<String> testDevices,
+      bool testing,
+      AdEventListener listener,
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
-    if (_bannerAd == null) setBannerAd(adUnitId: adUnitId);
+    if (anchorOffset == null) anchorOffset = 0.0;
+    if (anchorType == null) anchorType = AnchorType.bottom;
+    if (_bannerAd != null &&
+        (adUnitId != null ||
+            size != null ||
+            keywords != null ||
+            contentUrl != null ||
+            childDirected != null ||
+            testDevices != null ||
+            testing != null ||
+            listener != null)) hideBannerAd();
+    if (_bannerAd == null)
+      setBannerAd(
+        adUnitId: adUnitId,
+        size: size,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        listener: listener,
+      );
     _bannerAd
       ..load()
       ..show(anchorOffset: anchorOffset, anchorType: anchorType);
@@ -251,7 +222,7 @@ class Ads {
       unitId = adUnitId.trim();
     }
 
-    var info = _targetInfo(
+    MobileAdTargetingInfo info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -288,13 +259,36 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   static void showFullScreenAd(
-      {String adUnitId,
+      {String adUnitId = '',
+      List<String> keywords,
+      String contentUrl,
+      bool childDirected,
+      List<String> testDevices,
+      bool testing,
+      AdEventListener listener,
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
     if (state != null && !state.mounted) return;
+    if (anchorOffset == null) anchorOffset = 0.0;
+    if (anchorType == null) anchorType = AnchorType.bottom;
+    if (_fullScreenAd != null &&
+        (adUnitId != null ||
+            keywords != null ||
+            contentUrl != null ||
+            childDirected != null ||
+            testDevices != null ||
+            testing != null ||
+            listener != null)) hideFullScreenAd();
     if (_fullScreenAd == null || !_screenLoaded)
-      setFullScreenAd(adUnitId: adUnitId);
+      setFullScreenAd(
+          adUnitId: adUnitId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+          listener: listener);
     _fullScreenAd.show(anchorOffset: anchorOffset, anchorType: anchorType);
     _screenLoaded = false;
   }
@@ -317,7 +311,7 @@ class Ads {
       unitId = adUnitId.trim();
     }
 
-    var info = _targetInfo(
+    MobileAdTargetingInfo info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -354,19 +348,43 @@ class Ads {
   ///
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
-  static Future<void> showVideoAd({String adUnitId, State state}) async {
+  static void showVideoAd(
+      {String adUnitId = '',
+      List<String> keywords,
+      String contentUrl,
+      bool childDirected,
+      List<String> testDevices,
+      bool testing,
+      VideoEventListener listener,
+      State state}) {
     if (state != null && !state.mounted) return;
+    if (_showVideo &&
+        (adUnitId != null ||
+            keywords != null ||
+            contentUrl != null ||
+            childDirected != null ||
+            testDevices != null ||
+            testing != null ||
+            listener != null)) _showVideo = false;
     if (_showVideo) {
       _videoAd.ad.show();
       _showVideo = false;
     } else {
       /// calling with parameters will NOT show the video ad.
-      setVideoAd(show: true, adUnitId: adUnitId);
+      setVideoAd(
+          show: true,
+          adUnitId: adUnitId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+          listener: listener);
     }
   }
 
   /// Set the Video Ad options.
-  static Future<bool> setVideoAd({
+  static void setVideoAd({
     bool show = false,
     String adUnitId = '',
     List<String> keywords,
@@ -375,7 +393,7 @@ class Ads {
     List<String> testDevices,
     bool testing,
     VideoEventListener listener,
-  }) async {
+  }) {
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
@@ -384,7 +402,7 @@ class Ads {
       unitId = adUnitId.trim();
     }
 
-    var info = _targetInfo(
+    MobileAdTargetingInfo info = _targetInfo(
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -395,13 +413,12 @@ class Ads {
 
     if (listener != null) video._eventListeners.add(listener);
 
-    // show set to true and these other parameters not passed.
-    _showVideo = show &&
-        keywords == null &&
-        contentUrl == null &&
-        childDirected == null &&
-        testDevices == null &&
-        listener == null;
+    _showVideo = show; //&&
+//        keywords == null &&
+//        contentUrl == null &&
+//        childDirected == null &&
+//        testDevices == null &&
+//        listener == null;
 
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
@@ -422,12 +439,10 @@ class Ads {
         ? RewardedVideoAd.testAdUnitId
         : unitId.isEmpty ? RewardedVideoAd.testAdUnitId : unitId;
 
-    bool loaded =
-        await _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);
+    _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);
 
     _videoAd =
         _VideoAd(adUnitId: adModId, targetingInfo: info, ad: _rewardedVideoAd);
-    return loaded;
   }
 
   /// Return the target audience information
@@ -447,11 +462,16 @@ class Ads {
         testDevices == null;
 
     if (init) {
-      keywords ??= Ads.keywords;
-      contentUrl ??= Ads.contentUrl;
-      childDirected ??= Ads.childDirected;
-      testDevices ??= Ads.testDevices;
+      keywords ??= _keywords;
+      contentUrl ??= _contentUrl;
+      childDirected ??= _childDirected;
+      testDevices ??= _testDevices;
     }
+
+//    keywords =
+//        keywords == null || keywords.every((String s) => s == null || s.isEmpty)
+//            ? ['the']
+//            : keywords;
 
     return MobileAdTargetingInfo(
       keywords: keywords,
