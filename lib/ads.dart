@@ -119,13 +119,13 @@ class Ads {
   static BannerAd _bannerAd;
 
   /// Get Banner Ad object
-  @ deprecated
+  @deprecated
   static BannerAd get bannerAd => _bannerAd;
 
   static InterstitialAd _fullScreenAd;
 
   /// Get Interstitial Ad object
-  @ deprecated
+  @deprecated
   static InterstitialAd get fullScreenAd => _fullScreenAd;
 
   static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
@@ -133,7 +133,7 @@ class Ads {
   static _VideoAd _videoAd;
 
   /// Get Video Ad object
-  @ deprecated
+  @deprecated
   static _VideoAd get videoAd => _videoAd;
 
   static bool _screenLoaded = false;
@@ -349,7 +349,7 @@ class Ads {
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
   static void showVideoAd(
-      {String adUnitId = '',
+      {String adUnitId,
       List<String> keywords,
       String contentUrl,
       bool childDirected,
@@ -386,7 +386,7 @@ class Ads {
   /// Set the Video Ad options.
   static void setVideoAd({
     bool show = false,
-    String adUnitId = '',
+    String adUnitId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
@@ -413,12 +413,7 @@ class Ads {
 
     if (listener != null) video._eventListeners.add(listener);
 
-    _showVideo = show; //&&
-//        keywords == null &&
-//        contentUrl == null &&
-//        childDirected == null &&
-//        testDevices == null &&
-//        listener == null;
+    _showVideo = show; 
 
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
@@ -467,11 +462,6 @@ class Ads {
       childDirected ??= _childDirected;
       testDevices ??= _testDevices;
     }
-
-//    keywords =
-//        keywords == null || keywords.every((String s) => s == null || s.isEmpty)
-//            ? ['the']
-//            : keywords;
 
     return MobileAdTargetingInfo(
       keywords: keywords,

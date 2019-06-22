@@ -1,3 +1,8 @@
+## 0.8.1
+  June 22, 2019
+- Corrected showVideoAd() bug
+- Update README.md
+
 ## 0.8.0
   June 21, 2019
 - Added all parameters to showBannerAd(), showFullScreenAd() and showVideoAd() 

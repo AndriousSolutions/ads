@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
     switch (initOption) {
       case 1:
 
-      /// Assign a listener.
+        /// Assign a listener.
         var eventListener = (MobileAdEvent event) {
           if (event == MobileAdEvent.clicked) {
             print("The opened ad is clicked on.");
