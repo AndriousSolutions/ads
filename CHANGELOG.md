@@ -1,3 +1,7 @@
+## 0.9.0
+  June 25, 2019
+- Remove static properties and methods; Use a Conventional Constructor
+
 ## 0.8.1
   June 22, 2019
 - Corrected showVideoAd() bug

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'dart:io' show Platform;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ads/ads.dart';
@@ -14,7 +14,15 @@ Key _showVideo = ValueKey<String>('SHOW REWARDED VIDEO');
 /// Names the last event triggered.
 String _event = '';
 
+Ads ads;
+final String appId = Platform.isAndroid
+    ? 'ca-app-pub-3940256099942544~3347511713'
+    : 'ca-app-pub-3940256099942544~1458002511';
+
 void main() {
+
+  ads = Ads(appId);
+
   testWidgets('Test Rewarded Video', (WidgetTester tester) async {
     Key key = UniqueKey();
 
@@ -25,11 +33,11 @@ void main() {
       ),
     ));
 
-    Ads.video.startedListener = () {
+    ads.video.startedListener = () {
       _event = 'started';
     };
 
-    Ads.video.completedListener = () {};
+    ads.video.completedListener = () {};
 
     // Play a video ad.
     await tester.tap(find.byKey(_showVideo));
@@ -42,10 +50,10 @@ void main() {
     // Verify the current counter.
     expect(find.text(value), findsOneWidget);
 
-    expect(Ads.keywords.contains('ibm'), isTrue);
-    expect(Ads.contentUrl.contains('ibm'), isTrue);
-    expect(Ads.childDirected, isFalse);
-    expect(Ads.testDevices, isNotEmpty);
+    expect(ads.keywords.contains('ibm'), isTrue);
+    expect(ads.contentUrl.contains('ibm'), isTrue);
+    expect(ads.childDirected, isFalse);
+    expect(ads.testDevices, isNotEmpty);
   });
 
   String where = '';
@@ -59,27 +67,27 @@ void main() {
 //      ),
 //    ));
 //
-//    Ads.banner.loadedListener = () {
+//    ads.banner.loadedListener = () {
 //      where = 'loaded';
 //    };
 //
-//    Ads.banner.clickedListener = () {
+//    ads.banner.clickedListener = () {
 //      where = 'clicked';
 //    };
 //
-//    Ads.banner.openedListener = () {
+//    ads.banner.openedListener = () {
 //      where = 'opened';
 //    };
 //
-//    Ads.banner.leftAppListener = () {
+//    ads.banner.leftAppListener = () {
 //      where = 'left';
 //    };
 //
-//    Ads.banner.closedListener = () {
+//    ads.banner.closedListener = () {
 //      where = 'closed';
 //    };
 //
-//    Ads.video.openedListener = () {
+//    ads.video.openedListener = () {
 //      where = 'opened';
 //    };
 //
@@ -89,18 +97,18 @@ void main() {
 ////    expect(where, equals('MobileAdEvent.opened'));
 //
 //
-////    Ads.clearVideoListeners();
+////    ads.clearVideoListeners();
 //
-////    Ads.videoListener(VideoEventListener listener) =>
+////    ads.videoListener(VideoEventListener listener) =>
 //
-//    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.keywords.contains('ibm'), isTrue);
-//    expect(Ads.keywords.contains('computers'), isTrue);
-//    expect(Ads.contentUrl, equals('http://www.ibm.com'));
-//    expect(Ads.childDirected, isFalse);
-//    expect(Ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
-//    expect(Ads.testing, isFalse);
-////    Ads.banner.clearAll();
+//    expect(ads.appId, equals(FirebaseAdMob.testAppId));
+//    expect(ads.keywords.contains('ibm'), isTrue);
+//    expect(ads.keywords.contains('computers'), isTrue);
+//    expect(ads.contentUrl, equals('http://www.ibm.com'));
+//    expect(ads.childDirected, isFalse);
+//    expect(ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
+//    expect(ads.testing, isFalse);
+////    ads.banner.clearAll();
 //
 //  });
 //
@@ -120,13 +128,13 @@ void main() {
 //
 //    expect(_event, equals('MobileAdEvent.leftApplication'));
 //
-//    expect(Ads.appId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.keywords.contains('cats'), isTrue);
-//    expect(Ads.keywords.contains('dogs'), isTrue);
-//    expect(Ads.contentUrl, equals('http://www.animalsaspets.com'));
-//    expect(Ads.childDirected, isFalse);
-//    expect(Ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
-//    expect(Ads.testing, isTrue);
+//    expect(ads.appId, equals(FirebaseAdMob.testAppId));
+//    expect(ads.keywords.contains('cats'), isTrue);
+//    expect(ads.keywords.contains('dogs'), isTrue);
+//    expect(ads.contentUrl, equals('http://www.animalsaspets.com'));
+//    expect(ads.childDirected, isFalse);
+//    expect(ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
+//    expect(ads.testing, isTrue);
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -141,39 +149,39 @@ void main() {
 //      ),
 //    ));
 //
-//    expect(Ads.bannerAd.adUnitId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.bannerAd.targetingInfo.keywords.contains('android'), isTrue);
-//    expect(Ads.bannerAd.targetingInfo.keywords.contains('flutter'), isTrue);
-//    expect(Ads.bannerAd.targetingInfo.contentUrl,
+//    expect(ads.bannerAd.adUnitId, equals(FirebaseAdMob.testAppId));
+//    expect(ads.bannerAd.targetingInfo.keywords.contains('android'), isTrue);
+//    expect(ads.bannerAd.targetingInfo.keywords.contains('flutter'), isTrue);
+//    expect(ads.bannerAd.targetingInfo.contentUrl,
 //        equals('http://www.andrioussolutions.com'));
-//    expect(Ads.bannerAd.targetingInfo.childDirected, isFalse);
+//    expect(ads.bannerAd.targetingInfo.childDirected, isFalse);
 //    expect(
-//        Ads.bannerAd.targetingInfo.testDevices
+//        ads.bannerAd.targetingInfo.testDevices
 //            .contains('Samsung_Galaxy_SII_API_26:5554'),
 //        isTrue);
 //
-//    expect(Ads.fullScreenAd.adUnitId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.fullScreenAd.targetingInfo.keywords.contains('dart'), isTrue);
-//    expect(Ads.fullScreenAd.targetingInfo.keywords.contains('flutter'), isTrue);
-//    expect(Ads.fullScreenAd.targetingInfo.contentUrl,
+//    expect(ads.fullScreenAd.adUnitId, equals(FirebaseAdMob.testAppId));
+//    expect(ads.fullScreenAd.targetingInfo.keywords.contains('dart'), isTrue);
+//    expect(ads.fullScreenAd.targetingInfo.keywords.contains('flutter'), isTrue);
+//    expect(ads.fullScreenAd.targetingInfo.contentUrl,
 //        equals('http://www.fluttertogo.com'));
-//    expect(Ads.fullScreenAd.targetingInfo.childDirected, isFalse);
+//    expect(ads.fullScreenAd.targetingInfo.childDirected, isFalse);
 //    expect(
-//        Ads.fullScreenAd.targetingInfo.testDevices
+//        ads.fullScreenAd.targetingInfo.testDevices
 //            .contains('Samsung_Galaxy_SII_API_26:5554'),
 //        isTrue);
 //
-//    expect(Ads.videoAd.adUnitId, equals(FirebaseAdMob.testAppId));
-//    expect(Ads.videoAd.targetingInfo.keywords.contains('dart'), isTrue);
-//    expect(Ads.videoAd.targetingInfo.keywords.contains('java'), isTrue);
+//    expect(ads.videoAd.adUnitId, equals(FirebaseAdMob.testAppId));
+//    expect(ads.videoAd.targetingInfo.keywords.contains('dart'), isTrue);
+//    expect(ads.videoAd.targetingInfo.keywords.contains('java'), isTrue);
 //    expect(
-//        Ads.videoAd.targetingInfo.contentUrl, equals('http://www.publang.org'));
-//    expect(Ads.videoAd.targetingInfo.childDirected, isFalse);
+//        ads.videoAd.targetingInfo.contentUrl, equals('http://www.publang.org'));
+//    expect(ads.videoAd.targetingInfo.childDirected, isFalse);
 //    expect(
-//        Ads.videoAd.targetingInfo.testDevices
+//        ads.videoAd.targetingInfo.testDevices
 //            .contains('Samsung_Galaxy_SII_API_26:5554'),
 //        isFalse);
-//    expect(Ads.videoAd.listener, isNotNull);
+//    expect(ads.videoAd.listener, isNotNull);
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
@@ -188,12 +196,12 @@ void main() {
 //      ),
 //    ));
 //
-//    expect(Ads.keywords.contains('cats'), isTrue);
-//    expect(Ads.keywords.contains('dogs'), isTrue);
-//    expect(Ads.contentUrl, equals('http://www.animalsaspets.com'));
-//    expect(Ads.childDirected, isFalse);
-//    expect(Ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
-//    expect(Ads.testing, isTrue);
+//    expect(ads.keywords.contains('cats'), isTrue);
+//    expect(ads.keywords.contains('dogs'), isTrue);
+//    expect(ads.contentUrl, equals('http://www.animalsaspets.com'));
+//    expect(ads.childDirected, isFalse);
+//    expect(ads.testDevices.contains('Samsung_Galaxy_SII_API_26:5554'), isTrue);
+//    expect(ads.testing, isTrue);
 //  });
 //
 //  testWidgets('Header adds todo', (WidgetTester tester) async {
