@@ -161,13 +161,13 @@ class Ads {
   void dispose() {
     hideBannerAd();
     hideFullScreenAd();
-    clearEventListeners();
-    clearBannerListeners();
-    clearScreenListeners();
-    clearVideoListeners();
-    banner.clearAll();
-    screen.clearAll();
-    video.clearAll();
+    _clearEventListeners();
+    _clearBannerListeners();
+    _clearScreenListeners();
+    _clearVideoListeners();
+    banner._clearAll();
+    screen._clearAll();
+    video._clearAll();
     _videoAd = null;
   }
 
@@ -372,7 +372,7 @@ class Ads {
   }
 
   /// Show a Video Ad.
-  ///
+  ///hideFullScreenAd
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
   void showVideoAd(
@@ -509,7 +509,7 @@ class Ads {
       _adEventListeners.remove(listener);
 
   /// Clear all Ad Event Listeners.
-  clearEventListeners() => _adEventListeners.clear();
+  _clearEventListeners() => _adEventListeners.clear();
 
   final banner = _AdListener();
 
@@ -522,7 +522,7 @@ class Ads {
       banner._eventListeners.remove(listener);
 
   /// Clear all Banner Ad Event Listeners.
-  clearBannerListeners() => banner._eventListeners.clear();
+  _clearBannerListeners() => banner._eventListeners.clear();
 
   final screen = _AdListener();
 
@@ -535,7 +535,7 @@ class Ads {
       screen._eventListeners.remove(listener);
 
   /// Clear all Full Screen Ad Event Listeners.
-  clearScreenListeners() => screen._eventListeners.clear();
+  _clearScreenListeners() => screen._eventListeners.clear();
 
   final video = _VidListener();
 
@@ -548,7 +548,7 @@ class Ads {
       video._eventListeners.remove(listener);
 
   /// Clear all Video Ad Event Listeners.
-  clearVideoListeners() => video._eventListeners.clear();
+  _clearVideoListeners() => video._eventListeners.clear();
 }
 
 class _AdListener {
@@ -558,20 +558,20 @@ class _AdListener {
   List<VoidCallback> _loadedListeners = [];
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
   set removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
-  clearLoaded() => _loadedListeners.clear();
+  _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when the Ad fails to display.
   List<VoidCallback> _failedListeners = [];
   set failedListener(VoidCallback listener) => _failedListeners.add(listener);
   set removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
-  clearFailed() => _failedListeners.clear();
+  _clearFailed() => _failedListeners.clear();
 
   /// Listens for when the Ad is clicked on.
   List<VoidCallback> _clickedListeners = [];
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
   set removeClicked(VoidCallback listener) =>
       _clickedListeners.remove(listener);
-  clearClicked() => _clickedListeners.clear();
+  _clearClicked() => _clickedListeners.clear();
 
   /// Listens for when the user clicks further on the Ad.
   List<VoidCallback> _impressionListeners = [];
@@ -579,25 +579,25 @@ class _AdListener {
       _impressionListeners.add(listener);
   set removeImpression(VoidCallback listener) =>
       _impressionListeners.remove(listener);
-  clearImpression() => _impressionListeners.clear();
+  _clearImpression() => _impressionListeners.clear();
 
   /// Listens for when the Ad is opened.
   List<VoidCallback> _openedListeners = [];
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
   set removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
-  clearOpened() => _openedListeners.clear();
+  _clearOpened() => _openedListeners.clear();
 
   /// Listens for when the user has left the Ad.
   List<VoidCallback> _leftListeners = [];
   set leftAppListener(VoidCallback listener) => _leftListeners.add(listener);
   set removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
-  clearLeftApp() => _leftListeners.clear();
+  _clearLeftApp() => _leftListeners.clear();
 
   /// Listens for when the Ad is closed.
   List<VoidCallback> _closedListeners = [];
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
   set removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
-  clearClosed() => _closedListeners.clear();
+  _clearClosed() => _closedListeners.clear();
 
   /// The Ad's Event Listener Function.
   void _eventListener(MobileAdEvent event) {
@@ -656,13 +656,14 @@ class _AdListener {
     }
   }
 
-  clearAll() {
-    clearLoaded();
-    clearFailed();
-    clearClicked();
-    clearOpened();
-    clearLeftApp();
-    clearClosed();
+  _clearAll() {
+    _clearLoaded();
+    _clearFailed();
+    _clearClicked();
+    _clearImpression();
+    _clearOpened();
+    _clearLeftApp();
+    _clearClosed();
   }
 }
 
@@ -799,7 +800,7 @@ class _VidListener {
   }
 
   /// Clear all possible types of Ad listeners on one call.
-  clearAll() {
+  _clearAll() {
     clearLoaded();
     clearFailed();
     clearClicked();

@@ -327,6 +327,7 @@ class _MyAppState extends State<MyApp> {
       print("You've closed an ad and returned to your app.");
     };
 
+
     ads.screen.loadedListener = () {
       print("An ad has loaded into memory.");
     };
@@ -394,11 +395,23 @@ class _MyAppState extends State<MyApp> {
       print("You've just finished playing the Video ad.");
     };
 
-    List<String> two = ads.keywords;
-    String three = ads.contentUrl;
-    bool seven = ads.childDirected;
-    List<String> eight = ads.testDevices;
-    print(two);
+    List<String> one = ads.keywords;
+
+    String two = ads.contentUrl;
+
+    bool three = ads.childDirected;
+
+    List<String> four = ads.testDevices;
+
+    bool five = ads.initialized;
+
+    ads.dispose();
+
+
+    ads.hideBannerAd();
+
+    ads.hideFullScreenAd();
+
   }
 
   @override
