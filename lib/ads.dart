@@ -88,8 +88,7 @@ class Ads {
     if (_initialized) {
       // This Ads object can continue to be instantiated, but it can't do anything.
       _firstObject = false;
-      assert(_firstObject,
-      "An Ads class is already instantiated!");
+      assert(_firstObject, "An Ads class is already instantiated!");
     } else {
       /// Prevent any further instantiations until plugin is initialized or not.
       _initialized = true;
@@ -192,12 +191,9 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
-    assert(_firstObject,
-        "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
-    if (anchorOffset == null) anchorOffset = 0.0;
-    if (anchorType == null) anchorType = AnchorType.bottom;
     if (_bannerAd != null &&
         (adUnitId != null ||
             size != null ||
@@ -220,7 +216,9 @@ class Ads {
       );
     _bannerAd
       ..load()
-      ..show(anchorOffset: anchorOffset, anchorType: anchorType);
+      ..show(
+          anchorOffset: anchorOffset ?? 0.0,
+          anchorType: anchorType ?? AnchorType.bottom);
   }
 
   /// Set the Banner Ad options.
@@ -234,8 +232,7 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
-    assert(_firstObject,
-    "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;
@@ -294,8 +291,7 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
-    assert(_firstObject,
-    "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (anchorOffset == null) anchorOffset = 0.0;
@@ -331,8 +327,7 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
-    assert(_firstObject,
-    "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;
@@ -389,8 +384,7 @@ class Ads {
       bool testing,
       VideoEventListener listener,
       State state}) {
-    assert(_firstObject,
-    "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_showVideo &&
@@ -429,8 +423,7 @@ class Ads {
     bool testing,
     VideoEventListener listener,
   }) {
-    assert(_firstObject,
-    "An Ads class is already instantiated!");
+    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;
