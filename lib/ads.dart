@@ -89,6 +89,8 @@ class Ads {
     if (_initialized) {
       // This Ads object can continue to be instantiated, but it can't do anything.
       _firstObject = false;
+      assert(_firstObject,
+      "An Ads class is already instantiated!");
     } else {
       /// Prevent any further instantiations until plugin is initialized or not.
       _initialized = true;
