@@ -98,7 +98,7 @@ class Ads {
           .initialize(
               appId: appId,
               trackingId: trackingId,
-              analyticsEnabled: analyticsEnabled)
+              analyticsEnabled: analyticsEnabled ?? false)
           .then((init) {
         // Determine if the plugin has initialized successfully.
         _initialized = init;
@@ -115,7 +115,7 @@ class Ads {
   /// Stores the Video ad unit id.
   String _videoUnitId = '';
 
-  /// Activate this object.
+  /// Flag indicating this is the first object instantiated.
   bool _firstObject = true;
 
   /// You can only initialize the Firebase_AdMob plugin once!
