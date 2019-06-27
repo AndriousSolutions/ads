@@ -41,12 +41,11 @@ List<AdEventListener> _adEventListeners = [];
 
 class Ads {
 
-  // A private constructor
-  Ads._():super();
-
   /// Initialize the Firebase AdMob plugin with a number of options.
-  static void init(
+  Ads(
     String appId, {
+    String trackingId,
+    bool analyticsEnabled = false,
     String bannerUnitId,
     String screenUnitId,
     String videoUnitId,
@@ -57,10 +56,11 @@ class Ads {
     bool testing = false,
     AdEventListener listener,
   }) {
-    assert(appId != null && appId.isNotEmpty, 'Ads.init(): appId is required.');
+    assert(appId != null && appId.isNotEmpty, 'class Ads: appId is required.');
 
     /// Test for parameters being pass null in production
-    _appId = appId == null || appId.isEmpty ? FirebaseAdMob.testAppId : appId;
+    appId =
+        appId == null || appId.isEmpty ? FirebaseAdMob.testAppId : appId.trim();
 
     if (bannerUnitId != null) {
       _bannerUnitId = bannerUnitId.trim();
@@ -84,77 +84,92 @@ class Ads {
 
     if (listener != null) _adEventListeners.add(listener);
 
-    FirebaseAdMob.instance
-        .initialize(appId: testing ? FirebaseAdMob.testAppId : Ads._appId);
+    /// This class is being instantiated again??
+    /// Continue, but do not activate this object to do anything.
+    /// Once initialized only use the original reference.
+    if (_initialized) {
+      // This Ads object can continue to be instantiated, but it can't do anything.
+      _firstObject = false;
+      assert(_firstObject, "An Ads class is already instantiated!");
+    } else {
+      /// Prevent any further instantiations until plugin is initialized or not.
+      _initialized = true;
+      FirebaseAdMob.instance
+          .initialize(
+              appId: appId,
+              trackingId: trackingId,
+              analyticsEnabled: analyticsEnabled ?? false)
+          .then((init) {
+        // Determine if the plugin has initialized successfully.
+        _initialized = init;
+      });
+    }
   }
 
-  static String _appId;
+  /// Stores the Banner ad unit id.
+  String _bannerUnitId = '';
 
-  static String _bannerUnitId = '';
+  /// Stores the Interstitial ad unit id.
+  String _screenUnitId = '';
 
-  static String _screenUnitId = '';
+  /// Stores the Video ad unit id.
+  String _videoUnitId = '';
 
-  static String _videoUnitId = '';
+  /// Flag indicating this is the first object instantiated.
+  bool _firstObject = true;
 
-  static List<String> _keywords;
+  /// You can only initialize the Firebase_AdMob plugin once!
+  static bool _initialized = false;
+
+  bool get initialized => _initialized;
+
+  List<String> _keywords;
 
   /// Get ad keywords
-  static List<String> get keywords => _keywords;
+  List<String> get keywords => _keywords;
 
-  static String _contentUrl;
+  String _contentUrl;
 
   /// Get the url providing ad content
-  static String get contentUrl => _contentUrl;
+  String get contentUrl => _contentUrl;
 
-  static bool _childDirected;
+  bool _childDirected;
 
-  static bool get childDirected => _childDirected;
+  bool get childDirected => _childDirected;
 
-  static List _testDevices = <String>[];
+  List _testDevices = <String>[];
 
   /// Get list of test devices.
-  static List<String> get testDevices => _testDevices;
+  List<String> get testDevices => _testDevices;
 
-  static bool _testing;
+  bool _testing;
 
   /// Determine if testing or not
-  static bool get testing => _testing;
+  bool get testing => _testing;
 
-  static BannerAd _bannerAd;
+  BannerAd _bannerAd;
 
-  /// Get Banner Ad object
-  @deprecated
-  static BannerAd get bannerAd => _bannerAd;
+  InterstitialAd _fullScreenAd;
 
-  static InterstitialAd _fullScreenAd;
+  RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
 
-  /// Get Interstitial Ad object
-  @deprecated
-  static InterstitialAd get fullScreenAd => _fullScreenAd;
+  _VideoAd _videoAd;
 
-  static RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
+  bool _screenLoaded = false;
 
-  static _VideoAd _videoAd;
-
-  /// Get Video Ad object
-  @deprecated
-  static _VideoAd get videoAd => _videoAd;
-
-  static bool _screenLoaded = false;
-
-  static bool _showVideo = false;
+  bool _showVideo = false;
 
   /// Close any Ads, clean up memory and clear resources.
-  static void dispose() {
+  void dispose() {
     hideBannerAd();
     hideFullScreenAd();
-    clearEventListeners();
-    clearBannerListeners();
-    clearScreenListeners();
-    clearVideoListeners();
-    banner.clearAll();
-    screen.clearAll();
-    video.clearAll();
+    _clearEventListeners();
+    _clearBannerListeners();
+    _clearScreenListeners();
+    _clearVideoListeners();
+    banner._clearAll();
+    screen._clearAll();
+    video._clearAll();
     _videoAd = null;
   }
 
@@ -166,7 +181,7 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   ///
   /// anchorType place advert at top or bottom of screen (default bottom)
-  static void showBannerAd(
+  void showBannerAd(
       {String adUnitId = '',
       AdSize size = AdSize.banner,
       List<String> keywords,
@@ -178,9 +193,9 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
     if (state != null && !state.mounted) return;
-    if (anchorOffset == null) anchorOffset = 0.0;
-    if (anchorType == null) anchorType = AnchorType.bottom;
     if (_bannerAd != null &&
         (adUnitId != null ||
             size != null ||
@@ -203,11 +218,13 @@ class Ads {
       );
     _bannerAd
       ..load()
-      ..show(anchorOffset: anchorOffset, anchorType: anchorType);
+      ..show(
+          anchorOffset: anchorOffset ?? 0.0,
+          anchorType: anchorType ?? AnchorType.bottom);
   }
 
   /// Set the Banner Ad options.
-  static void setBannerAd({
+  void setBannerAd({
     String adUnitId = '',
     AdSize size = AdSize.banner,
     List<String> keywords,
@@ -217,6 +234,9 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
+
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
@@ -251,7 +271,7 @@ class Ads {
   }
 
   /// Hide a Banner Ad.
-  static void hideBannerAd() {
+  void hideBannerAd() {
     _bannerAd?.dispose();
     _bannerAd = null;
   }
@@ -262,7 +282,7 @@ class Ads {
   /// state is passed to determine if the app is not terminating. No need to show ad.
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
-  static void showFullScreenAd(
+  void showFullScreenAd(
       {String adUnitId = '',
       List<String> keywords,
       String contentUrl,
@@ -273,6 +293,8 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (anchorOffset == null) anchorOffset = 0.0;
     if (anchorType == null) anchorType = AnchorType.bottom;
@@ -298,7 +320,7 @@ class Ads {
   }
 
   /// Set the Full Screen Ad options.
-  static void setFullScreenAd({
+  void setFullScreenAd({
     String adUnitId = '',
     List<String> keywords,
     String contentUrl,
@@ -307,6 +329,9 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
+
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
@@ -343,16 +368,16 @@ class Ads {
   }
 
   /// Hide the Full Screen Ad.
-  static void hideFullScreenAd() {
+  void hideFullScreenAd() {
     _fullScreenAd?.dispose();
     _fullScreenAd = null;
   }
 
   /// Show a Video Ad.
-  ///
+  ///hideFullScreenAd
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
-  static void showVideoAd(
+  void showVideoAd(
       {String adUnitId,
       List<String> keywords,
       String contentUrl,
@@ -361,6 +386,8 @@ class Ads {
       bool testing,
       VideoEventListener listener,
       State state}) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_showVideo &&
         (adUnitId != null ||
@@ -388,7 +415,7 @@ class Ads {
   }
 
   /// Set the Video Ad options.
-  static void setVideoAd({
+  void setVideoAd({
     bool show = false,
     String adUnitId,
     List<String> keywords,
@@ -398,6 +425,9 @@ class Ads {
     bool testing,
     VideoEventListener listener,
   }) {
+    assert(_firstObject, "An Ads class is already instantiated!");
+    if (!_firstObject) return;
+
     String unitId;
 
     if (adUnitId == null || adUnitId.isEmpty) {
@@ -417,7 +447,7 @@ class Ads {
 
     if (listener != null) video._eventListeners.add(listener);
 
-    _showVideo = show; 
+    _showVideo = show;
 
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
@@ -445,15 +475,12 @@ class Ads {
   }
 
   /// Return the target audience information
-  static MobileAdTargetingInfo _targetInfo({
+  MobileAdTargetingInfo _targetInfo({
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
   }) {
-    assert(Ads._appId != null,
-        'Ads.init() must be called first in an initState() preferably!');
-
     // No parameters seek values from init()
     bool init = keywords == null &&
         contentUrl == null &&
@@ -476,54 +503,54 @@ class Ads {
   }
 
   /// Set an Ad Event Listener.
-  static set eventListener(AdEventListener listener) =>
+  set eventListener(AdEventListener listener) =>
       _adEventListeners.add(listener);
 
   /// Remove a specific Add Event Listener.
-  static set removeEvent(AdEventListener listener) =>
+  bool removeEvent(AdEventListener listener) =>
       _adEventListeners.remove(listener);
 
   /// Clear all Ad Event Listeners.
-  static clearEventListeners() => _adEventListeners.clear();
+  _clearEventListeners() => _adEventListeners.clear();
 
-  static final banner = _AdListener();
+  final banner = _AdListener();
 
   /// Set a Banner Ad Event Listener.
-  static set bannerListener(AdEventListener listener) =>
+  set bannerListener(AdEventListener listener) =>
       banner._eventListeners.add(listener);
 
   /// Remove a specific Banner Ad Event Listener.
-  static set removeBanner(AdEventListener listener) =>
+  bool removeBanner(AdEventListener listener) =>
       banner._eventListeners.remove(listener);
 
   /// Clear all Banner Ad Event Listeners.
-  static clearBannerListeners() => banner._eventListeners.clear();
+  _clearBannerListeners() => banner._eventListeners.clear();
 
-  static final screen = _AdListener();
+  final screen = _AdListener();
 
   /// Set a Full Screen Ad Event Listener.
-  static set screenListener(AdEventListener listener) =>
+  set screenListener(AdEventListener listener) =>
       screen._eventListeners.add(listener);
 
   /// Remove a Full Screen Ad Event Listener.
-  static set removeScreen(AdEventListener listener) =>
+  bool removeScreen(AdEventListener listener) =>
       screen._eventListeners.remove(listener);
 
   /// Clear all Full Screen Ad Event Listeners.
-  static clearScreenListeners() => screen._eventListeners.clear();
+  _clearScreenListeners() => screen._eventListeners.clear();
 
-  static final video = _VidListener();
+  final video = _VidListener();
 
   /// Set a Video Ad Event Listener
-  static set videoListener(VideoEventListener listener) =>
+  set videoListener(VideoEventListener listener) =>
       video._eventListeners.add(listener);
 
   /// Remove a specific Video Ad Event Listener.
-  static set removeVideo(VideoEventListener listener) =>
+  set removeVideo(VideoEventListener listener) =>
       video._eventListeners.remove(listener);
 
   /// Clear all Video Ad Event Listeners.
-  static clearVideoListeners() => video._eventListeners.clear();
+  _clearVideoListeners() => video._eventListeners.clear();
 }
 
 class _AdListener {
@@ -532,47 +559,47 @@ class _AdListener {
   /// Listens for when the Ad is loaded in memory.
   List<VoidCallback> _loadedListeners = [];
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
-  set removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
-  clearLoaded() => _loadedListeners.clear();
+  bool removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
+  _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when the Ad fails to display.
   List<VoidCallback> _failedListeners = [];
   set failedListener(VoidCallback listener) => _failedListeners.add(listener);
-  set removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
-  clearFailed() => _failedListeners.clear();
+  bool removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
+  _clearFailed() => _failedListeners.clear();
 
   /// Listens for when the Ad is clicked on.
   List<VoidCallback> _clickedListeners = [];
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
-  set removeClicked(VoidCallback listener) =>
+  bool removeClicked(VoidCallback listener) =>
       _clickedListeners.remove(listener);
-  clearClicked() => _clickedListeners.clear();
+  _clearClicked() => _clickedListeners.clear();
 
   /// Listens for when the user clicks further on the Ad.
   List<VoidCallback> _impressionListeners = [];
   set impressionListener(VoidCallback listener) =>
       _impressionListeners.add(listener);
-  set removeImpression(VoidCallback listener) =>
+  bool removeImpression(VoidCallback listener) =>
       _impressionListeners.remove(listener);
-  clearImpression() => _impressionListeners.clear();
+  _clearImpression() => _impressionListeners.clear();
 
   /// Listens for when the Ad is opened.
   List<VoidCallback> _openedListeners = [];
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
-  set removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
-  clearOpened() => _openedListeners.clear();
+  bool removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
+  _clearOpened() => _openedListeners.clear();
 
   /// Listens for when the user has left the Ad.
   List<VoidCallback> _leftListeners = [];
   set leftAppListener(VoidCallback listener) => _leftListeners.add(listener);
-  set removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
-  clearLeftApp() => _leftListeners.clear();
+  bool removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
+  _clearLeftApp() => _leftListeners.clear();
 
   /// Listens for when the Ad is closed.
   List<VoidCallback> _closedListeners = [];
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
-  set removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
-  clearClosed() => _closedListeners.clear();
+  bool removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
+  _clearClosed() => _closedListeners.clear();
 
   /// The Ad's Event Listener Function.
   void _eventListener(MobileAdEvent event) {
@@ -631,13 +658,14 @@ class _AdListener {
     }
   }
 
-  clearAll() {
-    clearLoaded();
-    clearFailed();
-    clearClicked();
-    clearOpened();
-    clearLeftApp();
-    clearClosed();
+  _clearAll() {
+    _clearLoaded();
+    _clearFailed();
+    _clearClicked();
+    _clearImpression();
+    _clearOpened();
+    _clearLeftApp();
+    _clearClosed();
   }
 }
 
@@ -647,62 +675,62 @@ class _VidListener {
   /// Listens for when video ad is loaded.
   List<VoidCallback> _loadedListeners = [];
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
-  set removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
-  clearLoaded() => _loadedListeners.clear();
+  bool removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
+  _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when video ad fails.
   List<VoidCallback> _failedListeners = [];
   set failedListener(VoidCallback listener) => _failedListeners.add(listener);
-  set removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
-  clearFailed() => _failedListeners.clear();
+  bool removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
+  _clearFailed() => _failedListeners.clear();
 
   /// Listens for when video ad is clicked on.
   List<VoidCallback> _clickedListeners = [];
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
-  set removeClicked(VoidCallback listener) =>
+  bool removeClicked(VoidCallback listener) =>
       _clickedListeners.remove(listener);
-  clearClicked() => _clickedListeners.clear();
+  _clearClicked() => _clickedListeners.clear();
 
   /// Listens for when video ad opens up.
   List<VoidCallback> _openedListeners = [];
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
-  set removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
-  clearOpened() => _openedListeners.clear();
+  bool removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
+  _clearOpened() => _openedListeners.clear();
 
   /// Listens for when user leaves the video ad.
   List<VoidCallback> _leftListeners = [];
   set leftAppListener(VoidCallback listener) => _leftListeners.add(listener);
-  set removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
-  clearLeftApp() => _leftListeners.clear();
+  bool removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
+  _clearLeftApp() => _leftListeners.clear();
 
   /// Listens for when video ad is closed.
   List<VoidCallback> _closedListeners = [];
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
-  set removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
-  clearClosed() => _closedListeners.clear();
+  bool removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
+  _clearClosed() => _closedListeners.clear();
 
   /// Listens for when video ad sends a reward.
   List<RewardListener> _rewardedListeners = [];
   set rewardedListener(RewardListener listener) =>
       _rewardedListeners.add(listener);
-  set rewardedClosed(RewardListener listener) =>
+  bool removeRewarded(RewardListener listener) =>
       _rewardedListeners.remove(listener);
-  clearRewarded() => _rewardedListeners.clear();
+  _clearRewarded() => _rewardedListeners.clear();
 
   /// Listens for when video ad starts playing.
   List<VoidCallback> _startedListeners = [];
   set startedListener(VoidCallback listener) => _startedListeners.add(listener);
-  set removeStarted(VoidCallback listener) =>
+  bool removeStarted(VoidCallback listener) =>
       _startedListeners.remove(listener);
-  clearStarted() => _startedListeners.clear();
+  _clearStarted() => _startedListeners.clear();
 
   /// Listens for when video ad has finished playing.
   List<VoidCallback> _completedListeners = [];
   set completedListener(VoidCallback listener) =>
       _completedListeners.add(listener);
-  set removeCompleted(VoidCallback listener) =>
+  bool removeCompleted(VoidCallback listener) =>
       _completedListeners.remove(listener);
-  clearCompleted() => _completedListeners.clear();
+  _clearCompleted() => _completedListeners.clear();
 
   /// The Video Ad Event Listener Function.
   void _eventListener(RewardedVideoAdEvent event,
@@ -774,16 +802,16 @@ class _VidListener {
   }
 
   /// Clear all possible types of Ad listeners on one call.
-  clearAll() {
-    clearLoaded();
-    clearFailed();
-    clearClicked();
-    clearOpened();
-    clearLeftApp();
-    clearClosed();
-    clearRewarded();
-    clearStarted();
-    clearCompleted();
+  _clearAll() {
+    _clearLoaded();
+    _clearFailed();
+    _clearClicked();
+    _clearOpened();
+    _clearLeftApp();
+    _clearClosed();
+    _clearRewarded();
+    _clearStarted();
+    _clearCompleted();
   }
 
   MobileAdEvent _toMobileAdEvent(RewardedVideoAdEvent event) {

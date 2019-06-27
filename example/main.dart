@@ -23,6 +23,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   _MyAppState({this.initOption = 1});
 
+  Ads ads;
   final int initOption;
   int _coins = 0;
 
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
           }
         };
 
-        Ads.init(
+        ads = Ads(
           appId,
           bannerUnitId: bannerUnitId,
           screenUnitId: screenUnitId,
@@ -69,7 +70,7 @@ class _MyAppState extends State<MyApp> {
         break;
 
       case 2:
-        Ads.init(appId);
+        ads = Ads(appId);
 
         /// Assign the listener.
         var eventListener = (MobileAdEvent event) {
@@ -80,7 +81,7 @@ class _MyAppState extends State<MyApp> {
 
         /// You can set the Banner, Fullscreen and Video Ads separately.
 
-        Ads.setBannerAd(
+        ads.setBannerAd(
           adUnitId: bannerUnitId,
           size: AdSize.banner,
           keywords: ['andriod, flutter'],
@@ -90,7 +91,7 @@ class _MyAppState extends State<MyApp> {
           listener: eventListener,
         );
 
-        Ads.setFullScreenAd(
+        ads.setFullScreenAd(
             adUnitId: screenUnitId,
             keywords: ['dart', 'flutter'],
             contentUrl: 'http://www.fluttertogo.com',
@@ -109,7 +110,7 @@ class _MyAppState extends State<MyApp> {
           }
         };
 
-        Ads.setVideoAd(
+        ads.setVideoAd(
           adUnitId: videoUnitId,
           keywords: ['dart', 'java'],
           contentUrl: 'http://www.publang.org',
@@ -121,7 +122,7 @@ class _MyAppState extends State<MyApp> {
         break;
 
       case 3:
-        Ads.init(appId);
+        ads = Ads(appId);
 
         /// Assign the listener.
         var eventListener = (MobileAdEvent event) {
@@ -132,7 +133,7 @@ class _MyAppState extends State<MyApp> {
 
         /// You just show the Banner, Fullscreen and Video Ads separately.
 
-        Ads.showBannerAd(
+        ads.showBannerAd(
           adUnitId: bannerUnitId,
           size: AdSize.banner,
           keywords: ['andriod, flutter'],
@@ -142,7 +143,7 @@ class _MyAppState extends State<MyApp> {
           listener: eventListener,
         );
 
-        Ads.showFullScreenAd(
+        ads.showFullScreenAd(
             adUnitId: screenUnitId,
             keywords: ['dart', 'flutter'],
             contentUrl: 'http://www.fluttertogo.com',
@@ -161,7 +162,7 @@ class _MyAppState extends State<MyApp> {
           }
         };
 
-        Ads.showVideoAd(
+        ads.showVideoAd(
           adUnitId: videoUnitId,
           keywords: ['dart', 'java'],
           contentUrl: 'http://www.publang.org',
@@ -173,10 +174,10 @@ class _MyAppState extends State<MyApp> {
         break;
 
       default:
-        Ads.init(appId, testing: true);
+        ads = Ads(appId, testing: true);
     }
 
-    Ads.eventListener = (MobileAdEvent event) {
+    ads.eventListener = (MobileAdEvent event) {
       switch (event) {
         case MobileAdEvent.loaded:
           print("An ad has loaded successfully in memory.");
@@ -204,7 +205,11 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    Ads.bannerListener = (MobileAdEvent event) {
+    AdEventListener eventHandler = (MobileAdEvent event) {
+      print("This is an event handler.");
+    };
+
+    ads.bannerListener = (MobileAdEvent event) {
       switch (event) {
         case MobileAdEvent.loaded:
           print("An ad has loaded successfully in memory.");
@@ -232,7 +237,13 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    Ads.screenListener = (MobileAdEvent event) {
+    ads.removeBanner(eventHandler);
+
+    ads.removeEvent(eventHandler);
+
+    ads.removeScreen(eventHandler);
+
+    ads.screenListener = (MobileAdEvent event) {
       switch (event) {
         case MobileAdEvent.loaded:
           print("An ad has loaded successfully in memory.");
@@ -260,7 +271,7 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    Ads.videoListener =
+    ads.videoListener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       switch (event) {
         case RewardedVideoAdEvent.loaded:
@@ -292,115 +303,175 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    Ads.banner.loadedListener = () {
-      print("An ad has loaded successfully in memory.");
-    };
-
-    Ads.banner.failedListener = () {
-      print("An ad failed to load into memory.");
-    };
-
-    Ads.banner.clickedListener = () {
-      print("The opened ad is clicked on.");
-    };
-
-    Ads.banner.impressionListener = () {
-      print("The user is still looking at the ad. A new ad came up.");
-    };
-
-    Ads.banner.openedListener = () {
-      print("You've closed an ad and returned to your app.");
-    };
-
-    Ads.banner.leftAppListener = () {
-      print("You left the app and gone to the ad's website.");
-    };
-
-    Ads.banner.impressionListener = () {
-      print("The user is still looking at the ad. A new ad came up.");
-    };
-
-    Ads.banner.closedListener = () {
-      print("You've closed an ad and returned to your app.");
-    };
-
-    Ads.screen.loadedListener = () {
-      print("An ad has loaded into memory.");
-    };
-
-    Ads.screen.failedListener = () {
-      print("An ad has failed to load in memory.");
-    };
-
-    Ads.screen.clickedListener = () {
+    VoidCallback handlerFunc = () {
       print("The opened ad was clicked on.");
     };
 
-    Ads.screen.impressionListener = () {
-      print("You've clicked on a link in the open ad.");
+    ads.banner.loadedListener = () {
+      print("An ad has loaded successfully in memory.");
     };
 
-    Ads.screen.openedListener = () {
-      print("The ad has opened.");
+    ads.banner.removeLoaded(handlerFunc);
+
+    ads.banner.failedListener = () {
+      print("An ad failed to load into memory.");
     };
 
-    Ads.screen.leftAppListener = () {
-      print("The user has left the app and gone to the opened ad.");
+    ads.banner.removeFailed(handlerFunc);
+
+    ads.banner.clickedListener = () {
+      print("The opened ad is clicked on.");
     };
 
-    Ads.screen.closedListener = () {
-      print("The ad has been closed. The user returns to the app.");
+    ads.banner.removeClicked(handlerFunc);
+
+    ads.banner.impressionListener = () {
+      print("The user is still looking at the ad. A new ad came up.");
     };
 
-    Ads.video.loadedListener = () {
-      print("An ad has loaded in memory.");
+    ads.banner.removeImpression(handlerFunc);
+
+    ads.banner.openedListener = () {
+      print("You've closed an ad and returned to your app.");
     };
 
-    Ads.video.failedListener = () {
+    ads.banner.removeOpened(handlerFunc);
+
+    ads.banner.leftAppListener = () {
+      print("You left the app and gone to the ad's website.");
+    };
+
+    ads.banner.removeLeftApp(handlerFunc);
+
+    ads.banner.closedListener = () {
+      print("You've closed an ad and returned to your app.");
+    };
+
+    ads.banner.removeClosed(handlerFunc);
+
+    ads.screen.loadedListener = () {
+      print("An ad has loaded into memory.");
+    };
+
+    ads.screen.removeLoaded(handlerFunc);
+
+    ads.screen.failedListener = () {
       print("An ad has failed to load in memory.");
     };
 
-    Ads.video.clickedListener = () {
+    ads.screen.removeFailed(handlerFunc);
+
+    ads.screen.clickedListener = () {
+      print("The opened ad was clicked on.");
+    };
+
+    ads.screen.removeClicked(handlerFunc);
+
+    ads.screen.impressionListener = () {
+      print("You've clicked on a link in the open ad.");
+    };
+
+    ads.screen.removeImpression(handlerFunc);
+
+    ads.screen.openedListener = () {
+      print("The ad has opened.");
+    };
+
+    ads.screen.removeOpened(handlerFunc);
+
+    ads.screen.leftAppListener = () {
+      print("The user has left the app and gone to the opened ad.");
+    };
+
+    ads.screen.leftAppListener = handlerFunc;
+
+    ads.screen.closedListener = () {
+      print("The ad has been closed. The user returns to the app.");
+    };
+
+    ads.screen.removeClosed(handlerFunc);
+
+    ads.video.loadedListener = () {
+      print("An ad has loaded in memory.");
+    };
+
+    ads.video.removeLoaded(handlerFunc);
+
+    ads.video.failedListener = () {
+      print("An ad has failed to load in memory.");
+    };
+
+    ads.video.removeFailed(handlerFunc);
+
+    ads.video.clickedListener = () {
       print("An ad has been clicked on.");
     };
 
-    Ads.video.openedListener = () {
+    ads.video.removeClicked(handlerFunc);
+
+    ads.video.openedListener = () {
       print("An ad has been opened.");
     };
 
-    Ads.video.leftAppListener = () {
+    ads.video.removeOpened(handlerFunc);
+
+    ads.video.leftAppListener = () {
       print("You've left the app to view the video.");
     };
 
-    Ads.video.closedListener = () {
+    ads.video.leftAppListener = handlerFunc;
+
+    ads.video.closedListener = () {
       print("The video has been closed.");
     };
 
-    Ads.video.rewardedListener = (String rewardType, int rewardAmount) {
+    ads.video.removeClosed(handlerFunc);
+
+    ads.video.rewardedListener = (String rewardType, int rewardAmount) {
       print("The ad was sent a reward amount.");
       setState(() {
         _coins += rewardAmount;
       });
     };
 
-    Ads.video.startedListener = () {
+    RewardListener rewardHandler = (String rewardType, int rewardAmount){
+      print("This is the Rewarded Video handler");
+    };
+
+    ads.video.removeRewarded(rewardHandler);
+
+    ads.video.startedListener = () {
       print("You've just started playing the Video ad.");
     };
 
-    Ads.video.completedListener = () {
+    ads.video.removeStarted(handlerFunc);
+
+    ads.video.completedListener = () {
       print("You've just finished playing the Video ad.");
     };
 
-    List<String> two = Ads.keywords;
-    String three = Ads.contentUrl;
-    bool seven = Ads.childDirected;
-    List<String> eight = Ads.testDevices;
-    print(two);
+    ads.video.removeCompleted(handlerFunc);
+
+    List<String> one = ads.keywords;
+
+    String two = ads.contentUrl;
+
+    bool three = ads.childDirected;
+
+    List<String> four = ads.testDevices;
+
+    bool five = ads.initialized;
+
+    ads.dispose();
+
+    ads.hideBannerAd();
+
+    ads.hideFullScreenAd();
   }
 
   @override
   void dispose() {
-    Ads.dispose();
+    ads.dispose();
     super.dispose();
   }
 
@@ -421,26 +492,26 @@ class _MyAppState extends State<MyApp> {
                     key: ValueKey<String>('SHOW BANNER'),
                     child: const Text('SHOW BANNER'),
                     onPressed: () {
-                      Ads.showBannerAd(state: this, anchorOffset: null);
+                      ads.showBannerAd(state: this, anchorOffset: null);
                     }),
                 RaisedButton(
                     key: ValueKey<String>('REMOVE BANNER'),
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
-                      Ads.hideBannerAd();
+                      ads.hideBannerAd();
                     }),
                 RaisedButton(
                   key: ValueKey<String>('SHOW INTERSTITIAL'),
                   child: const Text('SHOW INTERSTITIAL'),
                   onPressed: () {
-                    Ads.showFullScreenAd(state: this);
+                    ads.showFullScreenAd(state: this);
                   },
                 ),
                 RaisedButton(
                   key: ValueKey<String>('SHOW REWARDED VIDEO'),
                   child: const Text('SHOW REWARDED VIDEO'),
                   onPressed: () {
-                    Ads.showVideoAd(state: this);
+                    ads.showVideoAd(state: this);
                   },
                 ),
                 Text(
