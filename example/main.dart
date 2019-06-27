@@ -434,7 +434,7 @@ class _MyAppState extends State<MyApp> {
       });
     };
 
-    RewardListener rewardHandler = (String rewardType, int rewardAmount){
+    RewardListener rewardHandler = (String rewardType, int rewardAmount) {
       print("This is the Rewarded Video handler");
     };
 
