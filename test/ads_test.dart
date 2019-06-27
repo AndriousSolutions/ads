@@ -20,7 +20,6 @@ final String appId = Platform.isAndroid
     : 'ca-app-pub-3940256099942544~1458002511';
 
 void main() {
-
   ads = Ads(appId);
 
   testWidgets('Test Rewarded Video', (WidgetTester tester) async {

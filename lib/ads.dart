@@ -40,7 +40,6 @@ typedef void RewardListener(String rewardType, int rewardAmount);
 List<AdEventListener> _adEventListeners = [];
 
 class Ads {
-
   /// Initialize the Firebase AdMob plugin with a number of options.
   Ads(
     String appId, {
