@@ -1,6 +1,7 @@
 ## 0.9.0
   June 25, 2019
-- Remove static properties and methods; Many set to library-private. Using a generative constructor
+- Remove static properties and methods; Many set to library-private. 
+- Using a generative constructor
 
 ## 0.8.2
   June 27, 2019
