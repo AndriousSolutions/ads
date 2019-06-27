@@ -58,7 +58,7 @@ class Ads {
     assert(appId != null && appId.isNotEmpty, 'class Ads: appId is required.');
 
     /// Test for parameters being pass null in production
-    appId = appId == null || appId.isEmpty ? FirebaseAdMob.testAppId : appId;
+    appId = appId == null || appId.isEmpty ? FirebaseAdMob.testAppId : appId.trim();
 
     if (bannerUnitId != null) {
       _bannerUnitId = bannerUnitId.trim();
