@@ -15,21 +15,9 @@ dependencies:
   ads:
     path: ..
 
-  # https://pub.dartlang.org/packages/prefs#-changelog-tab-
-  prefs: ^1.0.2
-
-  # https://pub.dartlang.org/packages/mvc_pattern#-changelog-tab-
-  mvc_pattern: ^3.2.3
-
-  # https://pub.dartlang.org/packages/shared_preferences#-changelog-tab-
-  shared_preferences: ^0.5.1+1
-
   # https://pub.dartlang.org/packages/firebase_admob#-changelog-tab-
   firebase_admob:
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  
 
 dev_dependencies:
   flutter_test:
