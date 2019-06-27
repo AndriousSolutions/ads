@@ -1,3 +1,7 @@
+## 0.8.2
+  June 27, 2019
+- Private constructor, Ads._():super();
+
 ## 0.8.1
   June 22, 2019
 - Corrected showVideoAd() bug
