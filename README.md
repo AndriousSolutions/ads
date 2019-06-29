@@ -19,8 +19,35 @@ and add
 [![errorLoadAd03](https://user-images.githubusercontent.com/32497443/59965843-55d3b100-94e1-11e9-909a-d27de8ac8fa1.png "failed to load ad : 3")](https://stackoverflow.com/questions/33566485/failed-to-load-ad-3#answer-33712905)
 Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
 
+## There Must Only Be One!
+Try instantiating more than one Ads object, and you'll be a little dissappointed if not down right confused. It'll appear the second Ads object is not working, and you'd be right.
+```Java
+    _ads = Ads(
+      appId,
+      bannerUnitId: bannerUnitId,
+      screenUnitId: screenUnitId,
+      keywords: <String>['ibm', 'computers'],
+      contentUrl: 'http://www.ibm.com',
+      childDirected: false,
+      testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
+      listener: eventListener,
+    );
+
+    _adsTest = Ads(
+      appId,
+      bannerUnitId: bannerUnitId,
+      screenUnitId: screenUnitId,
+      keywords: <String>['ibm', 'computers'],
+      contentUrl: 'http://www.ibm.com',
+      childDirected: false,
+      testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
+      listener: eventListener,
+    );
+```
+The Google plugin is designed to work with one app and its set of ads. That's all. Creating another Ads object will serve no purpose for you because the Ads Dart package will be aware of the first one and work only with that one. Note, they'll be no 'error message' or notification there's more than one Ads object. The Dart package is designed not to be that disruptive in development or in production. The second object will just not do anything. It simply won't work, and will record the reason why in the log files. That's all.
+
 ## There's An Article On This
-There is an extensive article about this Dart package available on medium.com:
+Further documentation is available:
 [Add Ads To Your App in a Snap!](https://medium.com/@greg.perry/add-ads-in-your-app-in-a-snap-a980d2050ef9?postPublishedType=repub)
 
 [![admobFlutter03](https://user-images.githubusercontent.com/32497443/59965197-e4900000-94d8-11e9-9cc2-b1519d22201d.png "Add Ads to Your App in a Snap!")](https://medium.com/@greg.perry/add-ads-in-your-app-in-a-snap-a980d2050ef9?postPublishedType=repub)
@@ -173,9 +200,6 @@ class _MyAppState extends State<MyApp> {
 
 ## Beta You Bet!
 As of this writing, **firebase_admob**, is still in beta. As such, Banner ads can only be positioned at the top or the bottom of the screen, animation is limited, the ads come in a infinite set of sizes. Lastly, 'native ads' (i.e. ads displayed on UI components native to the platform) are not yet supported.
-
-## It's All Static
-As you can deduce by now, the Ads class is using only static members and methods. This means they can be accessed or changed any time and anywhere in your app. Makes it that much easier to deal with ads in your app.
 
 ## And the Number of the Counting Shall Be…Three
 There are three types of ads currently offered by the firebase_admob plugin. There's the traditional Banner ad, the Interstitial or full-screen ad that covers the interface of their host app when opened, and finally, there's the Video ad that also covers the screen when opened and then returns to the app when closed.

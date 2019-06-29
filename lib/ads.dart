@@ -30,6 +30,8 @@ import 'package:firebase_admob/firebase_admob.dart';
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 
+import 'dart:developer';
+
 typedef void AdEventListener(MobileAdEvent event);
 
 typedef void VideoEventListener(RewardedVideoAdEvent event,
@@ -89,7 +91,12 @@ class Ads {
     if (_initialized) {
       // This Ads object can continue to be instantiated, but it can't do anything.
       _firstObject = false;
-      assert(_firstObject, "An Ads class is already instantiated!");
+      log(
+        "An Ads class is already instantiated!",
+        time: DateTime.now(),
+        level: 1,
+        name: 'Ads()',
+      );
     } else {
       /// Prevent any further instantiations until plugin is initialized or not.
       _initialized = true;
@@ -192,7 +199,6 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_bannerAd != null &&
@@ -233,7 +239,6 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;
@@ -292,7 +297,6 @@ class Ads {
       State state,
       double anchorOffset = 0.0,
       AnchorType anchorType = AnchorType.bottom}) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (anchorOffset == null) anchorOffset = 0.0;
@@ -328,7 +332,6 @@ class Ads {
     bool testing,
     AdEventListener listener,
   }) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;
@@ -385,7 +388,6 @@ class Ads {
       bool testing,
       VideoEventListener listener,
       State state}) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_showVideo &&
@@ -424,7 +426,6 @@ class Ads {
     bool testing,
     VideoEventListener listener,
   }) {
-    assert(_firstObject, "An Ads class is already instantiated!");
     if (!_firstObject) return;
 
     String unitId;

@@ -1,3 +1,7 @@
+## 0.9.1
+  June 29, 2019
+- Remove assert statements, assert(_firstObject, "An Ads class is already instantiated!");
+
 ## 0.9.0
   June 25, 2019
 - Remove static properties and methods; Many set to library-private. 
