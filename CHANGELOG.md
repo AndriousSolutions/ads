@@ -1,3 +1,6 @@
+## 0.9.2
+- Updated the file, README.md, include adding a Firebase project to your app.
+
 ## 0.9.1
   June 29, 2019
 - Remove assert statements, assert(_firstObject, "An Ads class is already instantiated!");

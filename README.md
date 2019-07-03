@@ -15,6 +15,11 @@ A common error you may encounter when trying this package out is Google complain
 and add
 ![Info plist](https://user-images.githubusercontent.com/32497443/59237573-c406a280-8bc8-11e9-9600-cb051d068573.png)
 
+## Your App's Analytics in Ads 
+So, you created an AdMob account in order to monetize with ads in your production app. However, the kind of ads displayed will get a little help if you assign a Firebase project to your app as well. In fact, it's been suggested to be an esstential step, [Missing setup steps in readme](https://github.com/AndriousSolutions/ads/issues/9). This is yet to be confirmed however. Regardless, turn to the links below to add Firebase to your app: [Add Firebase to your iOS project](https://firebase.google.com/docs/ios/setup#create-firebase-project) and [Add Firebase to your Android project](https://firebase.google.com/docs/android/setup#create-firebase-project)
+[![FirebaseToiOS](https://user-images.githubusercontent.com/32497443/60599891-35c3ad80-9d7d-11e9-9c1d-e258fbb0add9.png)](https://firebase.google.com/docs/ios/setup#create-firebase-project)
+[![FirebaseToAndroid](https://user-images.githubusercontent.com/32497443/60599892-35c3ad80-9d7d-11e9-928f-cee55d4344ab.png)](https://firebase.google.com/docs/android/setup#create-firebase-project)
+
 ## failed to load ad : 3
 [![errorLoadAd03](https://user-images.githubusercontent.com/32497443/59965843-55d3b100-94e1-11e9-909a-d27de8ac8fa1.png "failed to load ad : 3")](https://stackoverflow.com/questions/33566485/failed-to-load-ad-3#answer-33712905)
 Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
@@ -47,7 +52,7 @@ Try instantiating more than one Ads object, and you'll be a little dissappointed
 The Google plugin is designed to work with one app and its set of ads. That's all. Creating another Ads object will serve no purpose for you because the Ads Dart package will be aware of the first one and work only with that one. Note, they'll be no 'error message' or notification there's more than one Ads object. The Dart package is designed not to be that disruptive in development or in production. The second object will just not do anything. It simply won't work, and will record the reason why in the log files. That's all.
 
 ## There's An Article On This
-Further documentation is available:
+There is an extensive article about this Dart package available on medium.com:
 [Add Ads To Your App in a Snap!](https://medium.com/@greg.perry/add-ads-in-your-app-in-a-snap-a980d2050ef9?postPublishedType=repub)
 
 [![admobFlutter03](https://user-images.githubusercontent.com/32497443/59965197-e4900000-94d8-11e9-9cc2-b1519d22201d.png "Add Ads to Your App in a Snap!")](https://medium.com/@greg.perry/add-ads-in-your-app-in-a-snap-a980d2050ef9?postPublishedType=repub)
