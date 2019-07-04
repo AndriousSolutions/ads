@@ -153,6 +153,10 @@ class Ads {
   /// Determine if testing or not
   bool get testing => _testing;
 
+  bool get inError => _inError;
+
+  List<EventError> get eventErrors => _eventErrors;
+
   BannerAd _bannerAd;
 
   InterstitialAd _fullScreenAd;
@@ -177,6 +181,8 @@ class Ads {
     screen._clearAll();
     video._clearAll();
     _videoAd = null;
+
+    _eventErrors.clear();
   }
 
   /// Show a Banner Ad.
@@ -604,53 +610,89 @@ class _AdListener {
   /// The Ad's Event Listener Function.
   void _eventListener(MobileAdEvent event) {
     for (var listener in _adEventListeners) {
-      listener(event);
+      try {
+        listener(event);
+      } catch (ex) {
+        _errorHandler(ex, event: event);
+      }
     }
 
     for (var listener in _eventListeners) {
-      listener(event);
+      try {
+        listener(event);
+      } catch (ex) {
+        _errorHandler(ex, event: event);
+      }
     }
 
     switch (event) {
       case MobileAdEvent.loaded:
         for (var listener in _loadedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.loaded);
+          }
         }
 
         break;
       case MobileAdEvent.failedToLoad:
         for (var listener in _failedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.failedToLoad);
+          }
         }
 
         break;
       case MobileAdEvent.clicked:
         for (var listener in _clickedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.clicked);
+          }
         }
 
         break;
       case MobileAdEvent.impression:
         for (var listener in _impressionListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.impression);
+          }
         }
 
         break;
       case MobileAdEvent.opened:
         for (var listener in _openedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.opened);
+          }
         }
 
         break;
       case MobileAdEvent.leftApplication:
         for (var listener in _leftListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.leftApplication);
+          }
         }
 
         break;
       case MobileAdEvent.closed:
         for (var listener in _closedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: MobileAdEvent.closed);
+          }
         }
 
         break;
@@ -735,65 +777,105 @@ class _VidListener {
   /// The Video Ad Event Listener Function.
   void _eventListener(RewardedVideoAdEvent event,
       {String rewardType, int rewardAmount}) {
-    var mobileEvent = _toMobileAdEvent(event);
+    MobileAdEvent mobileEvent = _toMobileAdEvent(event);
 
     /// Don't continue if there is no corresponding event type.
     if (mobileEvent != null) {
       for (var listener in _adEventListeners) {
-        listener(mobileEvent);
+        try {
+          listener(mobileEvent);
+        } catch (ex) {
+          _errorHandler(ex, event: mobileEvent);
+        }
       }
     }
 
     for (var listener in _eventListeners) {
-      listener(event, rewardType: rewardType, rewardAmount: rewardAmount);
+      try {
+        listener(event, rewardType: rewardType, rewardAmount: rewardAmount);
+      } catch (ex) {
+        _errorHandler(ex, event: mobileEvent);
+      }
     }
 
     switch (event) {
       case RewardedVideoAdEvent.loaded:
         for (var listener in _loadedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.failedToLoad:
         for (var listener in _failedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.opened:
         for (var listener in _openedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.leftApplication:
         for (var listener in _leftListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.closed:
         for (var listener in _closedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.rewarded:
         for (var listener in _rewardedListeners) {
-          listener(rewardType, rewardAmount);
+          try {
+            listener(rewardType, rewardAmount);
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.started:
         for (var listener in _startedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
       case RewardedVideoAdEvent.completed:
         for (var listener in _completedListeners) {
-          listener();
+          try {
+            listener();
+          } catch (ex) {
+            _errorHandler(ex, event: mobileEvent);
+          }
         }
 
         break;
@@ -873,4 +955,20 @@ class _VideoAd {
 
   /// An internal id that identifies this mobile ad to the native AdMob plugin.
   int get id => hashCode;
+}
+
+bool _inError = false;
+
+List<EventError> _eventErrors = List();
+
+/// Error Handler for the event listeners.
+void _errorHandler(Exception ex, {MobileAdEvent event}) {
+  _eventErrors.add(EventError(event, ex));
+  _inError = true;
+}
+
+class EventError {
+  EventError(this.event, this.ex);
+  MobileAdEvent event;
+  Exception ex;
 }

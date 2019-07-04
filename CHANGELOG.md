@@ -1,3 +1,6 @@
+## 0.10.0
+- try..catch statements in event handlers.
+
 ## 0.9.2
 - Updated the file, README.md, include adding a Firebase project to your app.
 
