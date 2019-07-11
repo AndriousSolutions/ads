@@ -51,6 +51,73 @@ Try instantiating more than one Ads object, and you'll be a little dissappointed
 ```
 The Google plugin is designed to work with one app and its set of ads. That's all. Creating another Ads object will serve no purpose for you because the Ads Dart package will be aware of the first one and work only with that one. Note, they'll be no 'error message' or notification there's more than one Ads object. The Dart package is designed not to be that disruptive in development or in production. The second object will just not do anything. It simply won't work, and will record the reason why in the log files. That's all.
 
+## Keep It Static
+A means to have access to the Ads instance from 'anywhere' in our app would be to have it all contained in a static ulitity class. Below only the showBannerAd() and dispose() functions are implemented, but you'll get the idea and should able to implement any and all the functions you require:
+#### AppAds.dart
+```Java
+class AppAds {
+  static Ads _ads;
+
+  static final String _appId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544~3347511713'
+      : 'ca-app-pub-3940256099942544~1458002511';
+
+  static final String _bannerUnitId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/6300978111'
+      : 'ca-app-pub-3940256099942544/2934735716';
+
+  /// Assign a listener.
+  static AdEventListener _eventListener = (MobileAdEvent event) {
+    if (event == MobileAdEvent.clicked) {
+      print("The opened ad is clicked on.");
+    }
+  };
+
+  static void showBanner(
+          {String adUnitId,
+          AdSize size,
+          List<String> keywords,
+          String contentUrl,
+          bool childDirected,
+          List<String> testDevices,
+          bool testing,
+          AdEventListener listener,
+          State state,
+          double anchorOffset,
+          AnchorType anchorType}) =>
+      _ads?.showBannerAd(
+          adUnitId: adUnitId,
+          size: size,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+          listener: listener,
+          state: state,
+          anchorOffset: anchorOffset,
+          anchorType: anchorType);
+
+  static void hideBanner() => _ads?.hideBannerAd();
+
+  /// Call this static function in your State object's initState() function.
+  static void init() => _ads ??= Ads(
+        _appId,
+        bannerUnitId: _bannerUnitId,
+        keywords: <String>['ibm', 'computers'],
+        contentUrl: 'http://www.ibm.com',
+        childDirected: false,
+        testDevices: ['Samsung_Galaxy_SII_API_26:5554'],
+        testing: false,
+        listener: _eventListener,
+      );
+
+  /// Remember to call this in the State object's dispose() function.
+  static void dispose() => _ads?.dispose();
+}
+```
+Simply import the Dart file, AppAds.dart, in this case to any library file you would need access to the Ads for one reason or another, and you're on your way.
+
 ## There's An Article On This
 There is an extensive article about this Dart package available on medium.com:
 [Add Ads To Your App in a Snap!](https://medium.com/@greg.perry/add-ads-in-your-app-in-a-snap-a980d2050ef9?postPublishedType=repub)
@@ -459,3 +526,7 @@ This last section provides yet another way to implement a specific event listene
     print("You've just finished playing the Video ad.");
   };
 ```
+
+## Add Up Ad Errors
+Below is a screenshot of some sample code implementing the error handling available to you when using the Dart package, Ads. By design, any exceptions that may occur in an event listeners' code is caught in a **try..catch** statement. The goal is to not crash the app for any reason involving AdMob ads. However, if and when an does error occurs, the developer has the means to determine the issue by collecting such errors in the List object, *eventErrors*.
+![eventError](https://user-images.githubusercontent.com/32497443/60682408-e652af80-9e58-11e9-9c7a-259b0b0c6577.jpg)

@@ -1,7 +1,13 @@
+## 0.10.1
+ July 11, 2019
+- updated README.md with static reference example.
+
 ## 0.10.0
+ July 04, 2019
 - try..catch statements in event handlers.
 
 ## 0.9.2
+ July 03, 2019
 - Updated the file, README.md, include adding a Firebase project to your app.
 
 ## 0.9.1
