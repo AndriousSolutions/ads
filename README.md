@@ -112,8 +112,43 @@ class AppAds {
         listener: _eventListener,
       );
 
-  /// Remember to call this in the State object's dispose() function.
+ /// Remember to call this in the State object's dispose() function.
   static void dispose() => _ads?.dispose();
+
+  /// Expose the 'event handling' capabilities to the World as well
+  /// Set a Banner Ad Event Listener.
+
+  /// Set an Ad Event Listener.
+  set eventListener(AdEventListener listener) =>
+      _ads?.eventListener = listener;
+
+  /// Remove a specific Add Event Listener.
+  bool removeEvent(AdEventListener listener) =>
+      _ads?.removeEvent(listener);
+
+  /// Set an Banner Event Listener.
+  set bannerListener(AdEventListener listener) =>
+      _ads?.bannerListener = listener;
+
+  /// Remove a specific Banner Ad Event Listener.
+  bool removeBanner(AdEventListener listener) =>
+      _ads?.removeBanner(listener);
+
+  /// Set a Full Screen Ad Event Listener.
+  set screenListener(AdEventListener listener) =>
+      _ads?.screenListener = listener;
+
+  /// Remove a Full Screen Ad Event Listener.
+  bool removeScreen(AdEventListener listener) =>
+      _ads?.removeScreen(listener);
+
+  /// Set a Video Ad Event Listener
+  set videoListener(VideoEventListener listener) =>
+      _ads?.videoListener = listener;
+
+  /// Remove a specific Video Ad Event Listener.
+  set removeVideo(VideoEventListener listener) =>
+      _ads?.removeVideo = listener;
 }
 ```
 Simply import the Dart file, AppAds.dart, in this case to any library file you would need access to the Ads for one reason or another, and you're on your way.

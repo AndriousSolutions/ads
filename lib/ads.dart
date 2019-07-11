@@ -552,7 +552,7 @@ class Ads {
       video._eventListeners.add(listener);
 
   /// Remove a specific Video Ad Event Listener.
-  set removeVideo(VideoEventListener listener) =>
+  bool removeVideo(VideoEventListener listener) =>
       video._eventListeners.remove(listener);
 
   /// Clear all Video Ad Event Listeners.
