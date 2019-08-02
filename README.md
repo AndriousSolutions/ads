@@ -24,6 +24,10 @@ So, you created an AdMob account in order to monetize with ads in your productio
 [![errorLoadAd03](https://user-images.githubusercontent.com/32497443/59965843-55d3b100-94e1-11e9-909a-d27de8ac8fa1.png "failed to load ad : 3")](https://stackoverflow.com/questions/33566485/failed-to-load-ad-3#answer-33712905)
 Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
 
+## Install Ads as a Package
+Dart uses packages to distribute libraries like this one.  You can find publicly available packages on the [Pub site](https://pub.dev). The [Ads](https://pub.dev/packages/ads) package in particular.
+[![ads](https://user-images.githubusercontent.com/32497443/61547093-4d06ca00-aa10-11e9-90d2-727dbfb35969.png "Ads Pub.dev")](https://pub.dev/packages/ads)
+
 ## There Must Only Be One!
 Try instantiating more than one Ads object, and you'll be a little dissappointed if not down right confused. It'll appear the second Ads object is not working, and you'd be right.
 ```Java
@@ -112,43 +116,8 @@ class AppAds {
         listener: _eventListener,
       );
 
- /// Remember to call this in the State object's dispose() function.
+  /// Remember to call this in the State object's dispose() function.
   static void dispose() => _ads?.dispose();
-
-  /// Expose the 'event handling' capabilities to the World as well
-  /// Set a Banner Ad Event Listener.
-
-  /// Set an Ad Event Listener.
-  set eventListener(AdEventListener listener) =>
-      _ads?.eventListener = listener;
-
-  /// Remove a specific Add Event Listener.
-  bool removeEvent(AdEventListener listener) =>
-      _ads?.removeEvent(listener);
-
-  /// Set an Banner Event Listener.
-  set bannerListener(AdEventListener listener) =>
-      _ads?.bannerListener = listener;
-
-  /// Remove a specific Banner Ad Event Listener.
-  bool removeBanner(AdEventListener listener) =>
-      _ads?.removeBanner(listener);
-
-  /// Set a Full Screen Ad Event Listener.
-  set screenListener(AdEventListener listener) =>
-      _ads?.screenListener = listener;
-
-  /// Remove a Full Screen Ad Event Listener.
-  bool removeScreen(AdEventListener listener) =>
-      _ads?.removeScreen(listener);
-
-  /// Set a Video Ad Event Listener
-  set videoListener(VideoEventListener listener) =>
-      _ads?.videoListener = listener;
-
-  /// Remove a specific Video Ad Event Listener.
-  set removeVideo(VideoEventListener listener) =>
-      _ads?.removeVideo = listener;
 }
 ```
 Simply import the Dart file, AppAds.dart, in this case to any library file you would need access to the Ads for one reason or another, and you're on your way.

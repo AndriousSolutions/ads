@@ -194,8 +194,8 @@ class Ads {
   ///
   /// anchorType place advert at top or bottom of screen (default bottom)
   void showBannerAd(
-      {String adUnitId = '',
-      AdSize size = AdSize.banner,
+      {String adUnitId,
+      AdSize size,
       List<String> keywords,
       String contentUrl,
       bool childDirected,
@@ -203,23 +203,23 @@ class Ads {
       bool testing,
       AdEventListener listener,
       State state,
-      double anchorOffset = 0.0,
-      AnchorType anchorType = AnchorType.bottom}) {
+      double anchorOffset,
+      AnchorType anchorType}) async {
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_bannerAd != null &&
-        (adUnitId != null ||
+        ((adUnitId != null && adUnitId.isNotEmpty) ||
             size != null ||
             keywords != null ||
-            contentUrl != null ||
+            (contentUrl != null && contentUrl.isNotEmpty) ||
             childDirected != null ||
             testDevices != null ||
             testing != null ||
-            listener != null)) hideBannerAd();
+            listener != null)) await hideBannerAd();
     if (_bannerAd == null)
       setBannerAd(
-        adUnitId: adUnitId,
-        size: size,
+        adUnitId: adUnitId ?? '',
+        size: size ?? AdSize.banner,
         keywords: keywords,
         contentUrl: contentUrl,
         childDirected: childDirected,
@@ -281,9 +281,13 @@ class Ads {
   }
 
   /// Hide a Banner Ad.
-  void hideBannerAd() {
-    _bannerAd?.dispose();
-    _bannerAd = null;
+  Future<void> hideBannerAd() async {
+    if (_bannerAd != null) {
+      try {
+        await _bannerAd?.dispose();
+      } catch (ex) {}
+      _bannerAd = null;
+    }
   }
 
   /// Show a Full Screen Ad.
@@ -293,7 +297,7 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
   void showFullScreenAd(
-      {String adUnitId = '',
+      {String adUnitId,
       List<String> keywords,
       String contentUrl,
       bool childDirected,
@@ -301,35 +305,36 @@ class Ads {
       bool testing,
       AdEventListener listener,
       State state,
-      double anchorOffset = 0.0,
-      AnchorType anchorType = AnchorType.bottom}) {
+      double anchorOffset,
+      AnchorType anchorType}) async {
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
-    if (anchorOffset == null) anchorOffset = 0.0;
-    if (anchorType == null) anchorType = AnchorType.bottom;
     if (_fullScreenAd != null &&
-        (adUnitId != null ||
+        ((adUnitId != null && adUnitId.isNotEmpty) ||
             keywords != null ||
-            contentUrl != null ||
+            (contentUrl != null && contentUrl.isNotEmpty) ||
             childDirected != null ||
             testDevices != null ||
             testing != null ||
-            listener != null)) hideFullScreenAd();
+            listener != null)) await hideFullScreenAd();
     if (_fullScreenAd == null || !_screenLoaded)
-      setFullScreenAd(
-          adUnitId: adUnitId,
+      await setFullScreenAd(
+          adUnitId: adUnitId ?? '',
           keywords: keywords,
           contentUrl: contentUrl,
           childDirected: childDirected,
           testDevices: testDevices,
           testing: testing,
           listener: listener);
-    _fullScreenAd.show(anchorOffset: anchorOffset, anchorType: anchorType);
+    if (_screenLoaded)
+      _fullScreenAd.show(
+          anchorOffset: anchorOffset ?? 0.0,
+          anchorType: anchorType ?? AnchorType.bottom);
     _screenLoaded = false;
   }
 
   /// Set the Full Screen Ad options.
-  void setFullScreenAd({
+  Future<void> setFullScreenAd({
     String adUnitId = '',
     List<String> keywords,
     String contentUrl,
@@ -337,7 +342,7 @@ class Ads {
     List<String> testDevices,
     bool testing,
     AdEventListener listener,
-  }) {
+  }) async {
     if (!_firstObject) return;
 
     String unitId;
@@ -370,15 +375,17 @@ class Ads {
       listener: screen._eventListener,
     );
 
-    _fullScreenAd.load();
-
-    _screenLoaded = true;
+    _screenLoaded = await _fullScreenAd.load();
   }
 
   /// Hide the Full Screen Ad.
-  void hideFullScreenAd() {
-    _fullScreenAd?.dispose();
-    _fullScreenAd = null;
+  Future<void> hideFullScreenAd() async {
+    if (_fullScreenAd != null) {
+      try {
+        await _fullScreenAd?.dispose();
+      } catch (ex) {}
+      _fullScreenAd = null;
+    }
   }
 
   /// Show a Video Ad.
@@ -397,9 +404,9 @@ class Ads {
     if (!_firstObject) return;
     if (state != null && !state.mounted) return;
     if (_showVideo &&
-        (adUnitId != null ||
+        ((adUnitId != null && adUnitId.isNotEmpty) ||
             keywords != null ||
-            contentUrl != null ||
+            (contentUrl != null && contentUrl.isNotEmpty) ||
             childDirected != null ||
             testDevices != null ||
             testing != null ||
@@ -453,12 +460,10 @@ class Ads {
 
     if (listener != null) video._eventListeners.add(listener);
 
-    _showVideo = show;
-
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (event == RewardedVideoAdEvent.loaded) {
-        if (_showVideo) {
+        if (show) {
           _videoAd.ad.show();
           _showVideo = false;
         } else {

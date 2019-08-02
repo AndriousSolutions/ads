@@ -1,3 +1,7 @@
+## 0.12.0
+ August 01, 2019
+- Async setFullScreenAd hideFullScreenAd showBannerAd showFullScreenAd
+
 ## 0.11.0
  July 11, 2019
 - bool removeVideo(VideoEventListener listener)
