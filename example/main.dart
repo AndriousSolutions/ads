@@ -9,7 +9,7 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:ads/ads.dart';
 
 void main() {
-  runApp(MyApp(initOption: 1));
+  runApp(MyApp(initOption: 2));
 }
 
 class MyApp extends StatefulWidget {
@@ -205,7 +205,7 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    AdEventListener eventHandler = (MobileAdEvent event) {
+    MobileAdListener eventHandler = (MobileAdEvent event) {
       print("This is an event handler.");
     };
 
@@ -452,21 +452,16 @@ class _MyAppState extends State<MyApp> {
 
     ads.video.removeCompleted(handlerFunc);
 
-    List<String> one = ads.keywords;
-
-    String two = ads.contentUrl;
-
-    bool three = ads.childDirected;
-
-    List<String> four = ads.testDevices;
-
-    bool five = ads.initialized;
-
-    ads.dispose();
-
-    ads.hideBannerAd();
-
-    ads.hideFullScreenAd();
+    // Uncomment and run this example
+//    List<String> one = ads.keywords;
+//
+//    String two = ads.contentUrl;
+//
+//    bool three = ads.childDirected;
+//
+//    List<String> four = ads.testDevices;
+//
+//    bool five = ads.initialized;
   }
 
   @override
@@ -498,7 +493,7 @@ class _MyAppState extends State<MyApp> {
                     key: ValueKey<String>('REMOVE BANNER'),
                     child: const Text('REMOVE BANNER'),
                     onPressed: () {
-                      ads.hideBannerAd();
+                      ads.closeBannerAd();
                     }),
                 RaisedButton(
                   key: ValueKey<String>('SHOW INTERSTITIAL'),

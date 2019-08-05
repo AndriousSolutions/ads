@@ -1,3 +1,12 @@
+## 1.0.0
+ August 05, 2019
+- Internal rewrite readying class for public use
+- Deprecated hideBannerAd() & hideFullScreenAd()
+- List listeners to Set if(listener != null)
+- Replaced AdEventListener with MobileAdListener
+- Replaced VideoEventListener with RewardedVideoAdListener
+- testDevices.every((String s) => s == null || s.isNotEmpty))
+
 ## 0.12.0
  August 01, 2019
 - Async setFullScreenAd hideFullScreenAd showBannerAd showFullScreenAd

@@ -26,20 +26,26 @@ library ads;
 
 import 'package:flutter/widgets.dart' show State;
 
-import 'package:firebase_admob/firebase_admob.dart';
+import 'package:firebase_admob/firebase_admob.dart'
+    show
+        AdSize,
+        AnchorType,
+        FirebaseAdMob,
+        MobileAdEvent,
+        MobileAdListener,
+        MobileAdTargetingInfo,
+        RewardedVideoAdEvent,
+        RewardedVideoAdListener;
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 
 import 'dart:developer';
 
-typedef void AdEventListener(MobileAdEvent event);
-
-typedef void VideoEventListener(RewardedVideoAdEvent event,
-    {String rewardType, int rewardAmount});
+import 'package:ads/AdMob.dart';
 
 typedef void RewardListener(String rewardType, int rewardAmount);
 
-List<AdEventListener> _adEventListeners = [];
+Set<MobileAdListener> _adEventListeners = Set();
 
 class Ads {
   /// Initialize the Firebase AdMob plugin with a number of options.
@@ -55,7 +61,7 @@ class Ads {
     bool childDirected = false,
     List<String> testDevices,
     bool testing = false,
-    AdEventListener listener,
+    MobileAdListener listener,
   }) {
     assert(appId != null && appId.isNotEmpty, 'class Ads: appId is required.');
 
@@ -79,7 +85,12 @@ class Ads {
 
     _childDirected = childDirected;
 
-    _testDevices = testDevices;
+    if (testDevices != null &&
+        testDevices.every((String s) => s == null || s.isNotEmpty)) {
+      testDevices = _testDevices;
+    } else {
+      _testDevices = testDevices;
+    }
 
     _testing = testing == null ? false : testing;
 
@@ -134,7 +145,7 @@ class Ads {
   /// Get ad keywords
   List<String> get keywords => _keywords;
 
-  String _contentUrl;
+  String _contentUrl = "";
 
   /// Get the url providing ad content
   String get contentUrl => _contentUrl;
@@ -143,7 +154,7 @@ class Ads {
 
   bool get childDirected => _childDirected;
 
-  List _testDevices = <String>[];
+  List<String> _testDevices;
 
   /// Get list of test devices.
   List<String> get testDevices => _testDevices;
@@ -159,30 +170,81 @@ class Ads {
 
   BannerAd _bannerAd;
 
-  InterstitialAd _fullScreenAd;
+  FullScreenAd _fullScreenAd;
 
-  RewardedVideoAd _rewardedVideoAd = RewardedVideoAd.instance;
-
-  _VideoAd _videoAd;
-
-  bool _screenLoaded = false;
-
-  bool _showVideo = false;
+  VideoAd _videoAd;
 
   /// Close any Ads, clean up memory and clear resources.
   void dispose() {
-    hideBannerAd();
-    hideFullScreenAd();
-    _clearEventListeners();
-    _clearBannerListeners();
-    _clearScreenListeners();
-    _clearVideoListeners();
-    banner._clearAll();
-    screen._clearAll();
-    video._clearAll();
+    closeBannerAd();
+    closeFullScreenAd();
+
+    /// Clear all Ad Event Listeners.
+    _adEventListeners.clear();
+
+    /// Clear all Banner Ad Event Listeners.
+    banner.eventListeners.clear();
+
+    /// Clear all Full Screen Ad Event Listeners.
+    screen.eventListeners.clear();
+
+    /// Clear all Video Ad Event Listeners.
+    video.eventListeners.clear();
+    banner.clearAll();
+    screen.clearAll();
+    video.clearAll();
     _videoAd = null;
 
     _eventErrors.clear();
+  }
+
+  /// Set the Banner Ad options.
+  void setBannerAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    MobileAdListener listener,
+    AdSize size,
+    double anchorOffset,
+    AnchorType anchorType,
+  }) {
+    if (!_firstObject) return;
+
+    testing = testing ?? _testing;
+
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
+    } else {
+      info = targetInfo;
+    }
+
+    if (listener != null) banner.eventListeners.add(listener);
+
+    _bannerAd ??= BannerAd(listener: banner.eventListener);
+
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _bannerUnitId;
+    }
+
+    _bannerAd.set(
+      adUnitId: adUnitId,
+      targetInfo: info,
+      testing: testing,
+      size: size,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
+    );
   }
 
   /// Show a Banner Ad.
@@ -193,101 +255,110 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   ///
   /// anchorType place advert at top or bottom of screen (default bottom)
-  void showBannerAd(
-      {String adUnitId,
-      AdSize size,
-      List<String> keywords,
-      String contentUrl,
-      bool childDirected,
-      List<String> testDevices,
-      bool testing,
-      AdEventListener listener,
-      State state,
-      double anchorOffset,
-      AnchorType anchorType}) async {
-    if (!_firstObject) return;
-    if (state != null && !state.mounted) return;
-    if (_bannerAd != null &&
-        ((adUnitId != null && adUnitId.isNotEmpty) ||
-            size != null ||
-            keywords != null ||
-            (contentUrl != null && contentUrl.isNotEmpty) ||
-            childDirected != null ||
-            testDevices != null ||
-            testing != null ||
-            listener != null)) await hideBannerAd();
-    if (_bannerAd == null)
-      setBannerAd(
-        adUnitId: adUnitId ?? '',
-        size: size ?? AdSize.banner,
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-        testing: testing,
-        listener: listener,
-      );
-    _bannerAd
-      ..load()
-      ..show(
-          anchorOffset: anchorOffset ?? 0.0,
-          anchorType: anchorType ?? AnchorType.bottom);
-  }
-
-  /// Set the Banner Ad options.
-  void setBannerAd({
-    String adUnitId = '',
-    AdSize size = AdSize.banner,
+  void showBannerAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     bool testing,
-    AdEventListener listener,
-  }) {
+    MobileAdListener listener,
+    AdSize size,
+    double anchorOffset,
+    AnchorType anchorType,
+    State state,
+  }) async {
     if (!_firstObject) return;
 
-    String unitId;
+    testing = testing ?? _testing;
 
-    if (adUnitId == null || adUnitId.isEmpty) {
-      // Use the id passed to the init() function if any.
-      unitId = _bannerUnitId;
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
     } else {
-      unitId = adUnitId.trim();
+      info = targetInfo;
     }
 
-    MobileAdTargetingInfo info = _targetInfo(
+    if (listener != null) banner.eventListeners.add(listener);
+
+    _bannerAd ??= BannerAd(listener: banner.eventListener);
+
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _bannerUnitId;
+    }
+    _bannerAd.show(
+      adUnitId: adUnitId,
+      targetInfo: info,
+      testing: testing,
+      size: size,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
+      state: state,
+    );
+  }
+
+  @deprecated
+  void hideBannerAd() => closeBannerAd();
+
+  /// Hide a Banner Ad.
+  void closeBannerAd() => _bannerAd?.dispose();
+
+  /// Set the Full Screen Ad options.
+  Future<void> setFullScreenAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    MobileAdListener listener,
+    double anchorOffset,
+    AnchorType anchorType,
+  }) async {
+    if (!_firstObject) return;
+
+    if (listener != null) screen.eventListeners.add(listener);
+
+    _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
+
+    testing = testing ?? _testing;
+
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
+    } else {
+      info = targetInfo;
+    }
+
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _screenUnitId;
+    }
+
+    _fullScreenAd.set(
+      adUnitId: adUnitId,
+      targetInfo: info,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
     );
-
-    if (testing == null) testing = _testing;
-
-    if (listener != null) banner._eventListeners.add(listener);
-
-    // Clear memory of any previously set banner ad.
-    hideBannerAd();
-
-    _bannerAd = BannerAd(
-      adUnitId: testing
-          ? BannerAd.testAdUnitId
-          : unitId.isEmpty ? BannerAd.testAdUnitId : unitId,
-      size: size ?? AdSize.banner,
-      targetingInfo: info,
-      listener: banner._eventListener,
-    );
-  }
-
-  /// Hide a Banner Ad.
-  Future<void> hideBannerAd() async {
-    if (_bannerAd != null) {
-      try {
-        await _bannerAd?.dispose();
-      } catch (ex) {}
-      _bannerAd = null;
-    }
   }
 
   /// Show a Full Screen Ad.
@@ -296,96 +367,107 @@ class Ads {
   /// state is passed to determine if the app is not terminating. No need to show ad.
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
-  void showFullScreenAd(
-      {String adUnitId,
-      List<String> keywords,
-      String contentUrl,
-      bool childDirected,
-      List<String> testDevices,
-      bool testing,
-      AdEventListener listener,
-      State state,
-      double anchorOffset,
-      AnchorType anchorType}) async {
-    if (!_firstObject) return;
-    if (state != null && !state.mounted) return;
-    if (_fullScreenAd != null &&
-        ((adUnitId != null && adUnitId.isNotEmpty) ||
-            keywords != null ||
-            (contentUrl != null && contentUrl.isNotEmpty) ||
-            childDirected != null ||
-            testDevices != null ||
-            testing != null ||
-            listener != null)) await hideFullScreenAd();
-    if (_fullScreenAd == null || !_screenLoaded)
-      await setFullScreenAd(
-          adUnitId: adUnitId ?? '',
-          keywords: keywords,
-          contentUrl: contentUrl,
-          childDirected: childDirected,
-          testDevices: testDevices,
-          testing: testing,
-          listener: listener);
-    if (_screenLoaded)
-      _fullScreenAd.show(
-          anchorOffset: anchorOffset ?? 0.0,
-          anchorType: anchorType ?? AnchorType.bottom);
-    _screenLoaded = false;
-  }
-
-  /// Set the Full Screen Ad options.
-  Future<void> setFullScreenAd({
-    String adUnitId = '',
+  void showFullScreenAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
     bool testing,
-    AdEventListener listener,
+    MobileAdListener listener,
+    double anchorOffset,
+    AnchorType anchorType,
+    State state,
   }) async {
     if (!_firstObject) return;
 
-    String unitId;
+    if (listener != null) screen.eventListeners.add(listener);
 
-    if (adUnitId == null || adUnitId.isEmpty) {
-      unitId = _screenUnitId;
+    _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
+
+    testing = testing ?? _testing;
+
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
     } else {
-      unitId = adUnitId.trim();
+      info = targetInfo;
     }
 
-    MobileAdTargetingInfo info = _targetInfo(
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _screenUnitId;
+    }
+
+    _fullScreenAd.show(
+      adUnitId: adUnitId,
+      targetInfo: info,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
+      state: state,
     );
-
-    if (testing == null) testing = _testing;
-
-    if (listener != null) screen._eventListeners.add(listener);
-
-    // Clear memory of any previously set interstitial ad.
-    hideFullScreenAd();
-
-    _fullScreenAd = InterstitialAd(
-      adUnitId: testing
-          ? InterstitialAd.testAdUnitId
-          : unitId.isEmpty ? InterstitialAd.testAdUnitId : unitId,
-      targetingInfo: info,
-      listener: screen._eventListener,
-    );
-
-    _screenLoaded = await _fullScreenAd.load();
   }
 
   /// Hide the Full Screen Ad.
-  Future<void> hideFullScreenAd() async {
-    if (_fullScreenAd != null) {
-      try {
-        await _fullScreenAd?.dispose();
-      } catch (ex) {}
-      _fullScreenAd = null;
+  void closeFullScreenAd() => _fullScreenAd?.dispose();
+
+  /// Set the Video Ad options.
+  void setVideoAd({
+    bool show = false,
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    RewardedVideoAdListener listener,
+  }) {
+    if (!_firstObject) return;
+
+    if (listener != null) video.eventListeners.add(listener);
+
+    _videoAd ??= VideoAd(listener: video.eventListener);
+
+    testing = testing ?? _testing;
+
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
+    } else {
+      info = targetInfo;
     }
+
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _videoUnitId;
+    }
+
+    _videoAd.set(
+      adUnitId: adUnitId,
+      targetInfo: info,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      testing: testing,
+    );
   }
 
   /// Show a Video Ad.
@@ -394,96 +476,93 @@ class Ads {
   /// state is passed to determine if the app is not terminating. No need to show ad.
   void showVideoAd(
       {String adUnitId,
+      MobileAdTargetingInfo targetInfo,
       List<String> keywords,
       String contentUrl,
       bool childDirected,
       List<String> testDevices,
       bool testing,
-      VideoEventListener listener,
+      RewardedVideoAdListener listener,
       State state}) {
     if (!_firstObject) return;
-    if (state != null && !state.mounted) return;
-    if (_showVideo &&
-        ((adUnitId != null && adUnitId.isNotEmpty) ||
-            keywords != null ||
-            (contentUrl != null && contentUrl.isNotEmpty) ||
-            childDirected != null ||
-            testDevices != null ||
-            testing != null ||
-            listener != null)) _showVideo = false;
-    if (_showVideo) {
-      _videoAd.ad.show();
-      _showVideo = false;
+
+    if (listener != null) video.eventListeners.add(listener);
+
+    _videoAd ??= VideoAd(listener: video.eventListener);
+
+    MobileAdTargetingInfo info;
+
+    if (targetInfo == null) {
+      info = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+      );
     } else {
-      /// calling with parameters will NOT show the video ad.
-      setVideoAd(
-          show: true,
-          adUnitId: adUnitId,
-          keywords: keywords,
-          contentUrl: contentUrl,
-          childDirected: childDirected,
-          testDevices: testDevices,
-          testing: testing,
-          listener: listener);
-    }
-  }
-
-  /// Set the Video Ad options.
-  void setVideoAd({
-    bool show = false,
-    String adUnitId,
-    List<String> keywords,
-    String contentUrl,
-    bool childDirected,
-    List<String> testDevices,
-    bool testing,
-    VideoEventListener listener,
-  }) {
-    if (!_firstObject) return;
-
-    String unitId;
-
-    if (adUnitId == null || adUnitId.isEmpty) {
-      unitId = _videoUnitId;
-    } else {
-      unitId = adUnitId.trim();
+      info = targetInfo;
     }
 
-    MobileAdTargetingInfo info = _targetInfo(
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _videoUnitId;
+    }
+
+    _videoAd.show(
+      adUnitId: adUnitId,
+      targetInfo: info,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      testing: testing,
+      state: state,
     );
-
-    if (testing == null) testing = _testing;
-
-    if (listener != null) video._eventListeners.add(listener);
-
-    _rewardedVideoAd.listener =
-        (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
-      if (event == RewardedVideoAdEvent.loaded) {
-        if (show) {
-          _videoAd.ad.show();
-          _showVideo = false;
-        } else {
-          _showVideo = true;
-        }
-      }
-
-      video._eventListener(event,
-          rewardType: rewardType, rewardAmount: rewardAmount);
-    };
-
-    String adModId = testing
-        ? RewardedVideoAd.testAdUnitId
-        : unitId.isEmpty ? RewardedVideoAd.testAdUnitId : unitId;
-
-    _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);
-
-    _videoAd =
-        _VideoAd(adUnitId: adModId, targetingInfo: info, ad: _rewardedVideoAd);
   }
+
+  /// Set an Ad Event Listener.
+  set eventListener(MobileAdListener listener) =>
+      _adEventListeners.add(listener);
+
+  /// Remove a specific Add Event Listener.
+  bool removeEvent(MobileAdListener listener) =>
+      _adEventListeners.remove(listener);
+
+  final banner = _AdListener(_adEventListeners);
+
+  /// Set a Banner Ad Event Listener.
+  set bannerListener(MobileAdListener listener) {
+    if (listener == null) return;
+    banner.eventListeners.add(listener);
+  }
+
+  /// Remove a specific Banner Ad Event Listener.
+  bool removeBanner(MobileAdListener listener) =>
+      banner.eventListeners.remove(listener);
+
+  final screen = _AdListener(_adEventListeners);
+
+  /// Set a Full Screen Ad Event Listener.
+  set screenListener(MobileAdListener listener) {
+    if (listener == null) return;
+
+    screen.eventListeners.add(listener);
+  }
+
+  /// Remove a Full Screen Ad Event Listener.
+  bool removeScreen(MobileAdListener listener) =>
+      screen.eventListeners.remove(listener);
+
+  final video = _VidListener(_adEventListeners);
+
+  /// Set a Video Ad Event Listener
+  set videoListener(RewardedVideoAdListener listener) {
+    if (listener == null) return;
+    video.eventListeners.add(listener);
+  }
+
+  /// Remove a specific Video Ad Event Listener.
+  bool removeVideo(RewardedVideoAdListener listener) =>
+      video.eventListeners.remove(listener);
 
   /// Return the target audience information
   MobileAdTargetingInfo _targetInfo({
@@ -492,18 +571,14 @@ class Ads {
     bool childDirected,
     List<String> testDevices,
   }) {
-    // No parameters seek values from init()
-    bool init = keywords == null &&
-        contentUrl == null &&
-        childDirected == null &&
-        testDevices == null;
+    keywords ??= _keywords;
 
-    if (init) {
-      keywords ??= _keywords;
-      contentUrl ??= _contentUrl;
-      childDirected ??= _childDirected;
-      testDevices ??= _testDevices;
-    }
+    contentUrl ??= _contentUrl;
+
+    testDevices ??= _testDevices;
+
+    // If true it has to be passed
+    if (_childDirected) childDirected = _childDirected;
 
     return MobileAdTargetingInfo(
       keywords: keywords,
@@ -512,82 +587,111 @@ class Ads {
       testDevices: testDevices,
     );
   }
+}
 
-  /// Set an Ad Event Listener.
-  set eventListener(AdEventListener listener) =>
-      _adEventListeners.add(listener);
+bool _inError = false;
 
-  /// Remove a specific Add Event Listener.
-  bool removeEvent(AdEventListener listener) =>
-      _adEventListeners.remove(listener);
+List<EventError> _eventErrors = List();
 
-  /// Clear all Ad Event Listeners.
-  _clearEventListeners() => _adEventListeners.clear();
+class BannerAd {
+  factory BannerAd({MobileAdListener listener}) {
+    _this ??= BannerAd._(listener);
+    return _this;
+  }
+  static BannerAd _this;
+  BannerAd._(MobileAdListener listener) {
+    _banner = Banner(listener: listener);
+  }
+  Banner _banner;
 
-  final banner = _AdListener();
+  /// Set options to the Banner Ad.
+  void set({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    AdSize size,
+    double anchorOffset,
+    AnchorType anchorType,
+  }) {
+    _banner.set(
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      testing: testing,
+      size: size,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
+    );
+  }
 
-  /// Set a Banner Ad Event Listener.
-  set bannerListener(AdEventListener listener) =>
-      banner._eventListeners.add(listener);
+  /// Show the Banner Ad.
+  void show({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    AdSize size,
+    double anchorOffset,
+    AnchorType anchorType,
+    State state,
+  }) {
+    _banner.show(
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      testing: testing,
+      size: size,
+      anchorOffset: anchorOffset,
+      anchorType: anchorType,
+      state: state,
+    );
+  }
 
-  /// Remove a specific Banner Ad Event Listener.
-  bool removeBanner(AdEventListener listener) =>
-      banner._eventListeners.remove(listener);
-
-  /// Clear all Banner Ad Event Listeners.
-  _clearBannerListeners() => banner._eventListeners.clear();
-
-  final screen = _AdListener();
-
-  /// Set a Full Screen Ad Event Listener.
-  set screenListener(AdEventListener listener) =>
-      screen._eventListeners.add(listener);
-
-  /// Remove a Full Screen Ad Event Listener.
-  bool removeScreen(AdEventListener listener) =>
-      screen._eventListeners.remove(listener);
-
-  /// Clear all Full Screen Ad Event Listeners.
-  _clearScreenListeners() => screen._eventListeners.clear();
-
-  final video = _VidListener();
-
-  /// Set a Video Ad Event Listener
-  set videoListener(VideoEventListener listener) =>
-      video._eventListeners.add(listener);
-
-  /// Remove a specific Video Ad Event Listener.
-  bool removeVideo(VideoEventListener listener) =>
-      video._eventListeners.remove(listener);
-
-  /// Clear all Video Ad Event Listeners.
-  _clearVideoListeners() => video._eventListeners.clear();
+  void dispose() => _banner?.dispose();
 }
 
 class _AdListener {
-  List<AdEventListener> _eventListeners = [];
+  _AdListener([this._adEventListeners]) {
+    _adEventListeners ??= Set();
+  }
+  Set<MobileAdListener> _adEventListeners;
+
+  Set<MobileAdListener> eventListeners = Set();
 
   /// Listens for when the Ad is loaded in memory.
-  List<VoidCallback> _loadedListeners = [];
+  Set<VoidCallback> _loadedListeners = Set();
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
   bool removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
   _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when the Ad fails to display.
-  List<VoidCallback> _failedListeners = [];
+  Set<VoidCallback> _failedListeners = Set();
   set failedListener(VoidCallback listener) => _failedListeners.add(listener);
   bool removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
   _clearFailed() => _failedListeners.clear();
 
   /// Listens for when the Ad is clicked on.
-  List<VoidCallback> _clickedListeners = [];
+  Set<VoidCallback> _clickedListeners = Set();
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
   bool removeClicked(VoidCallback listener) =>
       _clickedListeners.remove(listener);
   _clearClicked() => _clickedListeners.clear();
 
   /// Listens for when the user clicks further on the Ad.
-  List<VoidCallback> _impressionListeners = [];
+  Set<VoidCallback> _impressionListeners = Set();
   set impressionListener(VoidCallback listener) =>
       _impressionListeners.add(listener);
   bool removeImpression(VoidCallback listener) =>
@@ -595,25 +699,25 @@ class _AdListener {
   _clearImpression() => _impressionListeners.clear();
 
   /// Listens for when the Ad is opened.
-  List<VoidCallback> _openedListeners = [];
+  Set<VoidCallback> _openedListeners = Set();
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
   bool removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
   _clearOpened() => _openedListeners.clear();
 
   /// Listens for when the user has left the Ad.
-  List<VoidCallback> _leftListeners = [];
+  Set<VoidCallback> _leftListeners = Set();
   set leftAppListener(VoidCallback listener) => _leftListeners.add(listener);
   bool removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
   _clearLeftApp() => _leftListeners.clear();
 
   /// Listens for when the Ad is closed.
-  List<VoidCallback> _closedListeners = [];
+  Set<VoidCallback> _closedListeners = Set();
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
   bool removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
   _clearClosed() => _closedListeners.clear();
 
   /// The Ad's Event Listener Function.
-  void _eventListener(MobileAdEvent event) {
+  void eventListener(MobileAdEvent event) {
     for (var listener in _adEventListeners) {
       try {
         listener(event);
@@ -622,7 +726,7 @@ class _AdListener {
       }
     }
 
-    for (var listener in _eventListeners) {
+    for (var listener in eventListeners) {
       try {
         listener(event);
       } catch (ex) {
@@ -705,7 +809,7 @@ class _AdListener {
     }
   }
 
-  _clearAll() {
+  clearAll() {
     _clearLoaded();
     _clearFailed();
     _clearClicked();
@@ -717,62 +821,70 @@ class _AdListener {
 }
 
 class _VidListener {
-  List<VideoEventListener> _eventListeners = [];
+  _VidListener([this._adEventListeners]) {
+    _adEventListeners ??= Set();
+  }
+  Set<MobileAdListener> _adEventListeners;
+
+  Set<RewardedVideoAdListener> eventListeners = Set();
 
   /// Listens for when video ad is loaded.
-  List<VoidCallback> _loadedListeners = [];
+  Set<VoidCallback> _loadedListeners = Set();
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
   bool removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
   _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when video ad fails.
-  List<VoidCallback> _failedListeners = [];
+  Set<VoidCallback> _failedListeners = Set();
   set failedListener(VoidCallback listener) => _failedListeners.add(listener);
   bool removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
   _clearFailed() => _failedListeners.clear();
 
   /// Listens for when video ad is clicked on.
-  List<VoidCallback> _clickedListeners = [];
+  Set<VoidCallback> _clickedListeners = Set();
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
   bool removeClicked(VoidCallback listener) =>
       _clickedListeners.remove(listener);
   _clearClicked() => _clickedListeners.clear();
 
   /// Listens for when video ad opens up.
-  List<VoidCallback> _openedListeners = [];
+  Set<VoidCallback> _openedListeners = Set();
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
   bool removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
   _clearOpened() => _openedListeners.clear();
 
   /// Listens for when user leaves the video ad.
-  List<VoidCallback> _leftListeners = [];
+  Set<VoidCallback> _leftListeners = Set();
   set leftAppListener(VoidCallback listener) => _leftListeners.add(listener);
   bool removeLeftApp(VoidCallback listener) => _leftListeners.remove(listener);
   _clearLeftApp() => _leftListeners.clear();
 
   /// Listens for when video ad is closed.
-  List<VoidCallback> _closedListeners = [];
+  Set<VoidCallback> _closedListeners = Set();
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
   bool removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
   _clearClosed() => _closedListeners.clear();
 
   /// Listens for when video ad sends a reward.
-  List<RewardListener> _rewardedListeners = [];
-  set rewardedListener(RewardListener listener) =>
-      _rewardedListeners.add(listener);
+  Set<RewardListener> _rewardedListeners = Set();
+  set rewardedListener(RewardListener listener) {
+    if (listener == null) return;
+    _rewardedListeners.add(listener);
+  }
+
   bool removeRewarded(RewardListener listener) =>
       _rewardedListeners.remove(listener);
   _clearRewarded() => _rewardedListeners.clear();
 
   /// Listens for when video ad starts playing.
-  List<VoidCallback> _startedListeners = [];
+  Set<VoidCallback> _startedListeners = Set();
   set startedListener(VoidCallback listener) => _startedListeners.add(listener);
   bool removeStarted(VoidCallback listener) =>
       _startedListeners.remove(listener);
   _clearStarted() => _startedListeners.clear();
 
   /// Listens for when video ad has finished playing.
-  List<VoidCallback> _completedListeners = [];
+  Set<VoidCallback> _completedListeners = Set();
   set completedListener(VoidCallback listener) =>
       _completedListeners.add(listener);
   bool removeCompleted(VoidCallback listener) =>
@@ -780,7 +892,7 @@ class _VidListener {
   _clearCompleted() => _completedListeners.clear();
 
   /// The Video Ad Event Listener Function.
-  void _eventListener(RewardedVideoAdEvent event,
+  void eventListener(RewardedVideoAdEvent event,
       {String rewardType, int rewardAmount}) {
     MobileAdEvent mobileEvent = _toMobileAdEvent(event);
 
@@ -795,7 +907,7 @@ class _VidListener {
       }
     }
 
-    for (var listener in _eventListeners) {
+    for (var listener in eventListeners) {
       try {
         listener(event, rewardType: rewardType, rewardAmount: rewardAmount);
       } catch (ex) {
@@ -885,11 +997,12 @@ class _VidListener {
 
         break;
       default:
+        print(event);
     }
   }
 
   /// Clear all possible types of Ad listeners on one call.
-  _clearAll() {
+  clearAll() {
     _clearLoaded();
     _clearFailed();
     _clearClicked();
@@ -945,29 +1058,9 @@ class _VidListener {
   }
 }
 
-class _VideoAd {
-  _VideoAd({this.adUnitId, this.targetingInfo, this.ad});
-
-  /// Identifies the source of ads for your application.
-  final String adUnitId;
-
-  /// Optional targeting info per the native AdMob API.
-  final MobileAdTargetingInfo targetingInfo;
-
-  RewardedVideoAd ad;
-
-  RewardedVideoAdListener get listener => ad.listener;
-
-  /// An internal id that identifies this mobile ad to the native AdMob plugin.
-  int get id => hashCode;
-}
-
-bool _inError = false;
-
-List<EventError> _eventErrors = List();
-
 /// Error Handler for the event listeners.
-void _errorHandler(Exception ex, {MobileAdEvent event}) {
+void _errorHandler(Object ex, {MobileAdEvent event}) {
+  if (ex is! Exception) ex = Exception(ex.toString());
   _eventErrors.add(EventError(event, ex));
   _inError = true;
 }
