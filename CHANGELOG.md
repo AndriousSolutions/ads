@@ -1,3 +1,7 @@
+## 1.0.1
+ August 05, 2019
+- Renamed admob.dart
+
 ## 1.0.0
  August 05, 2019
 - Internal rewrite readying class for public use

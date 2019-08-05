@@ -41,7 +41,7 @@ import 'package:flutter/foundation.dart' show VoidCallback;
 
 import 'dart:developer';
 
-import 'package:ads/AdMob.dart';
+import 'package:ads/admob.dart';
 
 typedef void RewardListener(String rewardType, int rewardAmount);
 
