@@ -1,5 +1,6 @@
 # Add Ads to your App in a Snap! 
 This Dart package will utilize the plugin, **firebase_admob**, so to quickly and easily implement ads into a Flutter app.
+
 ## Sign Up and Get Your ID’s
 First and foremost, you have to [sign up for AdMob](https://support.google.com/admob/answer/7356219?hl=en). Please, turn to [AdMob Help](https://support.google.com/admob) for further guidance on this. You’re going to have to go to your [Google AdMob Dashboard](https://apps.admob.com/v2/apps/list?pli=1) and get your id’s as well. There’s the ‘app ID’ used to identify your individual app, and there’s individual unit ID’s unique to each ‘type’ of ad you decide to use. Currently, there are three types: a Banner ad, an Interstitial ad, and a Video ad. Might as well do all that now, and then come back here to learn how to display such ads in your Flutter app. 
 [![GoogleAdMob](https://user-images.githubusercontent.com/32497443/59965408-8add0500-94db-11e9-9c28-2f161ccfb62e.png "Google Admob Dashboard")](https://apps.admob.com/v2/home?pli=1)
@@ -10,6 +11,7 @@ Note, test id’s are supplied by the plugin to be used during development. Usin
 ## For Android, Modify AndroidManifest.xml
 A common error you may encounter when trying this package out is Google complaining that the AdMob was not properly initialized. Merely follow the directions below to resolve this:
 [![androidManifest](https://user-images.githubusercontent.com/32497443/54394329-ef89f780-4682-11e9-9539-3edeab1c7351.png)](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml)
+
 ## For iOS, Update your Info.plist
 [![Info.plist](https://user-images.githubusercontent.com/32497443/59237381-14c9cb80-8bc8-11e9-9bd7-c104fdde2f5e.png)](https://developers.google.com/admob/ios/quick-start#update_your_infoplist)
 and add
@@ -22,7 +24,10 @@ So, you created an AdMob account in order to monetize with ads in your productio
 
 ## failed to load ad : 3
 [![errorLoadAd03](https://user-images.githubusercontent.com/32497443/59965843-55d3b100-94e1-11e9-909a-d27de8ac8fa1.png "failed to load ad : 3")](https://stackoverflow.com/questions/33566485/failed-to-load-ad-3#answer-33712905)
-Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
+Google simply isn't ready for you. It doesn't have any ads to give you yet. Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
+
+## Mitigate Error 3 with Mediation
+And so the error is expected if there is little or no ads available to you. It's a [No Fill Error](https://developers.google.com/android/reference/com/google/android/gms/ads/AdRequest#ERROR_CODE_NO_FILL). I'm told, however, to help mitigate such an error you can try setting up [Mediation](https://developers.google.com/admob/android/mediate) in your Admob account--to get ads to your apps from multiple sources.
 
 ## Install Ads as a Package
 Dart uses packages to distribute libraries like this one.  You can find publicly available packages on the [Pub site](https://pub.dev). The [Ads](https://pub.dev/packages/ads) package in particular.
@@ -57,6 +62,7 @@ The Google plugin is designed to work with one app and its set of ads. That's al
 
 ## Keep It Static
 A means to have access to the Ads instance from 'anywhere' in our app would be to have it all contained in a static ulitity class. Below only the showBannerAd() and dispose() functions are implemented, but you'll get the idea and should able to implement any and all the functions you require:
+
 #### AppAds.dart
 ```Java
 class AppAds {
