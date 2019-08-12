@@ -1,6 +1,6 @@
 # Add Ads to your App in a Snap! 
 This Dart package will utilize the plugin, **firebase_admob**, so to quickly and easily implement ads into a Flutter app.
-
+[![ads](https://user-images.githubusercontent.com/32497443/62845170-9eab1900-bc8b-11e9-96f6-53789df8b051.png)](https://pub.dev/packages/ads)
 ## Sign Up and Get Your ID’s
 First and foremost, you have to [sign up for AdMob](https://support.google.com/admob/answer/7356219?hl=en). Please, turn to [AdMob Help](https://support.google.com/admob) for further guidance on this. You’re going to have to go to your [Google AdMob Dashboard](https://apps.admob.com/v2/apps/list?pli=1) and get your id’s as well. There’s the ‘app ID’ used to identify your individual app, and there’s individual unit ID’s unique to each ‘type’ of ad you decide to use. Currently, there are three types: a Banner ad, an Interstitial ad, and a Video ad. Might as well do all that now, and then come back here to learn how to display such ads in your Flutter app. 
 [![GoogleAdMob](https://user-images.githubusercontent.com/32497443/59965408-8add0500-94db-11e9-9c28-2f161ccfb62e.png "Google Admob Dashboard")](https://apps.admob.com/v2/home?pli=1)
