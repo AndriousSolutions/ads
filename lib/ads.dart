@@ -279,7 +279,7 @@ class Ads {
   void hideBannerAd() => closeBannerAd();
 
   /// Hide a Banner Ad.
-  void closeBannerAd() => _bannerAd?.dispose();
+  void closeBannerAd({bool load = false}) => _bannerAd?.dispose(load: load);
 
   /// Set the Full Screen Ad options.
   Future<void> setFullScreenAd({
@@ -543,7 +543,12 @@ class BannerAd {
     );
   }
 
-  void dispose() => _banner?.dispose();
+  void dispose({bool load = false}) {
+    _banner?.dispose()?.then((_) {
+      // Load the Ad into memory again
+      if (load) _banner.load(show: false);
+    });
+  }
 }
 
 class _AdListener {

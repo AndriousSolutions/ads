@@ -1,3 +1,8 @@
+## 1.2.0
+September 19, 2019
+- closeBannerAd({bool load = false}) Reload Banner Ad into memory when closed.
+- updated README.md
+
 ## 1.1.0
  September 18, 2019
 - Reload the ad into memory with every close
