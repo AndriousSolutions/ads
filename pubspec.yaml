@@ -1,19 +1,19 @@
 name: ads
 description: Easily add Ads to your App with one static function call with an array of options.
-version: 1.0.1
+version: 1.1.0
 author: Greg Perry <support@andrioussolutions.com>
 homepage: https://medium.com/@greg.perry/ads-in-a-snap-flutter-example-4362a2c88c0b
 repository: https://github.com/AndriousSolutions/ads
 # SDK version
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   # https://pub.dartlang.org/packages/firebase_admob#-changelog-tab-
-  firebase_admob: ^0.9.0
+  firebase_admob: any #^0.9.0
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,11 @@
+## 1.1.0
+ September 18, 2019
+- Reload the ad into memory with every close
+- MobileAds.load() and MobileAds._createAd()
+- Include parameters for setBannerAd()
+- Removed _targetInfo() from Ads class
+- firebase_admob: any
+
 ## 1.0.1
  August 05, 2019
 - Renamed admob.dart

@@ -214,21 +214,6 @@ class Ads {
   }) {
     if (!_firstObject) return;
 
-    testing = testing ?? _testing;
-
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
     if (listener != null) banner.eventListeners.add(listener);
 
     _bannerAd ??= BannerAd(listener: banner.eventListener);
@@ -239,7 +224,11 @@ class Ads {
 
     _bannerAd.set(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
       testing: testing,
       size: size,
       anchorOffset: anchorOffset,
@@ -271,31 +260,13 @@ class Ads {
   }) async {
     if (!_firstObject) return;
 
-    testing = testing ?? _testing;
-
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
     if (listener != null) banner.eventListeners.add(listener);
 
     _bannerAd ??= BannerAd(listener: banner.eventListener);
 
-    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
-      adUnitId = _bannerUnitId;
-    }
     _bannerAd.show(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
       testing: testing,
       size: size,
       anchorOffset: anchorOffset,
@@ -329,28 +300,14 @@ class Ads {
 
     _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
 
-    testing = testing ?? _testing;
-
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
+    // If an unit id is not provided, it may be available from the constructor.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
       adUnitId = _screenUnitId;
     }
 
     _fullScreenAd.set(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -386,28 +343,9 @@ class Ads {
 
     _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
 
-    testing = testing ?? _testing;
-
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
-    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
-      adUnitId = _screenUnitId;
-    }
-
     _fullScreenAd.show(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -440,28 +378,14 @@ class Ads {
 
     _videoAd ??= VideoAd(listener: video.eventListener);
 
-    testing = testing ?? _testing;
-
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
+    // If an unit id is not provided, it may be available from the constructor.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
       adUnitId = _videoUnitId;
     }
 
     _videoAd.set(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -490,26 +414,9 @@ class Ads {
 
     _videoAd ??= VideoAd(listener: video.eventListener);
 
-    MobileAdTargetingInfo info;
-
-    if (targetInfo == null) {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    } else {
-      info = targetInfo;
-    }
-
-    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
-      adUnitId = _videoUnitId;
-    }
-
     _videoAd.show(
       adUnitId: adUnitId,
-      targetInfo: info,
+      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -563,30 +470,6 @@ class Ads {
   /// Remove a specific Video Ad Event Listener.
   bool removeVideo(RewardedVideoAdListener listener) =>
       video.eventListeners.remove(listener);
-
-  /// Return the target audience information
-  MobileAdTargetingInfo _targetInfo({
-    List<String> keywords,
-    String contentUrl,
-    bool childDirected,
-    List<String> testDevices,
-  }) {
-    keywords ??= _keywords;
-
-    contentUrl ??= _contentUrl;
-
-    testDevices ??= _testDevices;
-
-    // If true it has to be passed
-    if (_childDirected) childDirected = _childDirected;
-
-    return MobileAdTargetingInfo(
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-    );
-  }
 }
 
 bool _inError = false;

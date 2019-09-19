@@ -22,7 +22,11 @@ So, you created an AdMob account in order to monetize with ads in your productio
 
 ## failed to load ad : 3
 [![errorLoadAd03](https://user-images.githubusercontent.com/32497443/59965843-55d3b100-94e1-11e9-909a-d27de8ac8fa1.png "failed to load ad : 3")](https://stackoverflow.com/questions/33566485/failed-to-load-ad-3#answer-33712905)
-Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
+Google simply isn't ready for you. It doesn't have any ads to give you yet. Patience is a virtue. The only errors I consistently receive from users are not of the Dart package itself, but are due to Google. Once the user has registered with Google, a common complaint is there’s still only ‘test’ ads being displayed, but that’s because it’ll take some hours if not a day to receive production ads. Wait a day, and see for yourself.
+
+## Mitigate Error 3 with Mediation
+And so the error is expected if there is little or no ad available to you. It's a [No Fill Error](https://developers.google.com/android/reference/com/google/android/gms/ads/AdRequest#ERROR_CODE_NO_FILL). I'm told, to help mitigate such an error, however, you can try setting up [Mediation](https://developers.google.com/admob/android/mediate) in your Admob account--to get ads to your apps from multiple sources.
+
 
 ## Install Ads as a Package
 Dart uses packages to distribute libraries like this one.  You can find publicly available packages on the [Pub site](https://pub.dev). The [Ads](https://pub.dev/packages/ads) package in particular.
@@ -534,3 +538,7 @@ This last section provides yet another way to implement a specific event listene
 ## Add Up Ad Errors
 Below is a screenshot of some sample code implementing the error handling available to you when using the Dart package, Ads. By design, any exceptions that may occur in an event listeners' code is caught in a **try..catch** statement. The goal is to not crash the app for any reason involving AdMob ads. However, if and when an does error occurs, the developer has the means to determine the issue by collecting such errors in the List object, *eventErrors*.
 ![eventError](https://user-images.githubusercontent.com/32497443/60682408-e652af80-9e58-11e9-9c7a-259b0b0c6577.jpg)
+
+##### Other Dart Packages
+[![packages](https://user-images.githubusercontent.com/32497443/64993716-5c818280-d89c-11e9-87b5-f35aee3e22f4.jpg)](https://pub.dev/packages?q=email%3Asupport%40andrioussolutions.com)
+Other Dart packages from the author can also be found at [Pub.dev](https://pub.dev/packages?q=email%3Asupport%40andrioussolutions.com)
