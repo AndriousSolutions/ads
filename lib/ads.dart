@@ -264,6 +264,10 @@ class Ads {
 
     _bannerAd ??= BannerAd(listener: banner.eventListener);
 
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _bannerUnitId;
+    }
+    
     _bannerAd.show(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
