@@ -1,5 +1,9 @@
+## 1.2.1
+ October 30, 2019
+- set_Ad() in show_Ad() if _Ad == null
+
 ## 1.2.0
-September 19, 2019
+ September 19, 2019
 - closeBannerAd({bool load = false}) Reload Banner Ad into memory when closed.
 - updated README.md
 

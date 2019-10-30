@@ -222,14 +222,18 @@ class Ads {
       adUnitId = _bannerUnitId;
     }
 
+    if (keywords == null || keywords.isEmpty) keywords = _keywords;
+
+    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
+
     _bannerAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
+      contentUrl: contentUrl ?? _contentUrl,
+      childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
-      testing: testing,
+      testing: testing ?? _testing,
       size: size,
       anchorOffset: anchorOffset,
       anchorType: anchorType,
@@ -260,19 +264,33 @@ class Ads {
   }) async {
     if (!_firstObject) return;
 
-    if (listener != null) banner.eventListeners.add(listener);
+    if (_bannerAd == null) {
+      setBannerAd(
+        adUnitId: adUnitId,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        listener: listener,
+        size: size,
+        anchorOffset: anchorOffset,
+        anchorType: anchorType,
+      );
+      _bannerAd.show();
+    }else {
+      if (listener != null) banner.eventListeners.add(listener);
 
-    _bannerAd ??= BannerAd(listener: banner.eventListener);
-
-    _bannerAd.show(
-      adUnitId: adUnitId,
-      targetInfo: targetInfo,
-      testing: testing,
-      size: size,
-      anchorOffset: anchorOffset,
-      anchorType: anchorType,
-      state: state,
-    );
+      _bannerAd.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        testing: testing,
+        size: size,
+        anchorOffset: anchorOffset,
+        anchorType: anchorType,
+        state: state,
+      );
+    }
   }
 
   @deprecated
@@ -305,14 +323,18 @@ class Ads {
       adUnitId = _screenUnitId;
     }
 
+    if (keywords == null || keywords.isEmpty) keywords = _keywords;
+
+    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
+
     _fullScreenAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
+      contentUrl: contentUrl ?? _contentUrl,
+      childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
-      testing: testing,
+      testing: testing ?? _testing,
       anchorOffset: anchorOffset,
       anchorType: anchorType,
     );
@@ -339,22 +361,33 @@ class Ads {
   }) async {
     if (!_firstObject) return;
 
-    if (listener != null) screen.eventListeners.add(listener);
+    if (_fullScreenAd == null) {
+      setFullScreenAd(
+        adUnitId: adUnitId,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        listener: listener,
+      );
+      _fullScreenAd.show();
+    } else {
+      if (listener != null) screen.eventListeners.add(listener);
 
-    _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
-
-    _fullScreenAd.show(
-      adUnitId: adUnitId,
-      targetInfo: targetInfo,
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      testing: testing,
-      anchorOffset: anchorOffset,
-      anchorType: anchorType,
-      state: state,
-    );
+      _fullScreenAd.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        anchorOffset: anchorOffset,
+        anchorType: anchorType,
+        state: state,
+      );
+    }
   }
 
   /// Hide the Full Screen Ad.
@@ -383,14 +416,18 @@ class Ads {
       adUnitId = _videoUnitId;
     }
 
+    if (keywords == null || keywords.isEmpty) keywords = _keywords;
+
+    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
+
     _videoAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
+      contentUrl: contentUrl ?? _contentUrl,
+      childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
-      testing: testing,
+      testing: testing ?? _testing,
     );
   }
 
@@ -410,20 +447,31 @@ class Ads {
       State state}) {
     if (!_firstObject) return;
 
-    if (listener != null) video.eventListeners.add(listener);
+    if (_videoAd == null) {
+      setVideoAd(
+        adUnitId: adUnitId,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        listener: listener,
+      );
+      _videoAd.show();
+    } else {
+      if (listener != null) video.eventListeners.add(listener);
 
-    _videoAd ??= VideoAd(listener: video.eventListener);
-
-    _videoAd.show(
-      adUnitId: adUnitId,
-      targetInfo: targetInfo,
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      testing: testing,
-      state: state,
-    );
+      _videoAd.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        state: state,
+      );
+    }
   }
 
   /// Set an Ad Event Listener.
