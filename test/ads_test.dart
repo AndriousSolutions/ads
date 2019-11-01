@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    show Key, MaterialApp, Text, UniqueKey, ValueKey;
 import 'dart:io' show Platform;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:ads/ads.dart';
+import 'package:ads/ads.dart' show Ads;
 
-import '../example/main.dart';
+import '../example/main.dart' show MyApp, ads;
+
+int frames;
 
 Key _showBanner = ValueKey<String>('SHOW BANNER');
 Key _removeBanner = ValueKey<String>('REMOVE BANNER');
@@ -14,45 +17,51 @@ Key _showVideo = ValueKey<String>('SHOW REWARDED VIDEO');
 /// Names the last event triggered.
 String _event = '';
 
-Ads ads;
 final String appId = Platform.isAndroid
     ? 'ca-app-pub-3940256099942544~3347511713'
     : 'ca-app-pub-3940256099942544~1458002511';
 
 void main() {
-  ads = Ads(appId);
-
   testWidgets('Test Rewarded Video', (WidgetTester tester) async {
-    Key key = UniqueKey();
-
     await tester.pumpWidget(MaterialApp(
       home: MyApp(
         initOption: 1,
-        key: key,
       ),
     ));
 
-    ads.video.startedListener = () {
-      _event = 'started';
-    };
+//    ads.video.startedListener = () {
+//      _event = 'started';
+//    };
+//
+//    ads.video.completedListener = () {};
+    try {
+      frames = await tester.pumpAndSettle(const Duration(seconds: 30));
+    } catch (ex) {
 
-    ads.video.completedListener = () {};
-
+    }
     // Play a video ad.
-    await tester.tap(find.byKey(_showVideo));
-    await tester.pumpAndSettle();
+    Finder button = find.byKey(_showVideo);
+    await tester.tap(button);
+    await tester.pump(const Duration(seconds: 30));
+    frames = await tester.pumpAndSettle(const Duration(seconds: 30));
 //    await tester.idle();
+//
+//    Text _coins = tester.widget(find.byKey(ValueKey<String>('COINS')));
+//    String value = _coins.data;
+//
+//    // Verify the current counter.
+//    expect(find.text(value), findsOneWidget);
 
-    Text _coins = tester.widget(find.byKey(ValueKey<String>('COINS')));
-    String value = _coins.data;
-
-    // Verify the current counter.
-    expect(find.text(value), findsOneWidget);
-
+    expect(ads.initialized, isTrue);
     expect(ads.keywords.contains('ibm'), isTrue);
     expect(ads.contentUrl.contains('ibm'), isTrue);
     expect(ads.childDirected, isFalse);
-    expect(ads.testDevices, isNotEmpty);
+    expect(ads.testDevices, isNull);
+    expect(ads.testing, isFalse);
+    expect(ads.inError, isFalse);
+
+//    ads.dispose();
+//    ads = null;
   });
 
   String where = '';

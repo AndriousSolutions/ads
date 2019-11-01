@@ -9,8 +9,11 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:ads/ads.dart';
 
 void main() {
-  runApp(MyApp(initOption: 2));
+  runApp(MyApp(initOption: 1));
 }
+
+/// Made a high-level variable to be accessible to ads_test.dart
+Ads ads;
 
 class MyApp extends StatefulWidget {
   const MyApp({this.initOption, Key key}) : super(key: key);
@@ -23,7 +26,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   _MyAppState({this.initOption = 1});
 
-  Ads ads;
   final int initOption;
   int _coins = 0;
 
@@ -466,7 +468,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    ads.dispose();
+    ads?.dispose();
     super.dispose();
   }
 

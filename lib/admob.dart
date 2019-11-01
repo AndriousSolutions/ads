@@ -41,7 +41,8 @@ class Banner extends MobileAds {
   static Banner _this;
   Banner._(MobileAdListener listener) : super(listener: listener);
 
-  AdSize _size = AdSize.banner;
+  AdSize _setSize;
+  AdSize _showSize;
 
   /// Set options to the Banner Ad.
   @override
@@ -55,6 +56,7 @@ class Banner extends MobileAds {
     bool testing,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
     super.set(
@@ -66,9 +68,10 @@ class Banner extends MobileAds {
       testDevices: testDevices,
       testing: testing,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
-    _size = size ?? _size;
+    _setSize ??= size ?? AdSize.banner;
     return load(
       show: false,
       adUnitId: adUnitId,
@@ -79,6 +82,7 @@ class Banner extends MobileAds {
       testDevices: testDevices,
       testing: testing,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
   }
@@ -95,47 +99,24 @@ class Banner extends MobileAds {
     bool testing,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
-  }) {
-    if (state != null && !state.mounted) return Future.value(false);
-
-    // Load a new ad if a parameter is passed.
-    if ((adUnitId != null && adUnitId.isNotEmpty) ||
-        targetInfo != null ||
-        (keywords != null && keywords.isNotEmpty) ||
-        (contentUrl != null && contentUrl.isNotEmpty) ||
-        childDirected != null ||
-        (testDevices != null && testDevices.isNotEmpty) ||
-        testing != null ||
-        size != null ||
-        anchorOffset != null ||
-        anchorType != null) {
-      dispose();
-    }
-    _size = size ?? _size;
-
-    // The ad is already loaded. Show it now.
-    if (_ad != null) {
-      _ad.show(
-          anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
-          anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
-      return Future.value(false);
-    }
-
-    // Load the ad and show it when loaded.
-    return load(
-      show: true,
-      adUnitId: adUnitId,
-      targetInfo: targetInfo,
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      testing: testing,
-      anchorOffset: anchorOffset,
-      anchorType: anchorType,
-    );
+  }) async {
+    if (size != null) dispose();
+    _showSize = size ?? _setSize ?? AdSize.banner;
+    return super.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
+        anchorType: anchorType,
+        state: state);
   }
 
   @override
@@ -144,7 +125,7 @@ class Banner extends MobileAds {
       adUnitId: testing
           ? BannerAd.testAdUnitId
           : adUnitId.isEmpty ? BannerAd.testAdUnitId : adUnitId.trim(),
-      size: _size,
+      size: _showSize ?? _setSize ?? AdSize.banner,
       targetingInfo: targetInfo,
     );
   }
@@ -170,6 +151,7 @@ class FullScreenAd extends MobileAds {
     List<String> testDevices,
     bool testing,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
     super.set(
@@ -181,6 +163,7 @@ class FullScreenAd extends MobileAds {
       testDevices: testDevices,
       testing: testing,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
     return load(
@@ -193,59 +176,7 @@ class FullScreenAd extends MobileAds {
       testDevices: testDevices,
       testing: testing,
       anchorOffset: anchorOffset,
-      anchorType: anchorType,
-    );
-  }
-
-  /// Display the Interstitial Ad.
-  @override
-  Future<bool> show({
-    String adUnitId,
-    MobileAdTargetingInfo targetInfo,
-    List<String> keywords,
-    String contentUrl,
-    bool childDirected,
-    List<String> testDevices,
-    bool testing,
-    double anchorOffset,
-    AnchorType anchorType,
-    State state,
-  }) {
-    // Don't bother if the app is terminating.
-    if (state != null && !state.mounted) return Future.value(false);
-
-    // Load a new ad if a parameter is passed.
-    if ((adUnitId != null && adUnitId.isNotEmpty) ||
-        targetInfo != null ||
-        (keywords != null && keywords.isNotEmpty) ||
-        (contentUrl != null && contentUrl.isNotEmpty) ||
-        childDirected != null ||
-        (testDevices != null && testDevices.isNotEmpty) ||
-        testing != null ||
-        anchorOffset != null ||
-        anchorType != null) {
-      dispose();
-    }
-
-    // The ad is already loaded. Show it now.
-    if (_ad != null) {
-      _ad.show(
-          anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
-          anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
-      return Future.value(false);
-    }
-
-    // Load the ad and show it when loaded.
-    return load(
-      show: true,
-      adUnitId: adUnitId,
-      targetInfo: targetInfo,
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      testing: testing,
-      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
   }
@@ -265,6 +196,7 @@ abstract class MobileAds extends AdMob {
   MobileAd _ad;
   final MobileAdListener listener;
   double _anchorOffset;
+  double _horizontalCenterOffset;
   AnchorType _anchorType;
 
   Future<bool> load({
@@ -277,8 +209,9 @@ abstract class MobileAds extends AdMob {
     List<String> testDevices,
     bool testing,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
-  }) {
+  }) async {
     // Are we testing?
     testing = testing ?? _testing;
 
@@ -287,16 +220,14 @@ abstract class MobileAds extends AdMob {
       adUnitId = _adUnitId;
     }
 
-    if (_info != null) {
-      targetInfo = _info;
-    } else {
-      targetInfo ??= _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    }
+    _info ??= _targetInfo(
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+    );
+
+    targetInfo ??= _info;
 
     // Get rid of the ad if already created.
     dispose();
@@ -308,9 +239,16 @@ abstract class MobileAds extends AdMob {
     // Assign the ad's listener
     _ad?.listener = (MobileAdEvent event) {
       if (show && event == MobileAdEvent.loaded) {
-        _ad.show(
-            anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
-            anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
+        try {
+          _ad.show(
+              anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
+              horizontalCenterOffset:
+                  horizontalCenterOffset ?? _horizontalCenterOffset ?? 0.0,
+              anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
+        } catch (ex) {
+          _setError(ex);
+          return;
+        }
       }
 
       if (listener != null) {
@@ -330,13 +268,22 @@ abstract class MobileAds extends AdMob {
             testDevices: testDevices,
             testing: testing,
             anchorOffset: anchorOffset,
+            horizontalCenterOffset: horizontalCenterOffset,
             anchorType: anchorType,
           );
         });
       }
     };
+
+    bool loaded;
+    try {
+      loaded = await _ad?.load();
+    } catch (ex) {
+      loaded = false;
+      _setError(ex);
+    }
     // Load the ad in memory.
-    return _ad?.load();
+    return loaded;
   }
 
   MobileAd _createAd(
@@ -353,6 +300,7 @@ abstract class MobileAds extends AdMob {
     List<String> testDevices,
     bool testing,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
     super.set(
@@ -364,26 +312,75 @@ abstract class MobileAds extends AdMob {
       testDevices: testDevices,
       testing: testing,
     );
-    _anchorOffset = anchorOffset ?? _anchorOffset ?? 0.0;
-    _anchorType = anchorType ?? _anchorType ?? AnchorType.bottom;
+    _anchorOffset ??= anchorOffset ?? 0.0;
+    _horizontalCenterOffset ??=
+        horizontalCenterOffset ?? 0.0;
+    _anchorType ??= anchorType ?? AnchorType.bottom;
   }
 
   /// Display the MobileAd
-  void show({
+  @override
+  Future<bool> show({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
+    State state,
   }) async {
-    anchorOffset = anchorOffset ?? _anchorOffset;
-    anchorType = anchorType ?? _anchorType;
+    if (state != null && !state.mounted) return Future.value(false);
 
-    _ad?.listener = (MobileAdEvent event) {
-      if (event == MobileAdEvent.loaded) {
-        _ad?.show(anchorOffset: anchorOffset, anchorType: anchorType);
+    // Load a new ad if a parameter is passed.
+    if ((adUnitId != null && adUnitId.isNotEmpty) ||
+        targetInfo != null ||
+        (keywords != null && keywords.isNotEmpty) ||
+        (contentUrl != null && contentUrl.isNotEmpty) ||
+        childDirected != null ||
+        (testDevices != null && testDevices.isNotEmpty) ||
+        testing != null ||
+        anchorOffset != null ||
+        horizontalCenterOffset != null ||
+        anchorType != null) {
+      dispose();
+    }
+
+    // The ad is already loaded. Show it now.
+    if (_ad != null) {
+      try {
+        bool show;
+        show = await _ad.show(
+            anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
+            horizontalCenterOffset:
+                horizontalCenterOffset ?? _horizontalCenterOffset ?? 0.0,
+            anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
+        if (show) return show;
+      } catch (ex) {
+        _ad?.dispose();
+        _ad = null;
+
+        /// try loading it again.
       }
-      if (listener != null) listener(event);
-    };
+    }
 
-    _ad?.load();
+    // Load the ad and show it when loaded.
+    return load(
+      show: true,
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
+      anchorType: anchorType,
+    );
   }
 
   /// Clear the MobileAd reference.
@@ -471,9 +468,11 @@ class VideoAd extends AdMob {
     List<String> testDevices,
     bool testing,
     State state,
-  }) {
+  }) async {
+    bool show = false;
+
     // Don't bother if the app is terminating.
-    if (state != null && !state.mounted) return Future.value(false);
+    if (state != null && !state.mounted) return show;
 
     // Load a new ad if a parameter is passed.
     if ((adUnitId != null && adUnitId.isNotEmpty) ||
@@ -488,11 +487,17 @@ class VideoAd extends AdMob {
 
     // Show if already loaded.
     if (_rewardedVideoAd != null) {
-      return _rewardedVideoAd.show();
+      try {
+        show = await _rewardedVideoAd.show();
+        if (show) return show;
+      } catch (ex) {
+        /// try loading it again.
+        _rewardedVideoAd = null;
+      }
     }
 
     // Show the ad when loaded.
-    return _loadVideo(
+    show = await _loadVideo(
       show: true,
       adUnitId: adUnitId,
       targetInfo: targetInfo,
@@ -502,6 +507,8 @@ class VideoAd extends AdMob {
       testDevices: testDevices,
       testing: testing,
     );
+
+    return show;
   }
 
   Future<bool> _loadVideo({
@@ -521,7 +528,12 @@ class VideoAd extends AdMob {
     _rewardedVideoAd.listener =
         (RewardedVideoAdEvent event, {String rewardType, int rewardAmount}) {
       if (show && event == RewardedVideoAdEvent.loaded) {
-        _rewardedVideoAd.show();
+        try {
+          _rewardedVideoAd.show();
+        } catch (ex) {
+          _setError(ex);
+          return;
+        }
       }
 
       // Call any listeners.
@@ -558,22 +570,17 @@ class VideoAd extends AdMob {
         ? RewardedVideoAd.testAdUnitId
         : adUnitId.isEmpty ? RewardedVideoAd.testAdUnitId : adUnitId.trim();
 
-    MobileAdTargetingInfo info;
-    // Retrieve the target info.
-    if (targetInfo != null) {
-      info = targetInfo;
-    } else if (_info != null) {
-      info = _info;
-    } else {
-      info = _targetInfo(
-        keywords: keywords,
-        contentUrl: contentUrl,
-        childDirected: childDirected,
-        testDevices: testDevices,
-      );
-    }
+    _info ??= _targetInfo(
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+    );
+
+    targetInfo ??= _info;
+
     // Load the ad into memory.
-    return _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: info);
+    return _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: targetInfo);
   }
 
   /// Clear the video ad plugin.
@@ -587,12 +594,12 @@ abstract class AdMob {
   String _adUnitId = "";
 
   MobileAdTargetingInfo _info;
-  List<String> _keywords = ["the"];
+  List<String> _keywords;
   String _contentUrl; // Can be null
   bool _childDirected; // Can be null
   List<String> _testDevices; // Can be null
 
-  bool _testing = false;
+  bool _testing;
 
   Exception _ex;
 
@@ -622,21 +629,21 @@ abstract class AdMob {
       _adUnitId = adUnitId;
     }
 
-    _info = targetInfo ?? _info;
+    _info ??= targetInfo;
 
-    _keywords = keywords ?? _keywords;
+    _keywords ??= keywords ?? ["the"];
 
-    _contentUrl = contentUrl ?? _contentUrl;
+    _contentUrl ??= contentUrl;
 
-    _childDirected = childDirected ?? _childDirected;
+    _childDirected ??= childDirected;
 
     if (testDevices != null &&
-        testDevices.every((String s) => s == null || s.isNotEmpty))
+        testDevices.every((String s) => s == null || s.isEmpty))
       testDevices = null;
 
-    _testDevices = testDevices ?? _testDevices;
+    _testDevices ??= testDevices;
 
-    _testing = testing ?? _testing;
+    _testing ??= testing ?? false;
   }
 
   // Must show the AdMob ad.

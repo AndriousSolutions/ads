@@ -63,6 +63,21 @@ class Ads {
     bool testing = false,
     MobileAdListener listener,
   }) {
+    /// This class is being instantiated again??
+    /// Continue, but do not activate this object to do anything.
+    /// Once initialized only use the original reference.
+    if (_initialized) {
+      // This Ads object can continue to be instantiated, but it can't do anything.
+      _firstObject = false;
+      log(
+        "An Ads class is already instantiated!",
+        time: DateTime.now(),
+        level: 1,
+        name: 'Ads()',
+      );
+      return;
+    }
+
     assert(appId != null && appId.isNotEmpty, 'class Ads: appId is required.');
 
     /// Test for parameters being pass null in production
@@ -86,41 +101,59 @@ class Ads {
     _childDirected = childDirected;
 
     if (testDevices != null &&
-        testDevices.every((String s) => s == null || s.isNotEmpty)) {
-      testDevices = _testDevices;
-    } else {
+        testDevices.every((String s) => s != null && s.isNotEmpty)) {
       _testDevices = testDevices;
+    } else {
+      testDevices = null;
     }
 
     _testing = testing == null ? false : testing;
 
     if (listener != null) _adEventListeners.add(listener);
 
-    /// This class is being instantiated again??
-    /// Continue, but do not activate this object to do anything.
-    /// Once initialized only use the original reference.
-    if (_initialized) {
-      // This Ads object can continue to be instantiated, but it can't do anything.
-      _firstObject = false;
-      log(
-        "An Ads class is already instantiated!",
-        time: DateTime.now(),
-        level: 1,
-        name: 'Ads()',
-      );
-    } else {
-      /// Prevent any further instantiations until plugin is initialized or not.
-      _initialized = true;
-      FirebaseAdMob.instance
-          .initialize(
-              appId: appId,
-              trackingId: trackingId,
-              analyticsEnabled: analyticsEnabled ?? false)
-          .then((init) {
-        // Determine if the plugin has initialized successfully.
-        _initialized = init;
-      });
-    }
+    /// Prevent any further instantiations until plugin is initialized or not.
+    FirebaseAdMob.instance
+        .initialize(
+            appId: appId,
+            trackingId: trackingId,
+            analyticsEnabled: analyticsEnabled ?? false)
+        .then((init) {
+      if (!init) return;
+
+      _initialized = init;
+
+      if (bannerUnitId != null)
+        setBannerAd(
+          adUnitId: bannerUnitId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+          listener: listener,
+        );
+
+      if (screenUnitId != null)
+        setFullScreenAd(
+          adUnitId: screenUnitId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+          listener: listener,
+        );
+
+      if (videoUnitId != null)
+        setVideoAd(
+          adUnitId: videoUnitId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          testing: testing,
+        );
+    });
   }
 
   /// Stores the Banner ad unit id.
@@ -164,7 +197,25 @@ class Ads {
   /// Determine if testing or not
   bool get testing => _testing;
 
-  bool get inError => _inError;
+  bool get inError =>
+      (_bannerAd?._banner?.inError ?? false) ||
+      (_fullScreenAd?.inError ?? false) ||
+      (_videoAd?.inError ?? false);
+
+  bool get bannerError => _bannerAd?._banner?.inError ?? false;
+
+  bool get screenError => _fullScreenAd?.inError ?? false;
+
+  bool get videoError => _videoAd?.inError ?? false;
+
+  Exception getError() =>
+      getBannerError() ?? getScreenError() ?? getVideoError();
+
+  Exception getBannerError() => _bannerAd?._banner?.getError();
+
+  Exception getScreenError() => _fullScreenAd?.getError();
+
+  Exception getVideoError() => _videoAd?.getError();
 
   List<EventError> get eventErrors => _eventErrors;
 
@@ -199,7 +250,7 @@ class Ads {
   }
 
   /// Set the Banner Ad options.
-  void setBannerAd({
+  Future<bool> setBannerAd({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -210,9 +261,10 @@ class Ads {
     MobileAdListener listener,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
-    if (!_firstObject) return;
+    if (!_firstObject) return Future.value(false);
 
     if (listener != null) banner.eventListeners.add(listener);
 
@@ -226,7 +278,7 @@ class Ads {
 
     if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
 
-    _bannerAd.set(
+    return _bannerAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
@@ -236,6 +288,7 @@ class Ads {
       testing: testing ?? _testing,
       size: size,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
   }
@@ -248,7 +301,7 @@ class Ads {
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   ///
   /// anchorType place advert at top or bottom of screen (default bottom)
-  void showBannerAd({
+  Future<bool> showBannerAd({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -259,13 +312,16 @@ class Ads {
     MobileAdListener listener,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
   }) async {
-    if (!_firstObject) return;
+    bool show = false;
+
+    if (!_firstObject) return show;
 
     if (_bannerAd == null) {
-      setBannerAd(
+      bool show = await setBannerAd(
         adUnitId: adUnitId,
         keywords: keywords,
         contentUrl: contentUrl,
@@ -275,32 +331,38 @@ class Ads {
         listener: listener,
         size: size,
         anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
         anchorType: anchorType,
       );
-      _bannerAd.show();
-    }else {
+      if (show) show = await _bannerAd.show();
+    } else {
       if (listener != null) banner.eventListeners.add(listener);
 
-      _bannerAd.show(
+      show = await _bannerAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
         testing: testing,
         size: size,
         anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
         anchorType: anchorType,
         state: state,
       );
     }
+    return show;
   }
 
   @deprecated
   void hideBannerAd() => closeBannerAd();
 
   /// Hide a Banner Ad.
-  void closeBannerAd({bool load = false}) => _bannerAd?.dispose(load: load);
+  void closeBannerAd({bool load = true}) => _bannerAd?.dispose(load: load);
+
+  /// Remove the Banner Ad from memory
+  void removeBannerAd({bool load = false}) => _bannerAd?.dispose(load: load);
 
   /// Set the Full Screen Ad options.
-  Future<void> setFullScreenAd({
+  Future<bool> setFullScreenAd({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -310,9 +372,10 @@ class Ads {
     bool testing,
     MobileAdListener listener,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) async {
-    if (!_firstObject) return;
+    if (!_firstObject) return Future.value(false);
 
     if (listener != null) screen.eventListeners.add(listener);
 
@@ -327,7 +390,7 @@ class Ads {
 
     if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
 
-    _fullScreenAd.set(
+    return await _fullScreenAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
@@ -336,6 +399,7 @@ class Ads {
       testDevices: testDevices,
       testing: testing ?? _testing,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
   }
@@ -346,7 +410,7 @@ class Ads {
   /// state is passed to determine if the app is not terminating. No need to show ad.
   /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
   /// anchorType place advert at top or bottom of screen (default bottom)
-  void showFullScreenAd({
+  Future<bool> showFullScreenAd({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -356,26 +420,32 @@ class Ads {
     bool testing,
     MobileAdListener listener,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
   }) async {
-    if (!_firstObject) return;
+    bool show = false;
+
+    if (!_firstObject) return show;
 
     if (_fullScreenAd == null) {
-      setFullScreenAd(
+      show = await setFullScreenAd(
         adUnitId: adUnitId,
         keywords: keywords,
         contentUrl: contentUrl,
         childDirected: childDirected,
         testDevices: testDevices,
         testing: testing,
+        anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
+        anchorType: anchorType,
         listener: listener,
       );
-      _fullScreenAd.show();
+      if (show) show = await _fullScreenAd.show();
     } else {
       if (listener != null) screen.eventListeners.add(listener);
 
-      _fullScreenAd.show(
+      show = await _fullScreenAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
         keywords: keywords,
@@ -384,17 +454,19 @@ class Ads {
         testDevices: testDevices,
         testing: testing,
         anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
         anchorType: anchorType,
         state: state,
       );
     }
+    return show;
   }
 
   /// Hide the Full Screen Ad.
   void closeFullScreenAd() => _fullScreenAd?.dispose();
 
   /// Set the Video Ad options.
-  void setVideoAd({
+  Future<bool> setVideoAd({
     bool show = false,
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
@@ -405,7 +477,7 @@ class Ads {
     bool testing,
     RewardedVideoAdListener listener,
   }) {
-    if (!_firstObject) return;
+    if (!_firstObject) return Future.value(false);
 
     if (listener != null) video.eventListeners.add(listener);
 
@@ -420,7 +492,7 @@ class Ads {
 
     if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
 
-    _videoAd.set(
+    return _videoAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
@@ -435,7 +507,7 @@ class Ads {
   ///hideFullScreenAd
   /// parameters:
   /// state is passed to determine if the app is not terminating. No need to show ad.
-  void showVideoAd(
+  Future<bool> showVideoAd(
       {String adUnitId,
       MobileAdTargetingInfo targetInfo,
       List<String> keywords,
@@ -444,11 +516,13 @@ class Ads {
       List<String> testDevices,
       bool testing,
       RewardedVideoAdListener listener,
-      State state}) {
-    if (!_firstObject) return;
+      State state}) async {
+    bool show = false;
+
+    if (!_firstObject) return show;
 
     if (_videoAd == null) {
-      setVideoAd(
+      show = await setVideoAd(
         adUnitId: adUnitId,
         keywords: keywords,
         contentUrl: contentUrl,
@@ -457,11 +531,11 @@ class Ads {
         testing: testing,
         listener: listener,
       );
-      _videoAd.show();
+      if (show) show = await _videoAd.show();
     } else {
       if (listener != null) video.eventListeners.add(listener);
 
-      _videoAd.show(
+      show = await _videoAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
         keywords: keywords,
@@ -472,6 +546,7 @@ class Ads {
         state: state,
       );
     }
+    return show;
   }
 
   /// Set an Ad Event Listener.
@@ -536,7 +611,7 @@ class BannerAd {
   Banner _banner;
 
   /// Set options to the Banner Ad.
-  void set({
+  Future<bool> set({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -546,9 +621,10 @@ class BannerAd {
     bool testing,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
-    _banner.set(
+    return _banner.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
@@ -558,12 +634,13 @@ class BannerAd {
       testing: testing,
       size: size,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
     );
   }
 
   /// Show the Banner Ad.
-  void show({
+  Future<bool> show({
     String adUnitId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
@@ -573,10 +650,11 @@ class BannerAd {
     bool testing,
     AdSize size,
     double anchorOffset,
+    double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
   }) {
-    _banner.show(
+    return _banner.show(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
       keywords: keywords,
@@ -586,6 +664,7 @@ class BannerAd {
       testing: testing,
       size: size,
       anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
       state: state,
     );
