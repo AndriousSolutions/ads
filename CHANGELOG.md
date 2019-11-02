@@ -1,3 +1,9 @@
+## 1.4.2
+ November 02, 2019
+- if (targetInfo == null) in _loadVideo()
+- Removed MobileAdTargetingInfo _info from AdMob
+- Removed bool _inError = false; from Ads
+
 ## 1.4.1
  November 01, 2019
 - await dispose();

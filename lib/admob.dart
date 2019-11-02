@@ -585,15 +585,14 @@ class VideoAd extends AdMob {
         ? RewardedVideoAd.testAdUnitId
         : adUnitId.isEmpty ? RewardedVideoAd.testAdUnitId : adUnitId.trim();
 
-    _info ??= _targetInfo(
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      nonPersonalizedAds: nonPersonalizedAds,
-    );
-
-    targetInfo ??= _info;
+    if (targetInfo == null)
+      targetInfo = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        nonPersonalizedAds: nonPersonalizedAds,
+      );
 
     // Load the ad into memory.
     return _rewardedVideoAd.load(adUnitId: adModId, targetingInfo: targetInfo);
@@ -608,7 +607,6 @@ class VideoAd extends AdMob {
 
 abstract class AdMob {
   String _adUnitId;
-  MobileAdTargetingInfo _info;
   List<String> _keywords;
   String _contentUrl; // Can be null
   bool _childDirected; // Can be null

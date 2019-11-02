@@ -652,8 +652,6 @@ class Ads {
       video.eventListeners.remove(listener);
 }
 
-bool _inError = false;
-
 List<EventError> _eventErrors = List();
 
 class BannerAd {
@@ -1136,7 +1134,6 @@ class _VidListener {
 void _errorHandler(Object ex, {MobileAdEvent event}) {
   if (ex is! Exception) ex = Exception(ex.toString());
   _eventErrors.add(EventError(event, ex));
-  _inError = true;
 }
 
 class EventError {
