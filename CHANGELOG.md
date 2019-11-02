@@ -1,3 +1,10 @@
+## 1.4.1
+ November 01, 2019
+- await dispose();
+- Removed "" from adUnitId = "";
+- _adUnitId ??= adUnitId;
+- Add parameters to _bannerAd.show();
+
 ## 1.4.0
  October 31, 2019
 - Additional parameters to Ads constructor

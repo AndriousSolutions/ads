@@ -137,7 +137,7 @@ class Ads {
 
       _initialized = init;
 
-      if (bannerUnitId != null)
+      if (bannerUnitId != null && _bannerAd == null)
         setBannerAd(
           adUnitId: bannerUnitId,
           keywords: keywords,
@@ -153,7 +153,7 @@ class Ads {
           anchorType: anchorType,
         );
 
-      if (screenUnitId != null)
+      if (screenUnitId != null && _fullScreenAd == null)
         setFullScreenAd(
           adUnitId: screenUnitId,
           keywords: keywords,
@@ -168,7 +168,7 @@ class Ads {
           anchorType: anchorType,
         );
 
-      if (videoUnitId != null)
+      if (videoUnitId != null && _videoAd == null)
         setVideoAd(
           adUnitId: videoUnitId,
           keywords: keywords,
@@ -388,6 +388,10 @@ class Ads {
       show = await _bannerAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
         testing: testing,
         size: size,
         anchorOffset: anchorOffset,

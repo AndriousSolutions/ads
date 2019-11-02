@@ -226,15 +226,16 @@ abstract class MobileAds extends AdMob {
       adUnitId = _adUnitId;
     }
 
-    _info ??= _targetInfo(
-      keywords: keywords,
-      contentUrl: contentUrl,
-      childDirected: childDirected,
-      testDevices: testDevices,
-      nonPersonalizedAds: nonPersonalizedAds,
-    );
+//    targetInfo ??= _info;
 
-    targetInfo ??= _info;
+    if (targetInfo == null)
+      targetInfo = _targetInfo(
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        nonPersonalizedAds: nonPersonalizedAds,
+      );
 
     // Get rid of the ad if already created.
     dispose();
@@ -354,7 +355,7 @@ abstract class MobileAds extends AdMob {
         anchorOffset != null ||
         horizontalCenterOffset != null ||
         anchorType != null) {
-      dispose();
+      await dispose();
     }
 
     // The ad is already loaded. Show it now.
@@ -606,8 +607,7 @@ class VideoAd extends AdMob {
 }
 
 abstract class AdMob {
-  String _adUnitId = "";
-
+  String _adUnitId;
   MobileAdTargetingInfo _info;
   List<String> _keywords;
   String _contentUrl; // Can be null
@@ -642,10 +642,10 @@ abstract class AdMob {
     bool testing,
   }) {
     if (adUnitId != null && adUnitId.isNotEmpty && adUnitId.length > 30) {
-      _adUnitId = adUnitId;
+      _adUnitId ??= adUnitId;
     }
 
-    _info ??= targetInfo;
+//    _info ??= targetInfo;
 
     _keywords ??= keywords;
 
