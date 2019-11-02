@@ -1,24 +1,33 @@
+## 1.4.0
+ October 31, 2019
+- Additional parameters to Ads constructor
+  - AdSize size,
+  - double anchorOffset,
+  - double horizontalCenterOffset,
+  - AnchorType anchorType, 
+  - bool nonPersonalizedAds,
+    
 ## 1.3.0
  October 31, 2019
 - Set Ads in constructor
-- Future<bool> setBannerAd
-- Future<bool> showBannerAd
-- Future<bool> showFullScreenAd
-- Future<bool> setVideoAd
-- Future<bool> showVideoAd
+- Future\<bool\> setBannerAd
+- Future\<bool\> showBannerAd
+- Future\<bool\> showFullScreenAd
+- Future\<bool\> setVideoAd
+- Future\<bool\> showVideoAd
 - MobileAd.show() tries again if it fails
 - size: _showSize ?? _setSize ?? AdSize.banner,
 - MobileAd.horizontalCenterOffset
 - New functions in Ads class:
-  inError 
-  getError()
-  bannerError 
-  getBannerError()
-  screenError 
-  getScreenError()
-  videoError 
-  getVideoError()
-  removeBannerAd()
+  - inError 
+  - getError()
+  - bannerError 
+  - getBannerError()
+  - screenError 
+  - getScreenError()
+  - videoError 
+  - getVideoError()
+  - removeBannerAd()
   
 ## 1.2.1
  October 30, 2019

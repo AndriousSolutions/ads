@@ -53,6 +53,7 @@ class Banner extends MobileAds {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     AdSize size,
     double anchorOffset,
@@ -66,6 +67,7 @@ class Banner extends MobileAds {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
@@ -80,6 +82,7 @@ class Banner extends MobileAds {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
@@ -149,6 +152,7 @@ class FullScreenAd extends MobileAds {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     double anchorOffset,
     double horizontalCenterOffset,
@@ -161,6 +165,7 @@ class FullScreenAd extends MobileAds {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
@@ -207,13 +212,14 @@ abstract class MobileAds extends AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
   }) async {
     // Are we testing?
-    testing = testing ?? _testing;
+    testing ??= _testing;
 
     // Supply a valid unit id.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
@@ -225,6 +231,7 @@ abstract class MobileAds extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
     );
 
     targetInfo ??= _info;
@@ -298,6 +305,7 @@ abstract class MobileAds extends AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     double anchorOffset,
     double horizontalCenterOffset,
@@ -310,12 +318,12 @@ abstract class MobileAds extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
     );
-    _anchorOffset ??= anchorOffset ?? 0.0;
-    _horizontalCenterOffset ??=
-        horizontalCenterOffset ?? 0.0;
-    _anchorType ??= anchorType ?? AnchorType.bottom;
+    _anchorOffset ??= anchorOffset;
+    _horizontalCenterOffset ??= horizontalCenterOffset;
+    _anchorType ??= anchorType;
   }
 
   /// Display the MobileAd
@@ -352,8 +360,7 @@ abstract class MobileAds extends AdMob {
     // The ad is already loaded. Show it now.
     if (_ad != null) {
       try {
-        bool show;
-        show = await _ad.show(
+        bool show = await _ad.show(
             anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
             horizontalCenterOffset:
                 horizontalCenterOffset ?? _horizontalCenterOffset ?? 0.0,
@@ -433,6 +440,7 @@ class VideoAd extends AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
   }) {
     super.set(
@@ -442,6 +450,7 @@ class VideoAd extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
     );
     // Load into memory.
@@ -453,6 +462,7 @@ class VideoAd extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
     );
   }
@@ -466,6 +476,7 @@ class VideoAd extends AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     State state,
   }) async {
@@ -505,6 +516,7 @@ class VideoAd extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
     );
 
@@ -519,6 +531,7 @@ class VideoAd extends AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
   }) {
     // Acquire an instance of the Video Ad.
@@ -552,6 +565,7 @@ class VideoAd extends AdMob {
           contentUrl: contentUrl,
           childDirected: childDirected,
           testDevices: testDevices,
+          nonPersonalizedAds: nonPersonalizedAds,
           testing: testing,
         );
       }
@@ -575,6 +589,7 @@ class VideoAd extends AdMob {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
     );
 
     targetInfo ??= _info;
@@ -598,7 +613,7 @@ abstract class AdMob {
   String _contentUrl; // Can be null
   bool _childDirected; // Can be null
   List<String> _testDevices; // Can be null
-
+  bool _nonPersonalizedAds; // Can be null
   bool _testing;
 
   Exception _ex;
@@ -623,6 +638,7 @@ abstract class AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
   }) {
     if (adUnitId != null && adUnitId.isNotEmpty && adUnitId.length > 30) {
@@ -631,7 +647,7 @@ abstract class AdMob {
 
     _info ??= targetInfo;
 
-    _keywords ??= keywords ?? ["the"];
+    _keywords ??= keywords;
 
     _contentUrl ??= contentUrl;
 
@@ -643,7 +659,9 @@ abstract class AdMob {
 
     _testDevices ??= testDevices;
 
-    _testing ??= testing ?? false;
+    _nonPersonalizedAds ??= nonPersonalizedAds;
+
+    _testing ??= testing;
   }
 
   // Must show the AdMob ad.
@@ -658,6 +676,7 @@ abstract class AdMob {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
   }) {
     keywords ??= _keywords;
     if (keywords != null && keywords.isEmpty) keywords = _keywords;
@@ -670,11 +689,14 @@ abstract class AdMob {
 
     if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
 
+    nonPersonalizedAds ??= _nonPersonalizedAds;
+
     return MobileAdTargetingInfo(
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
     );
   }
 

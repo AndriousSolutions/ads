@@ -8,7 +8,7 @@ Instead, always go up to the '**major**' semantic version number when installing
 
 1. **patch** - I've made bugfixes
 2. **minor** - I've introduced new features
-3. **major** - I've essentially made a new app. It's broken backwards-compatibility and has a completely new the user experience. You won't get this version until you increment the **major** number in the pubspec.yaml file.
+3. **major** - I've essentially made a new app. It's broken backwards-compatibility and has a completely new user experience. You won't get this version until you increment the **major** number in the pubspec.yaml file.
 
 And so, for this version, add this to your package's pubspec.yaml file instead:
 ```javascript

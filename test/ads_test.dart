@@ -34,16 +34,14 @@ void main() {
 //    };
 //
 //    ads.video.completedListener = () {};
-    try {
-      frames = await tester.pumpAndSettle(const Duration(seconds: 30));
-    } catch (ex) {
-
-    }
-    // Play a video ad.
-    Finder button = find.byKey(_showVideo);
-    await tester.tap(button);
-    await tester.pump(const Duration(seconds: 30));
-    frames = await tester.pumpAndSettle(const Duration(seconds: 30));
+//    try {
+//      frames = await tester.pumpAndSettle(const Duration(seconds: 30));
+//    } catch (ex) {}
+//    // Play a video ad.
+//    Finder button = find.byKey(_showVideo);
+//    await tester.tap(button);
+//    await tester.pump(const Duration(seconds: 30));
+//    frames = await tester.pumpAndSettle(const Duration(seconds: 30));
 //    await tester.idle();
 //
 //    Text _coins = tester.widget(find.byKey(ValueKey<String>('COINS')));

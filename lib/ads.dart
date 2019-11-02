@@ -58,10 +58,15 @@ class Ads {
     String videoUnitId,
     List<String> keywords,
     String contentUrl,
-    bool childDirected = false,
+    bool childDirected,
     List<String> testDevices,
-    bool testing = false,
+    bool nonPersonalizedAds,
+    bool testing,
     MobileAdListener listener,
+    AdSize size,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
   }) {
     /// This class is being instantiated again??
     /// Continue, but do not activate this object to do anything.
@@ -94,22 +99,32 @@ class Ads {
       _videoUnitId = videoUnitId.trim();
     }
 
-    _keywords = keywords;
+    _keywords = keywords ?? ["the"];
 
-    _contentUrl = contentUrl;
+    _contentUrl = contentUrl ?? "";
 
-    _childDirected = childDirected;
+    _childDirected = childDirected ?? false;
 
     if (testDevices != null &&
-        testDevices.every((String s) => s != null && s.isNotEmpty)) {
-      _testDevices = testDevices;
-    } else {
+        testDevices.every((String s) => s == null || s.isEmpty)) {
       testDevices = null;
     }
 
-    _testing = testing == null ? false : testing;
+    _testDevices = testDevices ?? [];
+
+    _nonPersonalizedAds = nonPersonalizedAds ?? false;
+
+    _testing = testing ?? false;
 
     if (listener != null) _adEventListeners.add(listener);
+
+    _size = size ?? AdSize.banner;
+
+    _anchorOffset = anchorOffset ?? 0.0;
+
+    _horizontalCenterOffset = horizontalCenterOffset ?? 0.0;
+
+    _anchorType = anchorType ?? AnchorType.bottom;
 
     /// Prevent any further instantiations until plugin is initialized or not.
     FirebaseAdMob.instance
@@ -129,8 +144,13 @@ class Ads {
           contentUrl: contentUrl,
           childDirected: childDirected,
           testDevices: testDevices,
+          nonPersonalizedAds: nonPersonalizedAds,
           testing: testing,
           listener: listener,
+          size: size,
+          anchorOffset: anchorOffset,
+          horizontalCenterOffset: horizontalCenterOffset,
+          anchorType: anchorType,
         );
 
       if (screenUnitId != null)
@@ -140,8 +160,12 @@ class Ads {
           contentUrl: contentUrl,
           childDirected: childDirected,
           testDevices: testDevices,
+          nonPersonalizedAds: nonPersonalizedAds,
           testing: testing,
           listener: listener,
+          anchorOffset: anchorOffset,
+          horizontalCenterOffset: horizontalCenterOffset,
+          anchorType: anchorType,
         );
 
       if (videoUnitId != null)
@@ -192,10 +216,30 @@ class Ads {
   /// Get list of test devices.
   List<String> get testDevices => _testDevices;
 
+  bool _nonPersonalizedAds;
+
+  bool get nonPersonalizedAds => _nonPersonalizedAds;
+
   bool _testing;
 
   /// Determine if testing or not
   bool get testing => _testing;
+
+  AdSize _size;
+
+  AdSize get size => _size;
+
+  double _anchorOffset;
+
+  double get anchorOffset => _anchorOffset;
+
+  double _horizontalCenterOffset;
+
+  double get horizontalCenterOffset => _horizontalCenterOffset;
+
+  AnchorType _anchorType;
+
+  AnchorType get anchorType => _anchorType;
 
   bool get inError =>
       (_bannerAd?._banner?.inError ?? false) ||
@@ -257,6 +301,7 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     MobileAdListener listener,
     AdSize size,
@@ -264,6 +309,7 @@ class Ads {
     double horizontalCenterOffset,
     AnchorType anchorType,
   }) {
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) banner.eventListeners.add(listener);
@@ -285,11 +331,12 @@ class Ads {
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
-      size: size,
-      anchorOffset: anchorOffset,
-      horizontalCenterOffset: horizontalCenterOffset,
-      anchorType: anchorType,
+      size: size ?? _size,
+      anchorOffset: anchorOffset ?? _anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset ?? _horizontalCenterOffset,
+      anchorType: anchorType ?? _anchorType,
     );
   }
 
@@ -317,7 +364,7 @@ class Ads {
     State state,
   }) async {
     bool show = false;
-
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return show;
 
     if (_bannerAd == null) {
@@ -369,12 +416,14 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     MobileAdListener listener,
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
   }) async {
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) screen.eventListeners.add(listener);
@@ -397,10 +446,11 @@ class Ads {
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
-      anchorOffset: anchorOffset,
-      horizontalCenterOffset: horizontalCenterOffset,
-      anchorType: anchorType,
+      anchorOffset: anchorOffset ?? _anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset ?? _horizontalCenterOffset,
+      anchorType: anchorType ?? _anchorType,
     );
   }
 
@@ -425,7 +475,7 @@ class Ads {
     State state,
   }) async {
     bool show = false;
-
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return show;
 
     if (_fullScreenAd == null) {
@@ -474,9 +524,11 @@ class Ads {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     RewardedVideoAdListener listener,
   }) {
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) video.eventListeners.add(listener);
@@ -499,6 +551,7 @@ class Ads {
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
     );
   }
@@ -518,7 +571,7 @@ class Ads {
       RewardedVideoAdListener listener,
       State state}) async {
     bool show = false;
-
+    // Can only have one instantiated Ads object.
     if (!_firstObject) return show;
 
     if (_videoAd == null) {
@@ -618,6 +671,7 @@ class BannerAd {
     String contentUrl,
     bool childDirected,
     List<String> testDevices,
+    bool nonPersonalizedAds,
     bool testing,
     AdSize size,
     double anchorOffset,
@@ -631,6 +685,7 @@ class BannerAd {
       contentUrl: contentUrl,
       childDirected: childDirected,
       testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
       size: size,
       anchorOffset: anchorOffset,
