@@ -99,16 +99,11 @@ class Ads {
       _videoUnitId = videoUnitId.trim();
     }
 
-    _keywords = keywords ?? ["the"];
+    _keywords = keywords ?? [];
 
     _contentUrl = contentUrl ?? "";
 
     _childDirected = childDirected ?? false;
-
-    if (testDevices != null &&
-        testDevices.every((String s) => s == null || s.isEmpty)) {
-      testDevices = null;
-    }
 
     _testDevices = testDevices ?? [];
 
@@ -168,7 +163,8 @@ class Ads {
           anchorType: anchorType,
         );
 
-      if (videoUnitId != null && _videoAd == null)
+      if (videoUnitId != null && _videoAd == null) {
+        if (listener != null) _adEventListeners.add(listener);
         setVideoAd(
           adUnitId: videoUnitId,
           keywords: keywords,
@@ -177,6 +173,7 @@ class Ads {
           testDevices: testDevices,
           testing: testing,
         );
+      }
     });
   }
 
@@ -202,7 +199,7 @@ class Ads {
   /// Get ad keywords
   List<String> get keywords => _keywords;
 
-  String _contentUrl = "";
+  String _contentUrl;
 
   /// Get the url providing ad content
   String get contentUrl => _contentUrl;
@@ -320,17 +317,13 @@ class Ads {
       adUnitId = _bannerUnitId;
     }
 
-    if (keywords == null || keywords.isEmpty) keywords = _keywords;
-
-    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
-
     return _bannerAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
-      keywords: keywords,
+      keywords: keywords ?? _keywords,
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
-      testDevices: testDevices,
+      testDevices: testDevices ?? _testDevices,
       nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
       size: size ?? _size,
@@ -439,17 +432,13 @@ class Ads {
       adUnitId = _screenUnitId;
     }
 
-    if (keywords == null || keywords.isEmpty) keywords = _keywords;
-
-    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
-
     return await _fullScreenAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
-      keywords: keywords,
+      keywords: keywords ?? _keywords,
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
-      testDevices: testDevices,
+      testDevices: testDevices ?? _testDevices,
       nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
       anchorOffset: anchorOffset ?? _anchorOffset,
@@ -544,17 +533,13 @@ class Ads {
       adUnitId = _videoUnitId;
     }
 
-    if (keywords == null || keywords.isEmpty) keywords = _keywords;
-
-    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
-
     return _videoAd.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
-      keywords: keywords,
+      keywords: keywords ?? _keywords,
       contentUrl: contentUrl ?? _contentUrl,
       childDirected: childDirected ?? _childDirected,
-      testDevices: testDevices,
+      testDevices: testDevices ?? _testDevices,
       nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
     );

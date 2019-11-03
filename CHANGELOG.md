@@ -1,3 +1,8 @@
+## 1.5.0
+ November 03, 2019
+- Pass empty keywords and testDevices to override any previous values
+- Allows a MobileAdListener listener to be added to a VideoAd
+
 ## 1.4.2
  November 02, 2019
 - if (targetInfo == null) in _loadVideo()

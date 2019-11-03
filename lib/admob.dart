@@ -226,8 +226,6 @@ abstract class MobileAds extends AdMob {
       adUnitId = _adUnitId;
     }
 
-//    targetInfo ??= _info;
-
     if (targetInfo == null)
       targetInfo = _targetInfo(
         keywords: keywords,
@@ -314,7 +312,6 @@ abstract class MobileAds extends AdMob {
   }) {
     super.set(
       adUnitId: adUnitId,
-      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -446,7 +443,6 @@ class VideoAd extends AdMob {
   }) {
     super.set(
       adUnitId: adUnitId,
-      targetInfo: targetInfo,
       keywords: keywords,
       contentUrl: contentUrl,
       childDirected: childDirected,
@@ -578,7 +574,7 @@ class VideoAd extends AdMob {
     }
 
     // Is this a test?
-    testing = testing ?? _testing;
+    testing ??= _testing;
 
     // If testing, assign a 'test' unit id.
     String adModId = testing
@@ -631,7 +627,6 @@ abstract class AdMob {
 
   void set({
     String adUnitId,
-    MobileAdTargetingInfo targetInfo,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
@@ -643,17 +638,11 @@ abstract class AdMob {
       _adUnitId ??= adUnitId;
     }
 
-//    _info ??= targetInfo;
-
     _keywords ??= keywords;
 
     _contentUrl ??= contentUrl;
 
     _childDirected ??= childDirected;
-
-    if (testDevices != null &&
-        testDevices.every((String s) => s == null || s.isEmpty))
-      testDevices = null;
 
     _testDevices ??= testDevices;
 
@@ -676,16 +665,33 @@ abstract class AdMob {
     List<String> testDevices,
     bool nonPersonalizedAds,
   }) {
+    // Either might be an 'empty' list.
     keywords ??= _keywords;
-    if (keywords != null && keywords.isEmpty) keywords = _keywords;
 
-    if (contentUrl == null || contentUrl.isEmpty) contentUrl = _contentUrl;
+    // An 'empty' list is not passed.
+    if (keywords.isEmpty ||
+        keywords.every((String s) => s == null || s.isEmpty)) {
+      keywords = null;
+    }
+
+    if (contentUrl == null) {
+      contentUrl = _contentUrl;
+    } else if (contentUrl.isEmpty) {
+      contentUrl = null;
+    }
 
     // If it's true, it has to be passed.
     if (_childDirected != null && _childDirected)
       childDirected ??= _childDirected;
 
-    if (testDevices == null || testDevices.isEmpty) testDevices = _testDevices;
+    // Either might be an 'empty' list.
+    testDevices ??= _testDevices;
+
+    // An 'empty' list is not passed.
+    if (testDevices.isEmpty ||
+        testDevices.every((String s) => s == null || s.isEmpty)) {
+      testDevices = null;
+    }
 
     nonPersonalizedAds ??= _nonPersonalizedAds;
 
