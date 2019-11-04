@@ -361,7 +361,7 @@ class Ads {
     if (!_firstObject) return show;
 
     if (_bannerAd == null) {
-      bool show = await setBannerAd(
+      show = await setBannerAd(
         adUnitId: adUnitId,
         keywords: keywords,
         contentUrl: contentUrl,

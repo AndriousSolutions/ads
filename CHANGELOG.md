@@ -1,3 +1,7 @@
+## 1.5.1
+ November 04, 2019
+- local variable, show, was shadowed in showBannerAd()
+
 ## 1.5.0
  November 03, 2019
 - Pass empty keywords and testDevices to override any previous values
