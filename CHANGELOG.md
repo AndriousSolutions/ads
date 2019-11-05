@@ -1,3 +1,9 @@
+## 1.6.0
+ November 05, 2019
+- New getter eventError
+- New function getEventError 
+- Logcat Event Errors
+ 
 ## 1.5.2
  November 05, 2019
 - Add assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");

@@ -239,6 +239,7 @@ class Ads {
   AnchorType get anchorType => _anchorType;
 
   bool get inError =>
+      _eventErrors.isNotEmpty ||
       (_bannerAd?._banner?.inError ?? false) ||
       (_fullScreenAd?.inError ?? false) ||
       (_videoAd?.inError ?? false);
@@ -249,6 +250,8 @@ class Ads {
 
   bool get videoError => _videoAd?.inError ?? false;
 
+  bool get eventError => _eventErrors.isNotEmpty;
+
   Exception getError() =>
       getBannerError() ?? getScreenError() ?? getVideoError();
 
@@ -258,7 +261,14 @@ class Ads {
 
   Exception getVideoError() => _videoAd?.getError();
 
+  @deprecated
   List<EventError> get eventErrors => _eventErrors;
+
+  List<EventError> getEventErrors() {
+    List<EventError> list = _eventErrors;
+    _eventErrors = null;
+    return list;
+  }
 
   BannerAd _bannerAd;
 
@@ -779,7 +789,7 @@ class _AdListener {
       try {
         listener(event);
       } catch (ex) {
-        _errorHandler(ex, event: event);
+        _eventError(ex, event: event);
       }
     }
 
@@ -787,7 +797,7 @@ class _AdListener {
       try {
         listener(event);
       } catch (ex) {
-        _errorHandler(ex, event: event);
+        _eventError(ex, event: event);
       }
     }
 
@@ -797,7 +807,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.loaded);
+            _eventError(ex, event: MobileAdEvent.loaded);
           }
         }
 
@@ -807,7 +817,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.failedToLoad);
+            _eventError(ex, event: MobileAdEvent.failedToLoad);
           }
         }
 
@@ -817,7 +827,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.clicked);
+            _eventError(ex, event: MobileAdEvent.clicked);
           }
         }
 
@@ -827,7 +837,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.impression);
+            _eventError(ex, event: MobileAdEvent.impression);
           }
         }
 
@@ -837,7 +847,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.opened);
+            _eventError(ex, event: MobileAdEvent.opened);
           }
         }
 
@@ -847,7 +857,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.leftApplication);
+            _eventError(ex, event: MobileAdEvent.leftApplication);
           }
         }
 
@@ -857,7 +867,7 @@ class _AdListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: MobileAdEvent.closed);
+            _eventError(ex, event: MobileAdEvent.closed);
           }
         }
 
@@ -865,7 +875,7 @@ class _AdListener {
       default:
     }
     // Notify the developer of any errors.
-    assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");
+    assert(_eventErrors.isEmpty, "Ads: Errors in Ad Events! Refer to logcat.");
   }
 
   clearAll() {
@@ -961,7 +971,7 @@ class _VidListener {
         try {
           listener(mobileEvent);
         } catch (ex) {
-          _errorHandler(ex, event: mobileEvent);
+          _eventError(ex, event: mobileEvent);
         }
       }
     }
@@ -970,7 +980,7 @@ class _VidListener {
       try {
         listener(event, rewardType: rewardType, rewardAmount: rewardAmount);
       } catch (ex) {
-        _errorHandler(ex, event: mobileEvent);
+        _eventError(ex, event: mobileEvent);
       }
     }
 
@@ -980,7 +990,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -990,7 +1000,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1000,7 +1010,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1010,7 +1020,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1020,7 +1030,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1030,7 +1040,7 @@ class _VidListener {
           try {
             listener(rewardType, rewardAmount);
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1040,7 +1050,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1050,7 +1060,7 @@ class _VidListener {
           try {
             listener();
           } catch (ex) {
-            _errorHandler(ex, event: mobileEvent);
+            _eventError(ex, event: mobileEvent);
           }
         }
 
@@ -1060,7 +1070,7 @@ class _VidListener {
     }
 
     // Notify the developer of any errors.
-    assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");
+    assert(_eventErrors.isEmpty, "Ads: Errors in Ad Events! Refer to logcat.");
   }
 
   /// Clear all possible types of Ad listeners on one call.
@@ -1121,9 +1131,10 @@ class _VidListener {
 }
 
 /// Error Handler for the event listeners.
-void _errorHandler(Object ex, {MobileAdEvent event}) {
+void _eventError(Object ex, {MobileAdEvent event}) {
   if (ex is! Exception) ex = Exception(ex.toString());
   _eventErrors.add(EventError(event, ex));
+  print("Ads: $event - ${ex.toString()}");
 }
 
 class EventError {
