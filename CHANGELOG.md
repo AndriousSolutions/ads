@@ -1,3 +1,7 @@
+## 1.5.2
+ November 05, 2019
+- Add assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");
+
 ## 1.5.1
  November 04, 2019
 - local variable, show, was shadowed in showBannerAd()

@@ -864,6 +864,8 @@ class _AdListener {
         break;
       default:
     }
+    // Notify the developer of any errors.
+    assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");
   }
 
   clearAll() {
@@ -1056,6 +1058,9 @@ class _VidListener {
       default:
         print(event);
     }
+
+    // Notify the developer of any errors.
+    assert(_eventErrors.isEmpty,"Errors in Ad Events! Refer to logcat.");
   }
 
   /// Clear all possible types of Ad listeners on one call.
