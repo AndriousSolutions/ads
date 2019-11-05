@@ -1,3 +1,7 @@
+## 1.6.1
+ November 05, 2019
+-  _eventErrors?.isNotEmpty || getter was called on null
+
 ## 1.6.0
  November 05, 2019
 - New getter eventError

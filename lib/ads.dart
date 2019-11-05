@@ -239,7 +239,7 @@ class Ads {
   AnchorType get anchorType => _anchorType;
 
   bool get inError =>
-      _eventErrors.isNotEmpty ||
+      (_eventErrors?.isNotEmpty ?? false) ||
       (_bannerAd?._banner?.inError ?? false) ||
       (_fullScreenAd?.inError ?? false) ||
       (_videoAd?.inError ?? false);
@@ -250,7 +250,7 @@ class Ads {
 
   bool get videoError => _videoAd?.inError ?? false;
 
-  bool get eventError => _eventErrors.isNotEmpty;
+  bool get eventError => _eventErrors?.isNotEmpty ?? false;
 
   Exception getError() =>
       getBannerError() ?? getScreenError() ?? getVideoError();
