@@ -31,7 +31,11 @@ import 'package:flutter/foundation.dart';
 
 import 'package:firebase_admob/firebase_admob.dart';
 
+/// Signature for a [RewardAd] status change callback.
 typedef void RewardListener(String rewardType, int rewardAmount);
+
+/// Signature for a [AdError] status change callback.
+typedef void AdErrorListener(Exception ex);
 
 class Banner extends MobileAds {
   factory Banner({MobileAdListener listener}) {
@@ -59,6 +63,7 @@ class Banner extends MobileAds {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
     super.set(
       adUnitId: adUnitId,
@@ -72,6 +77,7 @@ class Banner extends MobileAds {
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
+      errorListener: errorListener,
     );
     _setSize ??= size ?? AdSize.banner;
     return load(
@@ -157,6 +163,7 @@ class FullScreenAd extends MobileAds {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
     super.set(
       adUnitId: adUnitId,
@@ -170,6 +177,7 @@ class FullScreenAd extends MobileAds {
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
+      errorListener: errorListener,
     );
     return load(
       show: false,
@@ -309,6 +317,7 @@ abstract class MobileAds extends AdMob {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
     super.set(
       adUnitId: adUnitId,
@@ -318,6 +327,7 @@ abstract class MobileAds extends AdMob {
       testDevices: testDevices,
       nonPersonalizedAds: nonPersonalizedAds,
       testing: testing,
+      errorListener: errorListener,
     );
     _anchorOffset ??= anchorOffset;
     _horizontalCenterOffset ??= horizontalCenterOffset;
@@ -440,6 +450,7 @@ class VideoAd extends AdMob {
     List<String> testDevices,
     bool nonPersonalizedAds,
     bool testing,
+    AdErrorListener errorListener,
   }) {
     super.set(
       adUnitId: adUnitId,
@@ -611,6 +622,7 @@ abstract class AdMob {
   bool _testing;
 
   Exception _ex;
+  Set<AdErrorListener> _adErrorListeners = Set();
 
   /// Return any exception
   Exception getError() {
@@ -633,6 +645,7 @@ abstract class AdMob {
     List<String> testDevices,
     bool nonPersonalizedAds,
     bool testing,
+    AdErrorListener errorListener,
   }) {
     if (adUnitId != null && adUnitId.isNotEmpty && adUnitId.length > 30) {
       _adUnitId ??= adUnitId;
@@ -649,6 +662,8 @@ abstract class AdMob {
     _nonPersonalizedAds ??= nonPersonalizedAds;
 
     _testing ??= testing;
+
+    this.errorListener = errorListener;
   }
 
   // Must show the AdMob ad.
@@ -710,5 +725,30 @@ abstract class AdMob {
     } else {
       _ex = ex;
     }
+    // Run any listeners.
+    _adErrorListener(_ex);
   }
+
+  /// The Ad's Error Listener Function.
+  void _adErrorListener(Exception ex) {
+    if (ex == null) return;
+    for (AdErrorListener listener in _adErrorListeners) {
+      try {
+        listener(ex);
+      } catch (e) {
+        print("AdMob: ${e.toString()}");
+      }
+    }
+  }
+
+  /// Set an Error Event Listener.
+  set errorListener(AdErrorListener listener) {
+    if (listener != null) _adErrorListeners.add(listener);
+  }
+
+  /// Remove a specific Error Listener.
+  bool removeError(AdErrorListener listener) => _adErrorListeners.remove(listener);
+
+  /// Empty any error handlers from memory.
+  void clearErrorListeners() => _adErrorListeners.clear();
 }

@@ -39,13 +39,19 @@ import 'package:firebase_admob/firebase_admob.dart'
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 
-import 'dart:developer';
+import 'dart:developer' show log;
 
-import 'package:ads/admob.dart';
+import 'package:ads/admob.dart'
+    show AdErrorListener, Banner, FullScreenAd, VideoAd;
+
+/// Signature for a [AdError] status change callback.
+//typedef void EventErrorListener(MobileAdEvent event, Exception ex);
 
 typedef void RewardListener(String rewardType, int rewardAmount);
 
 Set<MobileAdListener> _adEventListeners = Set();
+
+Set<AdErrorListener> _eventErrorListeners = Set();
 
 class Ads {
   /// Initialize the Firebase AdMob plugin with a number of options.
@@ -67,6 +73,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
     /// This class is being instantiated again??
     /// Continue, but do not activate this object to do anything.
@@ -121,7 +128,10 @@ class Ads {
 
     _anchorType = anchorType ?? AnchorType.bottom;
 
-    /// Prevent any further instantiations until plugin is initialized or not.
+    _errorListener = errorListener;
+
+    if (errorListener != null) _eventErrorListeners.add(errorListener);
+
     FirebaseAdMob.instance
         .initialize(
             appId: appId,
@@ -146,6 +156,7 @@ class Ads {
           anchorOffset: anchorOffset,
           horizontalCenterOffset: horizontalCenterOffset,
           anchorType: anchorType,
+          errorListener: errorListener,
         );
 
       if (screenUnitId != null && _fullScreenAd == null)
@@ -161,6 +172,7 @@ class Ads {
           anchorOffset: anchorOffset,
           horizontalCenterOffset: horizontalCenterOffset,
           anchorType: anchorType,
+          errorListener: errorListener,
         );
 
       if (videoUnitId != null && _videoAd == null) {
@@ -172,6 +184,7 @@ class Ads {
           childDirected: childDirected,
           testDevices: testDevices,
           testing: testing,
+          errorListener: errorListener,
         );
       }
     });
@@ -238,6 +251,8 @@ class Ads {
 
   AnchorType get anchorType => _anchorType;
 
+  AdErrorListener _errorListener;
+
   bool get inError =>
       (_eventErrors?.isNotEmpty ?? false) ||
       (_bannerAd?._banner?.inError ?? false) ||
@@ -266,7 +281,7 @@ class Ads {
 
   List<EventError> getEventErrors() {
     List<EventError> list = _eventErrors;
-    _eventErrors = null;
+    _eventErrors = List();
     return list;
   }
 
@@ -278,7 +293,7 @@ class Ads {
 
   /// Close any Ads, clean up memory and clear resources.
   void dispose() {
-    closeBannerAd();
+    removeBannerAd();
     closeFullScreenAd();
 
     /// Clear all Ad Event Listeners.
@@ -315,6 +330,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
@@ -340,6 +356,7 @@ class Ads {
       anchorOffset: anchorOffset ?? _anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset ?? _horizontalCenterOffset,
       anchorType: anchorType ?? _anchorType,
+      errorListener: errorListener ?? _errorListener,
     );
   }
 
@@ -365,6 +382,7 @@ class Ads {
     double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
+    AdErrorListener errorListener,
   }) async {
     bool show = false;
     // Can only have one instantiated Ads object.
@@ -383,11 +401,12 @@ class Ads {
         anchorOffset: anchorOffset,
         horizontalCenterOffset: horizontalCenterOffset,
         anchorType: anchorType,
+        errorListener: errorListener,
       );
       if (show) show = await _bannerAd.show();
     } else {
       if (listener != null) banner.eventListeners.add(listener);
-
+      if (errorListener != null) _eventErrorListeners.add(errorListener);
       show = await _bannerAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
@@ -429,11 +448,15 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) async {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) screen.eventListeners.add(listener);
+
+    // Add this listener to the Error Listeners.
+    if (errorListener != null) _eventErrorListeners.add(errorListener);
 
     _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
 
@@ -454,6 +477,7 @@ class Ads {
       anchorOffset: anchorOffset ?? _anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset ?? _horizontalCenterOffset,
       anchorType: anchorType ?? _anchorType,
+      errorListener: errorListener ?? _errorListener,
     );
   }
 
@@ -475,6 +499,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
     State state,
   }) async {
     bool show = false;
@@ -493,11 +518,13 @@ class Ads {
         horizontalCenterOffset: horizontalCenterOffset,
         anchorType: anchorType,
         listener: listener,
+        errorListener: errorListener,
       );
       if (show) show = await _fullScreenAd.show();
     } else {
       if (listener != null) screen.eventListeners.add(listener);
-
+      // Add this listener to the Error Listeners.
+      if (errorListener != null) _eventErrorListeners.add(errorListener);
       show = await _fullScreenAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
@@ -530,13 +557,19 @@ class Ads {
     bool nonPersonalizedAds,
     bool testing,
     RewardedVideoAdListener listener,
+    AdErrorListener errorListener,
   }) {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) video.eventListeners.add(listener);
 
-    _videoAd ??= VideoAd(listener: video.eventListener);
+    // Add this listener to the Error Listeners.
+    if (errorListener != null) _eventErrorListeners.add(errorListener);
+
+    _videoAd ??= VideoAd(
+      listener: video.eventListener,
+    );
 
     // If an unit id is not provided, it may be available from the constructor.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
@@ -552,6 +585,7 @@ class Ads {
       testDevices: testDevices ?? _testDevices,
       nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
       testing: testing ?? _testing,
+      errorListener: errorListener ?? _errorListener,
     );
   }
 
@@ -568,6 +602,7 @@ class Ads {
       List<String> testDevices,
       bool testing,
       RewardedVideoAdListener listener,
+      AdErrorListener errorListener,
       State state}) async {
     bool show = false;
     // Can only have one instantiated Ads object.
@@ -582,11 +617,13 @@ class Ads {
         testDevices: testDevices,
         testing: testing,
         listener: listener,
+        errorListener: errorListener,
       );
       if (show) show = await _videoAd.show();
     } else {
       if (listener != null) video.eventListeners.add(listener);
-
+      // Add this listener to the Error Listeners.
+      if (errorListener != null) _eventErrorListeners.add(errorListener);
       show = await _videoAd.show(
         adUnitId: adUnitId,
         targetInfo: targetInfo,
@@ -674,7 +711,10 @@ class BannerAd {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
+    AdErrorListener errorListener,
   }) {
+    // Add this listener to the Error Listeners.
+    if (errorListener != null) _eventErrorListeners.add(errorListener);
     return _banner.set(
       adUnitId: adUnitId,
       targetInfo: targetInfo,
@@ -688,6 +728,7 @@ class BannerAd {
       anchorOffset: anchorOffset,
       horizontalCenterOffset: horizontalCenterOffset,
       anchorType: anchorType,
+      errorListener: errorListener,
     );
   }
 
@@ -874,6 +915,7 @@ class _AdListener {
         break;
       default:
     }
+
     // Notify the developer of any errors.
     assert(_eventErrors.isEmpty, "Ads: Errors in Ad Events! Refer to logcat.");
   }
@@ -1130,15 +1172,29 @@ class _VidListener {
   }
 }
 
-/// Error Handler for the event listeners.
-void _eventError(Object ex, {MobileAdEvent event}) {
-  if (ex is! Exception) ex = Exception(ex.toString());
-  _eventErrors.add(EventError(event, ex));
-  print("Ads: $event - ${ex.toString()}");
-}
-
 class EventError {
   EventError(this.event, this.ex);
   MobileAdEvent event;
   Exception ex;
+}
+
+/// Error Handler for the event listeners.
+void _eventError(Object ex, {MobileAdEvent event}) {
+  if (ex is! Exception) ex = Exception(ex.toString());
+  _eventErrors?.add(EventError(event, ex));
+  print("Ads: $event - ${ex.toString()}");
+  // Loop through any error listeners.
+  _adErrorListener(ex);
+}
+
+/// The Ad's Error Listener Function.
+void _adErrorListener(Exception ex) {
+  if (ex == null) return;
+  for (AdErrorListener listener in _eventErrorListeners) {
+    try {
+      listener(ex);
+    } catch (e) {
+      print("Ads: ${e.toString()}");
+    }
+  }
 }

@@ -1,6 +1,11 @@
+## 1.7.0
+ November 07, 2019
+- errorListener in setBannerAd() and others.
+- removeBannerAd(); in dispose();
+
 ## 1.6.1
  November 05, 2019
--  _eventErrors?.isNotEmpty || getter was called on null
+- _eventErrors?.isNotEmpty || getter was called on null
 
 ## 1.6.0
  November 05, 2019
