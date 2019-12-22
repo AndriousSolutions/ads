@@ -1,3 +1,7 @@
+## 1.7.1
+ December 21, 2019
+- corrected README.md;
+
 ## 1.7.0
  November 07, 2019
 - errorListener in setBannerAd() and others.

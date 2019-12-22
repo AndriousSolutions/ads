@@ -747,7 +747,8 @@ abstract class AdMob {
   }
 
   /// Remove a specific Error Listener.
-  bool removeError(AdErrorListener listener) => _adErrorListeners.remove(listener);
+  bool removeError(AdErrorListener listener) =>
+      _adErrorListeners.remove(listener);
 
   /// Empty any error handlers from memory.
   void clearErrorListeners() => _adErrorListeners.clear();

@@ -294,7 +294,11 @@ class Ads {
   /// Close any Ads, clean up memory and clear resources.
   void dispose() {
     removeBannerAd();
+
     closeFullScreenAd();
+
+    /// Clear all Error Event Listeners.
+    _eventErrorListeners.clear();
 
     /// Clear all Ad Event Listeners.
     _adEventListeners.clear();

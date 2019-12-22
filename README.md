@@ -92,7 +92,7 @@ class AppAds {
       : 'ca-app-pub-3940256099942544/2934735716';
 
   /// Assign a listener.
-  static AdEventListener _eventListener = (MobileAdEvent event) {
+  static MobileAdListener _eventListener = (MobileAdEvent event) {
     if (event == MobileAdEvent.clicked) {
       print("The opened ad is clicked on.");
     }
@@ -106,7 +106,7 @@ class AppAds {
           bool childDirected,
           List<String> testDevices,
           bool testing,
-          AdEventListener listener,
+          MobileAdListener listener,
           State state,
           double anchorOffset,
           AnchorType anchorType}) =>
@@ -123,7 +123,7 @@ class AppAds {
           anchorOffset: anchorOffset,
           anchorType: anchorType);
 
-  static void hideBanner() => _ads?.hideBannerAd();
+  static void hideBanner() => _ads?.closeBannerAd();
 
   /// Call this static function in your State object's initState() function.
   static void init() => _ads ??= Ads(
