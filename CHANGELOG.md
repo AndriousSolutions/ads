@@ -1,3 +1,7 @@
+## 1.7.2
+ December 22, 2019
+- further modified README.md
+
 ## 1.7.1
  December 21, 2019
 - corrected README.md;
