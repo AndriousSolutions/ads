@@ -1,3 +1,7 @@
+## 1.7.3
+ June 04, 2020
+- Corrected Apache Licence
+
 ## 1.7.2
  December 22, 2019
 - further modified README.md
