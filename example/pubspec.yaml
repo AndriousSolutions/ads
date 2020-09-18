@@ -1,12 +1,12 @@
 name: admob_app
 description: A Flutter Package to utilize the Firebase ADMob Plugin. Supplying an array 'easy to use' Static Functions.
-version: 0.2.0
+version: 0.2.1
 author: Greg Perry <support@andrioussolutions.com>
 homepage: https://github.com/AndriousSolutions/ads
 repository: https://github.com/AndriousSolutions/ads
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -16,8 +16,7 @@ dependencies:
     path: ..
 
   # https://pub.dartlang.org/packages/firebase_admob#-changelog-tab-
-  firebase_admob:
-  
+  firebase_admob: 0.10.0-dev.1
 
 dev_dependencies:
   flutter_test:

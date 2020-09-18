@@ -1,3 +1,7 @@
+## 2.0.0
+ September 18, 2020
+- Upgraded to firebase_admob: 0.10.0-dev.1
+
 ## 1.7.3
  June 04, 2020
 - Corrected Apache Licence
