@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ads/ads.dart' show Ads;
 
-import '../example/main.dart' show MyApp, ads;
+import '../example/lib/main.dart' show MyApp, ads;
 
 int frames;
 
