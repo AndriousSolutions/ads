@@ -19,6 +19,8 @@ library ads;
 ///
 ///
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/widgets.dart' show State;
 
 import 'dart:async' show Future;
@@ -34,12 +36,12 @@ typedef void RewardListener(String rewardType, int rewardAmount);
 typedef void AdErrorListener(Exception ex);
 
 class Banner extends MobileAds {
-  factory Banner({MobileAdListener listener}) {
-    _this ??= Banner._(listener);
-    return _this;
-  }
-  static Banner _this;
+  //
+  factory Banner({MobileAdListener listener}) => _this ??= Banner._(listener);
+
   Banner._(MobileAdListener listener) : super(listener: listener);
+
+  static Banner _this;
 
   AdSize _setSize;
   AdSize _showSize;
@@ -129,7 +131,9 @@ class Banner extends MobileAds {
     return BannerAd(
       adUnitId: testing
           ? BannerAd.testAdUnitId
-          : adUnitId.isEmpty ? BannerAd.testAdUnitId : adUnitId.trim(),
+          : adUnitId.isEmpty
+              ? BannerAd.testAdUnitId
+              : adUnitId.trim(),
       size: _showSize ?? _setSize ?? AdSize.banner,
       targetingInfo: targetInfo,
     );
@@ -137,12 +141,13 @@ class Banner extends MobileAds {
 }
 
 class FullScreenAd extends MobileAds {
-  factory FullScreenAd({MobileAdListener listener}) {
-    _this ??= FullScreenAd._(listener);
-    return _this;
-  }
-  static FullScreenAd _this;
+  //
+  factory FullScreenAd({MobileAdListener listener}) =>
+      _this ??= FullScreenAd._(listener);
+
   FullScreenAd._(MobileAdListener listener) : super(listener: listener);
+
+  static FullScreenAd _this;
 
   /// Set options for the Interstitial Ad
   // Uses super.set();
@@ -194,7 +199,121 @@ class FullScreenAd extends MobileAds {
     return InterstitialAd(
       adUnitId: testing
           ? InterstitialAd.testAdUnitId
-          : adUnitId.isEmpty ? InterstitialAd.testAdUnitId : adUnitId.trim(),
+          : adUnitId.isEmpty
+              ? InterstitialAd.testAdUnitId
+              : adUnitId.trim(),
+      targetingInfo: targetInfo,
+    );
+  }
+}
+
+class Native extends MobileAds {
+  //
+  factory Native({String factoryId, MobileAdListener listener}) =>
+      _this ??= Native._(factoryId, listener);
+
+  Native._(this._factoryId, MobileAdListener listener)
+      : super(listener: listener);
+
+  static Native _this;
+
+  /// An identifier for the factory that creates the Platform view.
+  String _factoryId;
+
+  /// Set options to the Banner Ad.
+  @override
+  Future<bool> set({
+    String adUnitId,
+    String factoryId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool nonPersonalizedAds,
+    bool testing,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    AdErrorListener errorListener,
+  }) {
+    // Override the initial id.
+    if (factoryId != null && factoryId.isNotEmpty) {
+      _factoryId = factoryId;
+    }
+    super.set(
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
+      anchorType: anchorType,
+      errorListener: errorListener,
+    );
+    return load(
+      show: false,
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
+      anchorType: anchorType,
+    );
+  }
+
+  /// Show the Banner Ad.
+  @override
+  Future<bool> show({
+    String adUnitId,
+    String factoryId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    State state,
+  }) async {
+    // Override the initial id.
+    if (factoryId != null && factoryId.isNotEmpty) {
+      await dispose();
+      _factoryId = factoryId;
+    }
+    return super.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
+        anchorType: anchorType,
+        state: state);
+  }
+
+  _createAd({bool testing, String adUnitId, MobileAdTargetingInfo targetInfo}) {
+    return NativeAd(
+      adUnitId: testing
+          ? NativeAd.testAdUnitId
+          : adUnitId.isEmpty
+              ? NativeAd.testAdUnitId
+              : adUnitId.trim(),
+      factoryId: _factoryId,
       targetingInfo: targetInfo,
     );
   }
@@ -251,10 +370,13 @@ abstract class MobileAds extends AdMob {
       if (show && event == MobileAdEvent.loaded) {
         try {
           _ad.show(
-              anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
-              horizontalCenterOffset:
-                  horizontalCenterOffset ?? _horizontalCenterOffset ?? 0.0,
-              anchorType: anchorType ?? _anchorType ?? AnchorType.bottom);
+            anchorOffset: anchorOffset ?? _anchorOffset ?? 0.0,
+            horizontalCenterOffset:
+                horizontalCenterOffset ?? _horizontalCenterOffset ?? 0.0,
+            anchorType: anchorType ?? _anchorType ?? Platform.isAndroid
+                ? AnchorType.bottom
+                : AnchorType.top,
+          );
         } catch (ex) {
           _setError(ex);
           return;
@@ -421,16 +543,15 @@ abstract class MobileAds extends AdMob {
 }
 
 class VideoAd extends AdMob {
-  factory VideoAd({RewardedVideoAdListener listener}) {
-    _this ??= VideoAd._(listener);
-    return _this;
-  }
-
-  static VideoAd _this;
+  //
+  factory VideoAd({RewardedVideoAdListener listener}) =>
+      _this ??= VideoAd._(listener);
 
   VideoAd._(RewardedVideoAdListener listener) : super() {
     this.listener = listener;
   }
+
+  static VideoAd _this;
 
   RewardedVideoAdListener listener;
   RewardedVideoAd _rewardedVideoAd;
@@ -586,7 +707,9 @@ class VideoAd extends AdMob {
     // If testing, assign a 'test' unit id.
     String adModId = testing
         ? RewardedVideoAd.testAdUnitId
-        : adUnitId.isEmpty ? RewardedVideoAd.testAdUnitId : adUnitId.trim();
+        : adUnitId.isEmpty
+            ? RewardedVideoAd.testAdUnitId
+            : adUnitId.trim();
 
     if (targetInfo == null)
       targetInfo = _targetInfo(

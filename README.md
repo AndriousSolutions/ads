@@ -13,7 +13,7 @@ Instead, always go up to the '**major**' semantic version number when installing
 And so, for this version, add this to your package's pubspec.yaml file instead:
 ```yaml
 dependencies:
-  ads:^1.0.0
+  ads:^2.0.0
 ```
 For more information on this topic, read the article, [The importance of semantic versioning](https://medium.com/@xabaras/the-importance-of-semantic-versioning-9b78e8e59bba).
 
@@ -52,7 +52,7 @@ Dart uses packages to distribute libraries like this one.  You can find publicly
 ## There Must Only Be One!
 Try instantiating more than one Ads object, and you'll be a little dissappointed if not down right confused. It'll appear the second Ads object is not working, and you'd be right.
 ```dart
-    _ads = Ads(
+    _ads = Ad(
       appId,
       bannerUnitId: bannerUnitId,
       screenUnitId: screenUnitId,
@@ -63,7 +63,7 @@ Try instantiating more than one Ads object, and you'll be a little dissappointed
       listener: eventListener,
     );
 
-    _adsTest = Ads(
+    _adsTest = Ad(
       appId,
       bannerUnitId: bannerUnitId,
       screenUnitId: screenUnitId,
@@ -157,7 +157,7 @@ import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 import 'package:firebase_admob/firebase_admob.dart';
 
-import 'package:ads/ads.dart';
+import 'package:ads/ad.dart';
 
 void main() {
   runApp(MyApp());
@@ -201,7 +201,7 @@ class _MyAppState extends State<MyApp> {
       }
     };
 
-    appAds = Ads(
+    appAds = Ad(
       appId,
       bannerUnitId: bannerUnitId,
       screenUnitId: screenUnitId,

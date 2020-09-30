@@ -1,3 +1,8 @@
+## 2.1.0
+ September 30, 2020
+- Incorporate plugin's Native ads
+- Upgraded to firebase_admob: ^0.10.0
+
 ## 2.0.0
  September 18, 2020
 - Upgraded to firebase_admob: 0.10.0-dev.1

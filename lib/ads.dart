@@ -20,6 +20,9 @@ library ads;
 ///   Dart Packages.org: https://pub.dartlang.org/packages/ads#-changelog-tab-
 ///
 
+/// Export the firebase_admob plugin for the developer to use.
+export 'package:firebase_admob/firebase_admob.dart';
+
 import 'package:flutter/widgets.dart' show State;
 
 import 'package:firebase_admob/firebase_admob.dart'
@@ -37,8 +40,8 @@ import 'package:flutter/foundation.dart' show VoidCallback;
 
 import 'dart:developer' show log;
 
-import 'package:ads/admob.dart'
-    show AdErrorListener, Banner, FullScreenAd, VideoAd;
+import 'package:ads/admob.dart' as m
+    show AdErrorListener, Banner, FullScreenAd, Native, VideoAd;
 
 /// Signature for a [AdError] status change callback.
 //typedef void EventErrorListener(MobileAdEvent event, Exception ex);
@@ -47,7 +50,7 @@ typedef void RewardListener(String rewardType, int rewardAmount);
 
 Set<MobileAdListener> _adEventListeners = Set();
 
-Set<AdErrorListener> _eventErrorListeners = Set();
+Set<m.AdErrorListener> _eventErrorListeners = Set();
 
 class Ads {
   /// Initialize the Firebase AdMob plugin with a number of options.
@@ -57,6 +60,7 @@ class Ads {
     bool analyticsEnabled = false,
     String bannerUnitId,
     String screenUnitId,
+    String nativeUnitId,
     String videoUnitId,
     List<String> keywords,
     String contentUrl,
@@ -69,7 +73,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) {
     /// This class is being instantiated again??
     /// Continue, but do not activate this object to do anything.
@@ -97,6 +101,9 @@ class Ads {
     }
     if (screenUnitId != null) {
       _screenUnitId = screenUnitId.trim();
+    }
+    if (nativeUnitId != null) {
+      _nativeUnitId = nativeUnitId.trim();
     }
     if (videoUnitId != null) {
       _videoUnitId = videoUnitId.trim();
@@ -192,6 +199,9 @@ class Ads {
   /// Stores the Interstitial ad unit id.
   String _screenUnitId = '';
 
+  /// Stores the Native ad unit id.
+  String _nativeUnitId = '';
+
   /// Stores the Video ad unit id.
   String _videoUnitId = '';
 
@@ -247,7 +257,7 @@ class Ads {
 
   AnchorType get anchorType => _anchorType;
 
-  AdErrorListener _errorListener;
+  m.AdErrorListener _errorListener;
 
   bool get inError =>
       (_eventErrors?.isNotEmpty ?? false) ||
@@ -281,11 +291,13 @@ class Ads {
     return list;
   }
 
-  BannerAd _bannerAd;
+  Banner _bannerAd;
 
-  FullScreenAd _fullScreenAd;
+  m.FullScreenAd _fullScreenAd;
 
-  VideoAd _videoAd;
+  Native _nativeAd;
+
+  m.VideoAd _videoAd;
 
   /// Close any Ads, clean up memory and clear resources.
   void dispose() {
@@ -315,6 +327,26 @@ class Ads {
     _eventErrors.clear();
   }
 
+  /// Set an Ad Event Listener.
+  set eventListener(MobileAdListener listener) =>
+      _adEventListeners.add(listener);
+
+  /// Remove a specific Add Event Listener.
+  bool removeEvent(MobileAdListener listener) =>
+      _adEventListeners.remove(listener);
+
+  final banner = _AdListener(_adEventListeners);
+
+  /// Set a Banner Ad Event Listener.
+  set bannerListener(MobileAdListener listener) {
+    if (listener == null) return;
+    banner.eventListeners.add(listener);
+  }
+
+  /// Remove a specific Banner Ad Event Listener.
+  bool removeBanner(MobileAdListener listener) =>
+      banner.eventListeners.remove(listener);
+
   /// Set the Banner Ad options.
   Future<bool> setBannerAd({
     String adUnitId,
@@ -330,14 +362,14 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
 
     if (listener != null) banner.eventListeners.add(listener);
 
-    _bannerAd ??= BannerAd(listener: banner.eventListener);
+    _bannerAd ??= Banner(listener: banner.eventListener);
 
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
       adUnitId = _bannerUnitId;
@@ -382,7 +414,7 @@ class Ads {
     double horizontalCenterOffset,
     AnchorType anchorType,
     State state,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) async {
     bool show = false;
     // Can only have one instantiated Ads object.
@@ -434,6 +466,21 @@ class Ads {
   /// Remove the Banner Ad from memory
   void removeBannerAd({bool load = false}) => _bannerAd?.dispose(load: load);
 
+  /// Full Screen Ad
+  ///
+  final screen = _AdListener(_adEventListeners);
+
+  /// Set a Full Screen Ad Event Listener.
+  set screenListener(MobileAdListener listener) {
+    if (listener == null) return;
+
+    screen.eventListeners.add(listener);
+  }
+
+  /// Remove a Full Screen Ad Event Listener.
+  bool removeScreen(MobileAdListener listener) =>
+      screen.eventListeners.remove(listener);
+
   /// Set the Full Screen Ad options.
   Future<bool> setFullScreenAd({
     String adUnitId,
@@ -448,7 +495,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) async {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
@@ -458,7 +505,7 @@ class Ads {
     // Add this listener to the Error Listeners.
     if (errorListener != null) _eventErrorListeners.add(errorListener);
 
-    _fullScreenAd ??= FullScreenAd(listener: screen.eventListener);
+    _fullScreenAd ??= m.FullScreenAd(listener: screen.eventListener);
 
     // If an unit id is not provided, it may be available from the constructor.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
@@ -499,7 +546,7 @@ class Ads {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
     State state,
   }) async {
     bool show = false;
@@ -545,6 +592,154 @@ class Ads {
   /// Hide the Full Screen Ad.
   void closeFullScreenAd() => _fullScreenAd?.dispose();
 
+  /// Native Ad
+  ///
+  final native = _AdListener(_adEventListeners);
+
+  /// Set a Full Screen Ad Event Listener.
+  set nativeListener(MobileAdListener listener) {
+    if (listener == null) return;
+
+    native.eventListeners.add(listener);
+  }
+
+  /// Remove a Full Screen Ad Event Listener.
+  bool removeNative(MobileAdListener listener) =>
+      native.eventListeners.remove(listener);
+
+  /// Set the Banner Ad options.
+  Future<bool> setNativeAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool nonPersonalizedAds,
+    bool testing,
+    MobileAdListener listener,
+    AdSize size,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    m.AdErrorListener errorListener,
+  }) {
+    // Can only have one instantiated Ads object.
+    if (!_firstObject) return Future.value(false);
+
+    if (listener != null) native.eventListeners.add(listener);
+
+    _nativeAd ??= Native(listener: native.eventListener);
+
+    if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
+      adUnitId = _nativeUnitId;
+    }
+
+    return _nativeAd.set(
+      adUnitId: adUnitId,
+      targetInfo: targetInfo,
+      keywords: keywords ?? _keywords,
+      contentUrl: contentUrl ?? _contentUrl,
+      childDirected: childDirected ?? _childDirected,
+      testDevices: testDevices ?? _testDevices,
+      nonPersonalizedAds: nonPersonalizedAds ?? _nonPersonalizedAds,
+      testing: testing ?? _testing,
+      anchorOffset: anchorOffset ?? _anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset ?? _horizontalCenterOffset,
+      anchorType: anchorType ?? _anchorType,
+      errorListener: errorListener ?? _errorListener,
+    );
+  }
+
+  /// Show a Native Ad.
+  ///
+  /// parameters:
+  /// state is passed to determine if the app is not terminating. No need to show ad.
+  ///
+  /// anchorOffset is the logical pixel offset from the edge of the screen (default 0.0)
+  ///
+  /// anchorType place advert at top or bottom of screen (default bottom)
+  Future<bool> showNativeAd({
+    String adUnitId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    MobileAdListener listener,
+    AdSize size,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    State state,
+    m.AdErrorListener errorListener,
+  }) async {
+    bool show = false;
+    // Can only have one instantiated Ads object.
+    if (!_firstObject) return show;
+
+    if (_nativeAd == null) {
+      show = await setBannerAd(
+        adUnitId: adUnitId,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        listener: listener,
+        size: size,
+        anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
+        anchorType: anchorType,
+        errorListener: errorListener,
+      );
+      if (show) show = await _nativeAd.show();
+    } else {
+      if (listener != null) native.eventListeners.add(listener);
+      if (errorListener != null) _eventErrorListeners.add(errorListener);
+      show = await _nativeAd.show(
+        adUnitId: adUnitId,
+        targetInfo: targetInfo,
+        keywords: keywords,
+        contentUrl: contentUrl,
+        childDirected: childDirected,
+        testDevices: testDevices,
+        testing: testing,
+        anchorOffset: anchorOffset,
+        horizontalCenterOffset: horizontalCenterOffset,
+        anchorType: anchorType,
+        state: state,
+      );
+    }
+    return show;
+  }
+
+  @deprecated
+  void hideNativeAd() => closeNativeAd();
+
+  /// Hide a Native Ad.
+  void closeNativeAd({bool load = true}) => _nativeAd?.dispose(load: load);
+
+  /// Remove the Native Ad from memory
+  void removeNativeAd({bool load = false}) => _nativeAd?.dispose(load: load);
+
+  /// Video Ad
+  ///
+  final video = _VidListener(_adEventListeners);
+
+  /// Set a Video Ad Event Listener
+  set videoListener(RewardedVideoAdListener listener) {
+    if (listener == null) return;
+    video.eventListeners.add(listener);
+  }
+
+  /// Remove a specific Video Ad Event Listener.
+  bool removeVideo(RewardedVideoAdListener listener) =>
+      video.eventListeners.remove(listener);
+
+  /// Video Ad
+  ///
   /// Set the Video Ad options.
   Future<bool> setVideoAd({
     bool show = false,
@@ -557,7 +752,7 @@ class Ads {
     bool nonPersonalizedAds,
     bool testing,
     RewardedVideoAdListener listener,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) {
     // Can only have one instantiated Ads object.
     if (!_firstObject) return Future.value(false);
@@ -567,7 +762,7 @@ class Ads {
     // Add this listener to the Error Listeners.
     if (errorListener != null) _eventErrorListeners.add(errorListener);
 
-    _videoAd ??= VideoAd(
+    _videoAd ??= m.VideoAd(
       listener: video.eventListener,
     );
 
@@ -602,7 +797,7 @@ class Ads {
       List<String> testDevices,
       bool testing,
       RewardedVideoAdListener listener,
-      AdErrorListener errorListener,
+      m.AdErrorListener errorListener,
       State state}) async {
     bool show = false;
     // Can only have one instantiated Ads object.
@@ -637,65 +832,21 @@ class Ads {
     }
     return show;
   }
-
-  /// Set an Ad Event Listener.
-  set eventListener(MobileAdListener listener) =>
-      _adEventListeners.add(listener);
-
-  /// Remove a specific Add Event Listener.
-  bool removeEvent(MobileAdListener listener) =>
-      _adEventListeners.remove(listener);
-
-  final banner = _AdListener(_adEventListeners);
-
-  /// Set a Banner Ad Event Listener.
-  set bannerListener(MobileAdListener listener) {
-    if (listener == null) return;
-    banner.eventListeners.add(listener);
-  }
-
-  /// Remove a specific Banner Ad Event Listener.
-  bool removeBanner(MobileAdListener listener) =>
-      banner.eventListeners.remove(listener);
-
-  final screen = _AdListener(_adEventListeners);
-
-  /// Set a Full Screen Ad Event Listener.
-  set screenListener(MobileAdListener listener) {
-    if (listener == null) return;
-
-    screen.eventListeners.add(listener);
-  }
-
-  /// Remove a Full Screen Ad Event Listener.
-  bool removeScreen(MobileAdListener listener) =>
-      screen.eventListeners.remove(listener);
-
-  final video = _VidListener(_adEventListeners);
-
-  /// Set a Video Ad Event Listener
-  set videoListener(RewardedVideoAdListener listener) {
-    if (listener == null) return;
-    video.eventListeners.add(listener);
-  }
-
-  /// Remove a specific Video Ad Event Listener.
-  bool removeVideo(RewardedVideoAdListener listener) =>
-      video.eventListeners.remove(listener);
 }
 
 List<EventError> _eventErrors = List();
 
-class BannerAd {
-  factory BannerAd({MobileAdListener listener}) {
-    _this ??= BannerAd._(listener);
-    return _this;
+class Banner {
+//
+  factory Banner({MobileAdListener listener}) => _this ??= Banner._(listener);
+
+  Banner._(MobileAdListener listener) {
+    _banner = m.Banner(listener: listener);
   }
-  static BannerAd _this;
-  BannerAd._(MobileAdListener listener) {
-    _banner = Banner(listener: listener);
-  }
-  Banner _banner;
+
+  static Banner _this;
+
+  m.Banner _banner;
 
   /// Set options to the Banner Ad.
   Future<bool> set({
@@ -711,7 +862,7 @@ class BannerAd {
     double anchorOffset,
     double horizontalCenterOffset,
     AnchorType anchorType,
-    AdErrorListener errorListener,
+    m.AdErrorListener errorListener,
   }) {
     // Add this listener to the Error Listeners.
     if (errorListener != null) _eventErrorListeners.add(errorListener);
@@ -767,6 +918,94 @@ class BannerAd {
     _banner?.dispose()?.then((_) {
       // Load the Ad into memory again
       if (load) _banner.load(show: false);
+    });
+  }
+}
+
+class Native {
+//
+  factory Native({MobileAdListener listener}) => _this ??= Native._(listener);
+
+  Native._(MobileAdListener listener) {
+    _native = m.Native(listener: listener);
+  }
+
+  static Native _this;
+
+  m.Native _native;
+
+  /// Set options to the Banner Ad.
+  Future<bool> set({
+    String adUnitId,
+    String factoryId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool nonPersonalizedAds,
+    bool testing,
+    AdSize size,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    m.AdErrorListener errorListener,
+  }) {
+    // Add this listener to the Error Listeners.
+    if (errorListener != null) _eventErrorListeners.add(errorListener);
+    return _native.set(
+      adUnitId: adUnitId,
+      factoryId: factoryId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      nonPersonalizedAds: nonPersonalizedAds,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
+      anchorType: anchorType,
+      errorListener: errorListener,
+    );
+  }
+
+  /// Show the Banner Ad.
+  Future<bool> show({
+    String adUnitId,
+    String factoryId,
+    MobileAdTargetingInfo targetInfo,
+    List<String> keywords,
+    String contentUrl,
+    bool childDirected,
+    List<String> testDevices,
+    bool testing,
+    AdSize size,
+    double anchorOffset,
+    double horizontalCenterOffset,
+    AnchorType anchorType,
+    State state,
+  }) {
+    return _native.show(
+      adUnitId: adUnitId,
+      factoryId: factoryId,
+      targetInfo: targetInfo,
+      keywords: keywords,
+      contentUrl: contentUrl,
+      childDirected: childDirected,
+      testDevices: testDevices,
+      testing: testing,
+      anchorOffset: anchorOffset,
+      horizontalCenterOffset: horizontalCenterOffset,
+      anchorType: anchorType,
+      state: state,
+    );
+  }
+
+  void dispose({bool load = false}) {
+    _native?.dispose()?.then((_) {
+      // Load the Ad into memory again
+      if (load) _native.load(show: false);
     });
   }
 }
@@ -1190,7 +1429,7 @@ void _eventError(Object ex, {MobileAdEvent event}) {
 /// The Ad's Error Listener Function.
 void _adErrorListener(Exception ex) {
   if (ex == null) return;
-  for (AdErrorListener listener in _eventErrorListeners) {
+  for (m.AdErrorListener listener in _eventErrorListeners) {
     try {
       listener(ex);
     } catch (e) {
