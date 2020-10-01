@@ -1,3 +1,8 @@
+## 2.1.1
+ September 30, 2020
+- String factoryId to Ads constructor
+- Complete incorporation of 'native ad' to Ads class.
+
 ## 2.1.0
  September 30, 2020
 - Incorporate plugin's Native ads

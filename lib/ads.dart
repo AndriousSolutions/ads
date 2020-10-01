@@ -62,6 +62,7 @@ class Ads {
     String screenUnitId,
     String nativeUnitId,
     String videoUnitId,
+    String factoryId,
     List<String> keywords,
     String contentUrl,
     bool childDirected,
@@ -107,6 +108,9 @@ class Ads {
     }
     if (videoUnitId != null) {
       _videoUnitId = videoUnitId.trim();
+    }
+    if (factoryId != null) {
+      _factoryId = factoryId.trim();
     }
 
     _keywords = keywords ?? [];
@@ -178,6 +182,26 @@ class Ads {
           errorListener: errorListener,
         );
 
+      if (nativeUnitId != null &&
+          _factoryId != null &&
+          _factoryId.isNotEmpty &&
+          _nativeAd == null)
+        setNativeAd(
+          adUnitId: nativeUnitId,
+          factoryId: factoryId,
+          keywords: keywords,
+          contentUrl: contentUrl,
+          childDirected: childDirected,
+          testDevices: testDevices,
+          nonPersonalizedAds: nonPersonalizedAds,
+          testing: testing,
+          listener: listener,
+          anchorOffset: anchorOffset,
+          horizontalCenterOffset: horizontalCenterOffset,
+          anchorType: anchorType,
+          errorListener: errorListener,
+        );
+
       if (videoUnitId != null && _videoAd == null) {
         if (listener != null) _adEventListeners.add(listener);
         setVideoAd(
@@ -212,6 +236,11 @@ class Ads {
   static bool _initialized = false;
 
   bool get initialized => _initialized;
+
+  String _factoryId;
+
+  /// Get factory Id for platform-specific ad
+  String get factoryId => _factoryId;
 
   List<String> _keywords;
 
@@ -263,11 +292,14 @@ class Ads {
       (_eventErrors?.isNotEmpty ?? false) ||
       (_bannerAd?._banner?.inError ?? false) ||
       (_fullScreenAd?.inError ?? false) ||
+      (_nativeAd?._native?.inError ?? false) ||
       (_videoAd?.inError ?? false);
 
   bool get bannerError => _bannerAd?._banner?.inError ?? false;
 
   bool get screenError => _fullScreenAd?.inError ?? false;
+
+  bool get nativeError => _nativeAd?._native?.inError ?? false;
 
   bool get videoError => _videoAd?.inError ?? false;
 
@@ -279,6 +311,8 @@ class Ads {
   Exception getBannerError() => _bannerAd?._banner?.getError();
 
   Exception getScreenError() => _fullScreenAd?.getError();
+
+  Exception getNativeError() => _nativeAd?._native?.getError();
 
   Exception getVideoError() => _videoAd?.getError();
 
@@ -301,9 +335,12 @@ class Ads {
 
   /// Close any Ads, clean up memory and clear resources.
   void dispose() {
+    //
     removeBannerAd();
 
     closeFullScreenAd();
+
+    closeNativeAd();
 
     /// Clear all Error Event Listeners.
     _eventErrorListeners.clear();
@@ -596,20 +633,21 @@ class Ads {
   ///
   final native = _AdListener(_adEventListeners);
 
-  /// Set a Full Screen Ad Event Listener.
+  /// Set a Native Ad Event Listener.
   set nativeListener(MobileAdListener listener) {
     if (listener == null) return;
 
     native.eventListeners.add(listener);
   }
 
-  /// Remove a Full Screen Ad Event Listener.
+  /// Remove a Native Ad Event Listener.
   bool removeNative(MobileAdListener listener) =>
       native.eventListeners.remove(listener);
 
-  /// Set the Banner Ad options.
+  /// Set the Native Ad options.
   Future<bool> setNativeAd({
     String adUnitId,
+    String factoryId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
     String contentUrl,
@@ -637,6 +675,7 @@ class Ads {
 
     return _nativeAd.set(
       adUnitId: adUnitId,
+      factoryId: factoryId ?? _factoryId,
       targetInfo: targetInfo,
       keywords: keywords ?? _keywords,
       contentUrl: contentUrl ?? _contentUrl,
@@ -661,6 +700,7 @@ class Ads {
   /// anchorType place advert at top or bottom of screen (default bottom)
   Future<bool> showNativeAd({
     String adUnitId,
+    String factoryId,
     MobileAdTargetingInfo targetInfo,
     List<String> keywords,
     String contentUrl,
@@ -680,8 +720,9 @@ class Ads {
     if (!_firstObject) return show;
 
     if (_nativeAd == null) {
-      show = await setBannerAd(
+      show = await setNativeAd(
         adUnitId: adUnitId,
+        factoryId: factoryId,
         keywords: keywords,
         contentUrl: contentUrl,
         childDirected: childDirected,
@@ -700,6 +741,7 @@ class Ads {
       if (errorListener != null) _eventErrorListeners.add(errorListener);
       show = await _nativeAd.show(
         adUnitId: adUnitId,
+        factoryId: factoryId,
         targetInfo: targetInfo,
         keywords: keywords,
         contentUrl: contentUrl,
@@ -922,6 +964,7 @@ class Banner {
   }
 }
 
+/// Implement the Native Ad
 class Native {
 //
   factory Native({MobileAdListener listener}) => _this ??= Native._(listener);
@@ -934,7 +977,7 @@ class Native {
 
   m.Native _native;
 
-  /// Set options to the Banner Ad.
+  /// Set options to the Native Ad.
   Future<bool> set({
     String adUnitId,
     String factoryId,
@@ -970,7 +1013,7 @@ class Native {
     );
   }
 
-  /// Show the Banner Ad.
+  /// Show the Native Ad.
   Future<bool> show({
     String adUnitId,
     String factoryId,
