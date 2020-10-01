@@ -271,7 +271,7 @@ class Native extends MobileAds {
     );
   }
 
-  /// Show the Banner Ad.
+  /// Show the Native Ad.
   @override
   Future<bool> show({
     String adUnitId,

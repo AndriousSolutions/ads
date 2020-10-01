@@ -1,4 +1,4 @@
-## 2.1.1
+## 2.1.1+2
  September 30, 2020
 - String factoryId to Ads constructor
 - Complete incorporation of 'native ad' to Ads class.

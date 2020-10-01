@@ -967,7 +967,8 @@ class Banner {
 /// Implement the Native Ad
 class Native {
 //
-  factory Native({MobileAdListener listener}) => _this ??= Native._(listener);
+  factory Native({MobileAdListener listener}) =>
+      _this ??= Native._(listener);
 
   Native._(MobileAdListener listener) {
     _native = m.Native(listener: listener);
