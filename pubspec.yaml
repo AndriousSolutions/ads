@@ -1,7 +1,7 @@
 name: ads
 description: Easily add Ads to your App with one static function call with an array of options.
 
-version: 2.1.1
+version: 2.2.0
 
 homepage: https://github.com/AndriousSolutions/ads
 repository: https://github.com/AndriousSolutions/ads
@@ -15,7 +15,7 @@ dependencies:
 
   # https://pub.dartlang.org/packages/firebase_admob
   # No constraint will reduce the Analyzed score!
-  firebase_admob: ^0.10.0
+  firebase_admob: ">=0.10.0 <1.0.0"
 
 dev_dependencies:
   flutter_test:

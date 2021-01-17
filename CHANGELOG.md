@@ -1,3 +1,7 @@
+## 2.2.0
+ January 17, 2021
+- firebase_admob: ">=0.10.0 <1.0.0"
+
 ## 2.1.1+2
  September 30, 2020
 - String factoryId to Ads constructor

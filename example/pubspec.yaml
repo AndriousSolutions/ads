@@ -16,7 +16,7 @@ dependencies:
     path: ..
 
   # https://pub.dartlang.org/packages/firebase_admob#-changelog-tab-
-  firebase_admob: 0.10.0
+  firebase_admob: ">=0.10.0 <1.0.0"
 
 dev_dependencies:
   flutter_test:

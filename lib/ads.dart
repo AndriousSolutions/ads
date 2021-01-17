@@ -52,6 +52,7 @@ Set<MobileAdListener> _adEventListeners = Set();
 
 Set<m.AdErrorListener> _eventErrorListeners = Set();
 
+/// The Ads class
 class Ads {
   /// Initialize the Firebase AdMob plugin with a number of options.
   Ads(
@@ -878,6 +879,7 @@ class Ads {
 
 List<EventError> _eventErrors = List();
 
+/// Implement the Banner Ad
 class Banner {
 //
   factory Banner({MobileAdListener listener}) => _this ??= Banner._(listener);
@@ -967,8 +969,7 @@ class Banner {
 /// Implement the Native Ad
 class Native {
 //
-  factory Native({MobileAdListener listener}) =>
-      _this ??= Native._(listener);
+  factory Native({MobileAdListener listener}) => _this ??= Native._(listener);
 
   Native._(MobileAdListener listener) {
     _native = m.Native(listener: listener);
@@ -1054,6 +1055,7 @@ class Native {
   }
 }
 
+/// Ads listener
 class _AdListener {
   _AdListener([this._adEventListeners]) {
     _adEventListeners ??= Set();
@@ -1214,6 +1216,7 @@ class _AdListener {
   }
 }
 
+/// Video listener
 class _VidListener {
   _VidListener([this._adEventListeners]) {
     _adEventListeners ??= Set();
@@ -1455,6 +1458,7 @@ class _VidListener {
   }
 }
 
+/// Event Error class
 class EventError {
   EventError(this.event, this.ex);
   MobileAdEvent event;
