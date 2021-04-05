@@ -1,3 +1,9 @@
+
+## 3.0.0-beta01
+ April 05, 2021
+- Replaced firebase_admob with google_mobile_ads
+- Upgraded to Flutter 2.12.0 with null safety
+
 ## 2.2.0
  January 17, 2021
 - firebase_admob: ">=0.10.0 <1.0.0"

@@ -1,21 +1,23 @@
 name: ads
 description: Easily add Ads to your App with one static function call with an array of options.
 
-version: 2.2.0
+version: 3.0.0-beta01
 
 homepage: https://github.com/AndriousSolutions/ads
 repository: https://github.com/AndriousSolutions/ads
 # SDK version
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # https://pub.dartlang.org/packages/firebase_admob
-  # No constraint will reduce the Analyzed score!
-  firebase_admob: ">=0.10.0 <1.0.0"
+## https://pub.dartlang.org/packages/firebase_admob
+#  firebase_admob: ">=0.10.0 <1.0.0"
+
+# https://pub.dev/packages/google_mobile_ads/
+  google_mobile_ads: ^0.12.0
 
 dev_dependencies:
   flutter_test:
