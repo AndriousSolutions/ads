@@ -8,8 +8,6 @@ library ads;
 
 import 'dart:async';
 
-import 'dart:developer' show log;
-
 import 'package:flutter/material.dart';
 
 import 'package:ads/admob.dart' as m
@@ -17,12 +15,13 @@ import 'package:ads/admob.dart' as m
         AdErrorListener,
         AdMobListener,
         adEventListeners,
-        Banner,
+        BannerAd,
         eventErrors,
         eventErrorListeners,
         FullScreenAd,
         MobileAdListener,
-        Native,
+        RewardListener,
+        NativeAd,
         VideoAd;
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -31,12 +30,14 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 export 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /// Export types and properties for the developer to use.
-export 'package:ads/admob.dart' hide MobileAds, FullScreenAd;
+export 'package:ads/admob.dart'
+    hide BannerAd, MobileAds, NativeAd, FullScreenAd;
 
 /// Signature for a ['AdError'] status change callback.
 //typedef void EventErrorListener(MobileAdEvent event, Exception ex);
 
-typedef RewardListener = void Function(String rewardType, int rewardAmount);
+/// Signature for a ['RewardAd'] status change callback.
+typedef RewardListener = void Function(RewardedAd ad, RewardItem reward);
 
 /// The Ads class
 class Ads {
@@ -57,6 +58,7 @@ class Ads {
     RequestConfiguration? requestConfiguration,
     bool? testing,
     m.MobileAdListener? listener,
+    m.RewardListener? rewardListener,
     AdSize? size,
     double? anchorOffset,
     double? horizontalCenterOffset,
@@ -78,6 +80,7 @@ class Ads {
         requestConfiguration: requestConfiguration,
         testing: testing,
         listener: listener,
+        rewardListener: rewardListener,
         size: size,
         anchorOffset: anchorOffset,
         horizontalCenterOffset: horizontalCenterOffset,
@@ -101,6 +104,7 @@ class Ads {
     RequestConfiguration? requestConfiguration,
     bool? testing,
     m.MobileAdListener? listener,
+    m.RewardListener? rewardListener,
     AdSize? size,
     double? anchorOffset,
     double? horizontalCenterOffset,
@@ -155,9 +159,7 @@ class Ads {
       m.eventErrorListeners.add(errorListener);
     }
 
-    MobileAds.instance
-        .initialize()
-        .then((status) {
+    MobileAds.instance.initialize().then((status) {
       //
       status.adapterStatuses.forEach((key, value) {
         if (value.state == AdapterInitializationState.ready) {
@@ -168,6 +170,7 @@ class Ads {
       // Configuration provided.
       if (requestConfiguration != null) {
         MobileAds.instance.updateRequestConfiguration(requestConfiguration);
+        childDirected = requestConfiguration.tagForChildDirectedTreatment! > 0;
       }
 
       if (bannerUnitId != null && _bannerAd == null) {
@@ -224,9 +227,6 @@ class Ads {
       }
 
       if (videoUnitId != null && _videoAd == null) {
-        // if (listener != null) {
-        //   m.adEventListeners.add(listener);
-        // }
         setVideoAd(
           adUnitId: videoUnitId,
           keywords: keywords,
@@ -234,6 +234,7 @@ class Ads {
           childDirected: childDirected,
           testDevices: testDevices,
           testing: testing,
+          rewardListener: rewardListener,
           errorListener: errorListener,
         );
       }
@@ -352,12 +353,15 @@ class Ads {
   ///
   ///
 
+  m.BannerAd? get bannerAd => _bannerAd!._banner;
   Banner? _bannerAd;
 
   Native? _nativeAd;
 
+  m.FullScreenAd? get fullScreenAd => _fullScreenAd;
   m.FullScreenAd? _fullScreenAd;
 
+  m.VideoAd? get videoAd => _videoAd;
   m.VideoAd? _videoAd;
 
   /// Close any Ads
@@ -416,7 +420,7 @@ class Ads {
   ///
   ///
 
-  final banner = m.AdMobListener();
+  final banner = m.AdMobListener(m.adEventListeners);
 
   /// Set a Banner Ad Event Listener.
   // ignore: avoid_setters_without_getters
@@ -463,7 +467,7 @@ class Ads {
       bannerCompleter.complete(_bannerAd!._banner.ad as BannerAd);
     };
 
-    banner.failedListener = () {
+    banner.failedListener = (Ad ad, LoadAdError error) {
 //        completer.completeError(error);
     };
 
@@ -504,7 +508,7 @@ class Ads {
   // m.FullScreenAd? get interstitial => _fullScreenAd;
   // m.FullScreenAd? get screen => _fullScreenAd;
 
-  final screen = m.AdMobListener();
+  final screen = m.AdMobListener(m.adEventListeners);
 
   /// Set a Full Screen Ad Event Listener.
   // ignore: avoid_setters_without_getters
@@ -677,7 +681,7 @@ class Ads {
   ///
 //  m.Native? get native => _nativeAd!._native;
 
-  final native = m.AdMobListener();
+  final native = m.AdMobListener(m.adEventListeners);
 
   /// Set a Native Ad Event Listener.
   // ignore: avoid_setters_without_getters
@@ -756,7 +760,7 @@ class Ads {
   /// Video Ad
   ///
 //  m.VideoAd? get video => _videoAd;
-  final video = m.AdMobListener();
+  final video = m.AdMobListener(m.adEventListeners);
 
   /// Set a Video Ad Event Listener
   // ignore: avoid_setters_without_getters
@@ -785,6 +789,7 @@ class Ads {
     bool? nonPersonalizedAds,
     bool? testing,
     m.MobileAdListener? listener,
+    m.RewardListener? rewardListener,
     m.AdErrorListener? errorListener,
   }) {
     // Can only have one instantiated Ads object.
@@ -802,6 +807,11 @@ class Ads {
     }
 
     _videoAd ??= m.VideoAd(listener: video);
+
+    // Add an Reward function if any.
+    if (rewardListener != null) {
+      _videoAd!.rewardListener = rewardListener;
+    }
 
     // If an unit id is not provided, it may be available from the constructor.
     if (adUnitId == null || adUnitId.isEmpty || adUnitId.length < 30) {
@@ -834,6 +844,7 @@ class Ads {
       List<String>? testDevices,
       bool? testing,
       m.MobileAdListener? listener,
+      m.RewardListener? rewardListener,
       m.AdErrorListener? errorListener,
       State? state}) async {
     //
@@ -857,6 +868,7 @@ class Ads {
         testDevices: testDevices,
         testing: testing,
         listener: listener,
+        rewardListener: rewardListener,
         errorListener: errorListener,
       );
 
@@ -866,6 +878,9 @@ class Ads {
     } else {
       if (listener != null) {
         video.eventListeners.add(listener);
+      }
+      if (rewardListener != null) {
+        video.rewardListener = rewardListener;
       }
       // Add this listener to the Error Listeners.
       if (errorListener != null) {
@@ -884,10 +899,10 @@ class Banner {
   factory Banner({required m.AdMobListener listener}) =>
       _this ??= Banner._(listener);
 
-  Banner._(m.AdMobListener listener) : _banner = m.Banner(listener: listener);
+  Banner._(m.AdMobListener listener) : _banner = m.BannerAd(listener: listener);
   static Banner? _this;
 
-  m.Banner _banner;
+  m.BannerAd _banner;
 
   /// Set options to the Banner Ad.
   Future<bool> set({
@@ -943,12 +958,12 @@ class Native {
       _this ??= Native._(listener);
 
   Native._(m.AdMobListener listener) {
-    _native = m.Native(listener: listener);
+    _native = m.NativeAd(listener: listener);
   }
 
   static Native? _this;
 
-  m.Native? _native;
+  m.NativeAd? _native;
 
   /// Set options to the Native Ad.
   Future<bool> set({
@@ -1104,28 +1119,27 @@ class _NativeAdState extends State<_NativeAdWidget> {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<NativeAd>(
-    future: ads.nativeCompleter.future,
-    builder:
-        (BuildContext context, AsyncSnapshot<NativeAd> snapshot) {
-      Widget? child;
-      switch (snapshot.connectionState) {
-        case ConnectionState.none:
-        case ConnectionState.waiting:
-        case ConnectionState.active:
-          child = Container();
-          break;
-        case ConnectionState.done:
-          if (snapshot.hasData) {
-            child = Container(
-              width: 250,
-              height: 350,
-              child: AdWidget(ad: snapshot.data as AdWithView),
-            );
-          } else {
-            child = Container();
+        future: ads.nativeCompleter.future,
+        builder: (BuildContext context, AsyncSnapshot<NativeAd> snapshot) {
+          Widget? child;
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              child = Container();
+              break;
+            case ConnectionState.done:
+              if (snapshot.hasData) {
+                child = Container(
+                  width: 250,
+                  height: 350,
+                  child: AdWidget(ad: snapshot.data as AdWithView),
+                );
+              } else {
+                child = Container();
+              }
           }
-      }
-      return child;
-    },
-  );
+          return child;
+        },
+      );
 }

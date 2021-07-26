@@ -9,48 +9,52 @@ import 'dart:async' show Future;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show Container, Widget;
 
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart' as g;
 
 // import 'package:firebase_admob/firebase_admob.dart'
 //     hide AdSize, BannerAd, InterstitialAd, MobileAdListener, NativeAd;
 
 /// The Ads event function signature
-typedef AdsListener = void Function(Ad ad);
+typedef AdsListener = void Function(g.Ad ad);
+
+/// Signature for a 'Load Error' callback
+typedef VoidLoadErrorCallback = void Function(g.Ad ad, g.LoadAdError error);
 
 /// Signature for a ['MobileAd'] status change callback.
 typedef MobileAdListener = void Function(AdsEvent event);
 
 /// Signature for a ['RewardAd'] status change callback.
-typedef RewardListener = void Function(String rewardType, int rewardAmount);
+typedef RewardListener = void Function(g.RewardedAd ad, g.RewardItem reward);
 
 /// Signature for a ['AdError'] status change callback.
 typedef AdErrorListener = void Function(Exception ex);
 
-class Banner extends MobileAds {
+class BannerAd extends MobileAds {
   //
-  factory Banner({required AdMobListener listener}) =>
-      _this ??= Banner._(listener);
-  Banner._(AdMobListener listener) : super(listener: listener) {
+  factory BannerAd({required AdMobListener listener}) =>
+      _this ??= BannerAd._(listener);
+  BannerAd._(AdMobListener listener) : super(listener: listener) {
     listener.closedListener = () {
       loadAd(show: false);
     };
   }
-  static Banner? _this;
-  AdSize? _setSize;
-  AdSize? _showSize;
+  static BannerAd? _this;
+  g.AdSize? _setSize;
+  g.AdSize? _showSize;
 
 //  final _bannerListener = AdMobListener(adEventListeners);
 
   Set<MobileAdListener> get eventListeners => listener!.eventListeners;
+
   // ignore: avoid_setters_without_getters
   set loadedListener(VoidCallback listener) =>
       this.listener!.loadedListener = listener;
   bool removeLoaded(VoidCallback listener) =>
       this.listener!.removeLoaded(listener);
   // ignore: avoid_setters_without_getters
-  set failedListener(VoidCallback listener) =>
+  set failedListener(VoidLoadErrorCallback listener) =>
       this.listener!.failedListener = listener;
-  bool removeFailed(VoidCallback listener) =>
+  bool removeFailed(VoidLoadErrorCallback listener) =>
       this.listener!.removeFailed(listener);
   // ignore: avoid_setters_without_getters
   set clickedListener(VoidCallback listener) =>
@@ -77,20 +81,21 @@ class Banner extends MobileAds {
       this.listener!.closedListener = listener;
   bool removeClosed(VoidCallback listener) =>
       this.listener!.removeClosed(listener);
+
   void clearAll() => listener!.clearAll();
 
   /// Set options to the Banner Ad.
   @override
   Future<bool> set({
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
     List<String>? testDevices,
     bool? nonPersonalizedAds,
     bool? testing,
-    AdSize? size,
+    g.AdSize? size,
     double? anchorOffset,
     double? horizontalCenterOffset,
 //    AnchorType anchorType,
@@ -110,7 +115,7 @@ class Banner extends MobileAds {
 //      anchorType: anchorType,
       errorListener: errorListener,
     );
-    _setSize ??= size ?? AdSize.banner;
+    _setSize ??= size ?? g.AdSize.banner;
     return loadAd(
       show: false,
       adUnitId: adUnitId,
@@ -131,14 +136,14 @@ class Banner extends MobileAds {
   Widget get widget => adWidget();
 
   @override
-  BannerAd _createAd(
-          {bool? testing, String? adUnitId, AdRequest? targetInfo}) =>
-      BannerAd(
-        size: _showSize ?? _setSize ?? AdSize.banner,
+  g.BannerAd _createAd(
+          {bool? testing, String? adUnitId, g.AdRequest? targetInfo}) =>
+      g.BannerAd(
+        size: _showSize ?? _setSize ?? g.AdSize.banner,
         adUnitId: testing!
-            ? BannerAd.testAdUnitId
+            ? g.BannerAd.testAdUnitId
             : adUnitId!.isEmpty
-                ? BannerAd.testAdUnitId
+                ? g.BannerAd.testAdUnitId
                 : adUnitId.trim(),
         listener: listener!.createListener(),
         request: targetInfo!,
@@ -161,15 +166,18 @@ class FullScreenAd extends MobileAds {
 //  final _screenListener = AdMobListener(adEventListeners);
 
   Set<MobileAdListener> get eventListeners => listener!.eventListeners;
+
+  get targetingInfo => null;
+
   // ignore: avoid_setters_without_getters
   set loadedListener(VoidCallback listener) =>
       this.listener!.loadedListener = listener;
   bool removeLoaded(VoidCallback listener) =>
       this.listener!.removeLoaded(listener);
   // ignore: avoid_setters_without_getters
-  set failedListener(VoidCallback listener) =>
+  set failedListener(VoidLoadErrorCallback listener) =>
       this.listener!.failedListener = listener;
-  bool removeFailed(VoidCallback listener) =>
+  bool removeFailed(VoidLoadErrorCallback listener) =>
       this.listener!.removeFailed(listener);
   // ignore: avoid_setters_without_getters
   set clickedListener(VoidCallback listener) =>
@@ -202,7 +210,7 @@ class FullScreenAd extends MobileAds {
   @override
   Future<bool> set({
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
@@ -244,44 +252,45 @@ class FullScreenAd extends MobileAds {
   }
 
   @override
-  InterstitialAd _createAd({
+  g.InterstitialAd _createAd({
     bool? testing,
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
   }) =>
-      InterstitialAd(
+      g.InterstitialAd(
         adUnitId: testing!
-            ? InterstitialAd.testAdUnitId
+            ? g.InterstitialAd.testAdUnitId
             : adUnitId!.isEmpty
-                ? InterstitialAd.testAdUnitId
+                ? g.InterstitialAd.testAdUnitId
                 : adUnitId.trim(),
         listener: listener!.createListener(),
         request: targetInfo!,
       );
 }
 
-class Native extends MobileAds {
+class NativeAd extends MobileAds {
   //
-  factory Native({required AdMobListener listener}) =>
-      _this ??= Native._(listener);
-  Native._(AdMobListener listener) : super(listener: listener) {
+  factory NativeAd({required AdMobListener listener}) =>
+      _this ??= NativeAd._(listener);
+  NativeAd._(AdMobListener listener) : super(listener: listener) {
     listener.closedListener = () {
       loadAd(show: false);
     };
   }
 
-  static Native? _this;
+  static NativeAd? _this;
 
   Set<MobileAdListener> get eventListeners => listener!.eventListeners;
+
   // ignore: avoid_setters_without_getters
   set loadedListener(VoidCallback listener) =>
       this.listener!.loadedListener = listener;
   bool removeLoaded(VoidCallback listener) =>
       this.listener!.removeLoaded(listener);
   // ignore: avoid_setters_without_getters
-  set failedListener(VoidCallback listener) =>
+  set failedListener(VoidLoadErrorCallback listener) =>
       this.listener!.failedListener = listener;
-  bool removeFailed(VoidCallback listener) =>
+  bool removeFailed(VoidLoadErrorCallback listener) =>
       this.listener!.removeFailed(listener);
   // ignore: avoid_setters_without_getters
   set clickedListener(VoidCallback listener) =>
@@ -318,7 +327,7 @@ class Native extends MobileAds {
   Future<bool> set({
     String? adUnitId,
     String? factoryId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
@@ -368,16 +377,16 @@ class Native extends MobileAds {
   Widget get widget => adWidget();
 
   @override
-  NativeAd _createAd({
+  g.NativeAd _createAd({
     bool? testing,
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
   }) =>
-      NativeAd(
+      g.NativeAd(
         adUnitId: testing!
-            ? NativeAd.testAdUnitId
+            ? g.NativeAd.testAdUnitId
             : adUnitId!.isEmpty
-                ? NativeAd.testAdUnitId
+                ? g.NativeAd.testAdUnitId
                 : adUnitId.trim(),
         factoryId: _factoryId!,
         listener: listener!.createListener(),
@@ -398,48 +407,62 @@ class VideoAd extends MobileAds {
   static VideoAd? _this;
 
   Set<MobileAdListener> get eventListeners => listener!.eventListeners;
+
   // ignore: avoid_setters_without_getters
   set loadedListener(VoidCallback listener) =>
       this.listener!.loadedListener = listener;
   bool removeLoaded(VoidCallback listener) =>
       this.listener!.removeLoaded(listener);
+
   // ignore: avoid_setters_without_getters
-  set failedListener(VoidCallback listener) =>
+  set failedListener(VoidLoadErrorCallback listener) =>
       this.listener!.failedListener = listener;
-  bool removeFailed(VoidCallback listener) =>
+  bool removeFailed(VoidLoadErrorCallback listener) =>
       this.listener!.removeFailed(listener);
+
   // ignore: avoid_setters_without_getters
   set clickedListener(VoidCallback listener) =>
       this.listener!.clickedListener = listener;
   bool removeClicked(VoidCallback listener) =>
       this.listener!.removeClicked(listener);
+
   // ignore: avoid_setters_without_getters
   set impressionListener(VoidCallback listener) =>
       this.listener!.impressionListener = listener;
   bool removeImpression(VoidCallback listener) =>
       this.listener!.removeImpression(listener);
+
   // ignore: avoid_setters_without_getters
   set openedListener(VoidCallback listener) =>
       this.listener!.openedListener = listener;
   bool removeOpened(VoidCallback listener) =>
       this.listener!.removeOpened(listener);
+
   // ignore: avoid_setters_without_getters
   set leftAppListener(VoidCallback listener) =>
       this.listener!.leftAppListener = listener;
   bool removeLeftApp(VoidCallback listener) =>
       this.listener!.removeLeftApp(listener);
+
   // ignore: avoid_setters_without_getters
   set closedListener(VoidCallback listener) =>
       this.listener!.closedListener = listener;
   bool removeClosed(VoidCallback listener) =>
       this.listener!.removeClosed(listener);
+
+  // ignore: avoid_setters_without_getters
+  set rewardListener(RewardListener listener) =>
+      this.listener!.rewardListener = listener;
+  bool removeReward(RewardListener listener) =>
+      this.listener!.removeReward(listener);
+
   void clearAll() => listener!.clearAll();
 
   /// Set the Video Ad's options.
   @override
   Future<bool> set({
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
@@ -485,16 +508,16 @@ class VideoAd extends MobileAds {
   bool show() => super.show();
 
   @override
-  RewardedAd _createAd({
+  g.RewardedAd _createAd({
     bool? testing,
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
   }) =>
-      RewardedAd(
+      g.RewardedAd(
         adUnitId: testing!
-            ? RewardedAd.testAdUnitId
+            ? g.RewardedAd.testAdUnitId
             : adUnitId!.isEmpty
-                ? RewardedAd.testAdUnitId
+                ? g.RewardedAd.testAdUnitId
                 : adUnitId.trim(),
         listener: listener!.createListener(),
         request: targetInfo,
@@ -510,10 +533,17 @@ abstract class MobileAds extends AdMob {
 
   final AdMobListener? listener;
 
-  Ad? _ad;
+  g.AdRequest? _adRequest;
+
+  List<String>? get keywords => _adRequest?.keywords;
+  String? get contentUrl => _adRequest?.contentUrl;
+  List<String>? get testDevices => _adRequest?.testDevices;
+  bool? get nonPersonalizedAds => _adRequest?.nonPersonalizedAds;
+
+  g.Ad? _ad;
 
   /// Provide the Ad object
-  Ad? get ad => _ad;
+  g.Ad? get ad => _ad;
 
   Key? _key;
 
@@ -525,7 +555,7 @@ abstract class MobileAds extends AdMob {
   Future<bool> loadAd({
     required bool show,
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
@@ -551,6 +581,9 @@ abstract class MobileAds extends AdMob {
       nonPersonalizedAds: nonPersonalizedAds,
     );
 
+    // Save the info. into a class property.
+    _adRequest = targetInfo;
+
     // Get rid of the ad if already created.
     await dispose();
 
@@ -570,13 +603,13 @@ abstract class MobileAds extends AdMob {
   }
 
   /// todo: Override and implement in a subclass.
-  Ad _createAd({bool? testing, String? adUnitId, AdRequest? targetInfo});
+  g.Ad _createAd({bool? testing, String? adUnitId, g.AdRequest? targetInfo});
 
   /// Set the MobileAd's options.
   @override
   void set({
     String? adUnitId,
-    AdRequest? targetInfo,
+    g.AdRequest? targetInfo,
     List<String>? keywords,
     String? contentUrl,
     bool? childDirected,
@@ -633,10 +666,10 @@ abstract class MobileAds extends AdMob {
   /// Display as a widget
   Widget adWidget({Key? key}) {
     Widget widget;
-    if (_ad == null || _ad is! AdWithView) {
+    if (_ad == null || _ad is! g.AdWithView) {
       widget = Container();
     } else {
-      widget = AdWidget(key: key ?? _key, ad: _ad as AdWithView);
+      widget = g.AdWidget(key: key ?? _key, ad: _ad as g.AdWithView);
     }
     return widget;
   }
@@ -644,10 +677,10 @@ abstract class MobileAds extends AdMob {
   /// Display the Ad
   @override
   bool show() {
-    final show = loaded && _ad != null && _ad is AdWithoutView;
+    final show = loaded && _ad != null && _ad is g.AdWithoutView;
     if (show) {
       loaded = false; // It will have to load again.
-      (_ad as AdWithoutView).show();
+      (_ad as g.AdWithoutView).show();
     }
     return show;
   }
@@ -669,9 +702,9 @@ abstract class MobileAds extends AdMob {
 abstract class AdMob {
   String? _adUnitId;
   List<String>? _keywords;
-  String? _contentUrl; // Can be null
-  List<String>? _testDevices; // Can be null
-  bool? _nonPersonalizedAds; // Can be null
+  String? _contentUrl;
+  List<String>? _testDevices;
+  bool? _nonPersonalizedAds;
   bool? _testing;
 
   Exception? _ex;
@@ -723,7 +756,7 @@ abstract class AdMob {
   void dispose();
 
   /// Return the target audience information
-  AdRequest _targetInfo({
+  g.AdRequest _targetInfo({
     List<String>? keywords,
     String? contentUrl,
     List<String>? testDevices,
@@ -755,7 +788,7 @@ abstract class AdMob {
 
     nonPersonalizedAds ??= _nonPersonalizedAds;
 
-    return AdRequest(
+    return g.AdRequest(
       keywords: keywords,
       contentUrl: contentUrl,
       testDevices: testDevices,
@@ -815,20 +848,25 @@ class AdMobListener {
 
   /// Listens for when the Ad is loaded in memory.
   final Set<VoidCallback> _loadedListeners = {};
+
   // ignore: avoid_setters_without_getters
   set loadedListener(VoidCallback listener) => _loadedListeners.add(listener);
   bool removeLoaded(VoidCallback listener) => _loadedListeners.remove(listener);
   void _clearLoaded() => _loadedListeners.clear();
 
   /// Listens for when the Ad fails to display.
-  final Set<VoidCallback> _failedListeners = {};
+  final Set<VoidLoadErrorCallback> _failedListeners = {};
+
   // ignore: avoid_setters_without_getters
-  set failedListener(VoidCallback listener) => _failedListeners.add(listener);
-  bool removeFailed(VoidCallback listener) => _failedListeners.remove(listener);
+  set failedListener(VoidLoadErrorCallback listener) =>
+      _failedListeners.add(listener);
+  bool removeFailed(VoidLoadErrorCallback listener) =>
+      _failedListeners.remove(listener);
   void _clearFailed() => _failedListeners.clear();
 
   /// Listens for when the Ad is clicked on.
   final Set<VoidCallback> _clickedListeners = {};
+
   // ignore: avoid_setters_without_getters
   set clickedListener(VoidCallback listener) => _clickedListeners.add(listener);
   bool removeClicked(VoidCallback listener) =>
@@ -837,6 +875,7 @@ class AdMobListener {
 
   /// Listens for when the user clicks further on the Ad.
   final Set<VoidCallback> _impressionListeners = {};
+
   // ignore: avoid_setters_without_getters
   set impressionListener(VoidCallback listener) =>
       _impressionListeners.add(listener);
@@ -846,6 +885,7 @@ class AdMobListener {
 
   /// Listens for when the Ad is opened.
   final Set<VoidCallback> _openedListeners = {};
+
   // ignore: avoid_setters_without_getters
   set openedListener(VoidCallback listener) => _openedListeners.add(listener);
   bool removeOpened(VoidCallback listener) => _openedListeners.remove(listener);
@@ -862,13 +902,23 @@ class AdMobListener {
 
   /// Listens for when the Ad is closed.
   final Set<VoidCallback> _closedListeners = {};
+
   // ignore: avoid_setters_without_getters
   set closedListener(VoidCallback listener) => _closedListeners.add(listener);
   bool removeClosed(VoidCallback listener) => _closedListeners.remove(listener);
   void _clearClosed() => _closedListeners.clear();
 
+  /// Listens for when the Ad is loaded in memory.
+  final Set<RewardListener> _rewardListeners = {};
+
+  // ignore: avoid_setters_without_getters
+  set rewardListener(RewardListener listener) => _rewardListeners.add(listener);
+  bool removeReward(RewardListener listener) =>
+      _rewardListeners.remove(listener);
+  void _clearReward() => _rewardListeners.clear();
+
   /// The Ad's Event Listener Function.
-  void eventListener(Ad ad, AdsEvent event) {
+  void eventListener(g.Ad ad, AdsEvent event, [g.LoadAdError? error]) {
     //
     for (final listener in _adEventListeners!) {
       try {
@@ -903,7 +953,7 @@ class AdMobListener {
       case AdsEvent.onAdFailedToLoad:
         for (final listener in _failedListeners) {
           try {
-            listener();
+            listener(ad, error!);
           } catch (ex) {
             eventError(ex, event: AdsEvent.onAdFailedToLoad);
           }
@@ -967,6 +1017,16 @@ class AdMobListener {
     assert(eventErrors.isEmpty, 'Ads: Errors in Ad Events! Refer to logcat.');
   }
 
+  void rewardedListener(g.RewardedAd ad, g.RewardItem reward) {
+    for (final listener in _rewardListeners) {
+      try {
+        listener(ad, reward);
+      } catch (ex) {
+        eventError(ex, event: AdsEvent.onRewardedAdUserEarnedReward);
+      }
+    }
+  }
+
   void clearAll() {
     _clearLoaded();
     _clearFailed();
@@ -975,24 +1035,27 @@ class AdMobListener {
     _clearOpened();
     _clearLeftApp();
     _clearClosed();
+    _clearReward();
   }
 
   /// Supply a comprehensive Ad Listener to all for multiple listeners assigned.
-  AdListener createListener() => AdListener(
-        onAdLoaded: (Ad ad) => eventListener(ad, AdsEvent.onAdLoaded),
-        onAdFailedToLoad: (Ad ad, LoadAdError error) =>
-            eventListener(ad, AdsEvent.onAdFailedToLoad),
-        onNativeAdClicked: (NativeAd ad) =>
+  g.AdListener createListener() => g.AdListener(
+        onAdLoaded: (g.Ad ad) => eventListener(ad, AdsEvent.onAdLoaded),
+        onAdFailedToLoad: (g.Ad ad, g.LoadAdError error) =>
+            eventListener(ad, AdsEvent.onAdFailedToLoad, error),
+        onNativeAdClicked: (g.NativeAd ad) =>
             eventListener(ad, AdsEvent.onNativeAdClicked),
-        onNativeAdImpression: (NativeAd ad) =>
+        onNativeAdImpression: (g.NativeAd ad) =>
             eventListener(ad, AdsEvent.onNativeAdImpression),
-        onAdOpened: (Ad ad) => eventListener(ad, AdsEvent.onAdOpened),
-        onApplicationExit: (Ad ad) =>
+        onAdOpened: (g.Ad ad) => eventListener(ad, AdsEvent.onAdOpened),
+        onApplicationExit: (g.Ad ad) =>
             eventListener(ad, AdsEvent.onApplicationExit),
-        onAdClosed: (Ad ad) => eventListener(ad, AdsEvent.onAdClosed),
-        onRewardedAdUserEarnedReward: (RewardedAd ad, RewardItem reward) =>
-            eventListener(ad, AdsEvent.onRewardedAdUserEarnedReward),
-        onAppEvent: (Ad ad, String name, String data) =>
+        onAdClosed: (g.Ad ad) => eventListener(ad, AdsEvent.onAdClosed),
+        onRewardedAdUserEarnedReward: (g.RewardedAd ad, g.RewardItem reward) {
+          eventListener(ad, AdsEvent.onRewardedAdUserEarnedReward);
+          rewardedListener(ad, reward);
+        },
+        onAppEvent: (g.Ad ad, String name, String data) =>
             eventListener(ad, AdsEvent.onAppEvent),
       );
 }

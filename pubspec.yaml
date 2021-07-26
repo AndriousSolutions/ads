@@ -1,7 +1,7 @@
 name: ads
 description: Easily add Ads to your App with one static function call with an array of options.
 
-version: 3.0.0-beta01
+version: 3.0.1
 
 homepage: https://github.com/AndriousSolutions/ads
 repository: https://github.com/AndriousSolutions/ads

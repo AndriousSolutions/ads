@@ -15,7 +15,6 @@ And so, for this version, add this to your package's pubspec.yaml file instead:
 dependencies:
   ads:^3.0.0
 ```
-For more information on this topic, read the article, [The importance of semantic versioning](https://medium.com/@xabaras/the-importance-of-semantic-versioning-9b78e8e59bba).
 
 ## Sign Up and Get Your ID’s
 First and foremost, you have to [sign up for AdMob](https://support.google.com/admob/answer/7356219?hl=en). Please, turn to [AdMob Help](https://support.google.com/admob) for further guidance on this. You’re going to have to go to your [Google AdMob Dashboard](https://apps.admob.com/v2/apps/list?pli=1) and get your id’s as well. There’s the ‘app ID’ used to identify your individual app, and there’s individual unit ID’s unique to each ‘type’ of ad you decide to use. Currently, there are three types: a Banner ad, an Interstitial ad, and a Video ad. Might as well do all that now, and then come back here to learn how to display such ads in your Flutter app. 

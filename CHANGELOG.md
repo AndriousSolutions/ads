@@ -1,4 +1,9 @@
 
+## 3.0.1
+ April 14, 2021
+- RewardListener = void Function(RewardedAd ad, RewardItem reward);
+- banner.failedListener = (Ad ad, LoadAdError error) {
+
 ## 3.0.0-beta01
  April 05, 2021
 - Replaced firebase_admob with google_mobile_ads
